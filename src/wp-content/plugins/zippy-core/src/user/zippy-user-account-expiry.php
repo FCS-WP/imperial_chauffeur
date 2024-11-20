@@ -93,8 +93,13 @@ class Zippy_User_Account_Expiry
     public function set_expiry_date_on_registration($user_id)
     {
         $retention_period = get_option('mpda_consent_time');
-
-        $expiry_date = date('Y-m-d', strtotime('+' . $retention_period . 'years'));
+        if ($retention_period === false) {
+            $retention_period = 5;
+            update_option('mpda_consent_time', $retention_period);
+        }
+        $user_info = get_userdata($user_id);
+        $creation_date = $user_info->user_registered;
+        $expiry_date = date('Y-m-d', strtotime($creation_date . ' + ' . $retention_period . ' years'));
         update_user_meta($user_id, 'expiry_date', $expiry_date);
     }
 
@@ -148,7 +153,8 @@ class Zippy_User_Account_Expiry
     public function show_pdpa_column_content($value, $column_name, $user_id)
     {
         if ($column_name == 'pdpa_column') {
-            $pdpa_consent = get_user_meta($user_id, 'custom_consent', true);
+            $pdpa_consent = get_user_meta($user_id, 'mpda_consent
+            ', true);
             if (empty($pdpa_consent)) {
                 $pdpa_consent_html = '-';
             } elseif ($pdpa_consent == "yes") {

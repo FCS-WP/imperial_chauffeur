@@ -102,7 +102,6 @@ class Zippy_Admin_Setting
 
     update_option($params['key'], $params['value']);
 
-
     $response = array(
       'status' => 'success',
       'message' => 'autheticated',

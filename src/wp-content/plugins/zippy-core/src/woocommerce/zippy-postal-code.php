@@ -12,7 +12,6 @@ defined('ABSPATH') or die();
 
 use Zippy_Core\Utils\Zippy_Utils_Core;
 
-
 class Zippy_Postal_code
 {
   protected static $_instance = null;
@@ -47,19 +46,44 @@ class Zippy_Postal_code
     add_filter('woocommerce_form_field_button', array($this, 'create_button_form_field_type'), 10, 4);
   }
 
+  public function zippy_check_shipping_method()
+  {
+    global $woocommerce;
+
+    $shipping_method = 'local_pickup:2';
+
+    $chosen_methods = $woocommerce->session->get('chosen_shipping_methods');
+
+    $chosen_shipping = $chosen_methods[0];
+
+    if ($chosen_shipping == $shipping_method) {
+      return false;
+    }
+    return true;
+  }
+
   public function modify_default_fields($fields)
   {
-    return $this->modify_fields($fields, '');
+    if ($this->zippy_check_shipping_method()) {
+      return $this->modify_fields($fields, '');
+    }
+    return $fields;
   }
 
   public function modify_billing_fields($fields)
   {
-    return $this->modify_fields($fields, 'billing');
+    if ($this->zippy_check_shipping_method()) {
+      return $this->modify_fields($fields, 'billing');
+    }
+    return $fields;
   }
 
   public function modify_shipping_fields($fields)
   {
-    return $this->modify_fields($fields, 'shipping');
+    if ($this->zippy_check_shipping_method()) {
+      return $this->modify_fields($fields, 'shipping');
+    }
+    return $fields;
   }
 
 
@@ -74,11 +98,14 @@ class Zippy_Postal_code
     $fields[$type . 'postcode']['required'] = true;
     $fields[$type . 'company']['required'] = true;
 
+
     return $fields;
   }
   public function postcode_script()
   {
+
     if (!is_checkout()) return;
+
     echo Zippy_Utils_Core::get_template('scripts.php', [], dirname(__FILE__), '/templates');
   }
 
