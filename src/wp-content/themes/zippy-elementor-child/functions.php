@@ -28,5 +28,3 @@ add_shortcode('random_slide', 'show_random_slide');
 // error_reporting(E_ALL);
 
 
-
-
