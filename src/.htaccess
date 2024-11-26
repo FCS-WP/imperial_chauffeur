@@ -18,5 +18,5 @@ RewriteRule . /index.php [L]
 
 # END WordPress
 # BEGIN PHP Settings
-php_value upload_max_filesize 20M
-php_value post_max_size 20M
+php_value upload_max_filesize 128M
+php_value post_max_size 128M
