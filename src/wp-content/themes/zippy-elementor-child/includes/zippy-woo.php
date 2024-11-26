@@ -1,4 +1,5 @@
 <?php
+//function to create booking car list on shop page
 function book_car_page(){
     global $product;
     $args = array(
@@ -49,11 +50,8 @@ function book_car_page(){
 }
 add_shortcode('booking-car-list', 'book_car_page');
 
-
-
-
+//function remove basic field on checkout page
 add_filter('woocommerce_checkout_fields', 'remove_billing_details');
-
 function remove_billing_details($fields) {
     // Remove specific billing fields
     unset($fields['billing']['billing_company']);
@@ -68,8 +66,8 @@ function remove_billing_details($fields) {
     return $fields;
 }
 
+//function create new field on checkout page
 add_filter('woocommerce_checkout_fields', 'add_multiple_custom_checkout_fields');
-
 function add_multiple_custom_checkout_fields($fields) {
     $cart = WC()->cart;
     foreach ($cart->get_cart() as $cart_item){
@@ -168,6 +166,7 @@ function add_multiple_custom_checkout_fields($fields) {
 }
 add_action('woocommerce_checkout_update_order_meta', 'save_multiple_custom_checkout_fields');
 
+//function save data booking to database
 function save_multiple_custom_checkout_fields($order_id) {
 
     if (!empty($_POST['no_of_passengers'])) {
@@ -210,6 +209,7 @@ function save_multiple_custom_checkout_fields($order_id) {
 }
 add_action('woocommerce_admin_order_data_after_billing_address', 'display_multiple_custom_checkout_fields_in_admin', 10, 1);
 
+//function display information booking to order details page
 function display_multiple_custom_checkout_fields_in_admin($order) {
 
     $no_of_passengers = get_post_meta($order->get_id(), 'no_of_passengers', true);
@@ -271,6 +271,8 @@ function display_multiple_custom_checkout_fields_in_admin($order) {
 
 add_filter('woocommerce_available_payment_gateways', 'restrict_payment_methods_for_logged_in_users');
 
+
+//function to divide member and guest
 function restrict_payment_methods_for_logged_in_users($available_gateways) {
     // Check if the user is logged in
     if (is_user_logged_in()) {
@@ -291,3 +293,4 @@ function restrict_payment_methods_for_logged_in_users($available_gateways) {
 
     return $available_gateways;
 }
+
