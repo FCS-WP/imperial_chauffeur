@@ -215,6 +215,10 @@
     text-align: center;
 }
 
+.product_type_simple.add_to_cart_button{
+    display: none !important;
+}
+
 .date-time-form {
     position: relative;
     display: flex;
