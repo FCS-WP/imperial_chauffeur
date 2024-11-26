@@ -291,6 +291,22 @@
     display: none;
 }
 
+.col-total-price-information{
+    margin-top: 20px;
+    padding-top: 10px;
+    margin-bottom: 10px;
+    font-size: 18px;
+    display: flex;
+    border-top: 2px solid #e0e0e0;
+    justify-content: space-between;
+    align-items: center;
+    span{
+        font-weight: bold;
+        color:#f1192e;
+    }
+}
+
+
 .flatpickr-month {
     display: flex;
     width: 100%;

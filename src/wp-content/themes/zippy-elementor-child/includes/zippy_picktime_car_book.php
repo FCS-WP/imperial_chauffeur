@@ -28,9 +28,7 @@ function vanilla_booking_car_custom(){
                     <label>Drop Off</label><input type="time" id="DropOffTime" name="DropOffTime" min="00:00" max="24:00" value="<?php echo date("H:i"); ?>" required>
                 </div>
             </div>
-            <div class="col-total-price-information">
-                <label>Total Price: </label><span > $<span id="price-total"><?php echo $current_price = $product->get_price();?></span><span id="default-price" style="display:none"><?php echo $current_price = $product->get_price();?></span> / Trip(Day)</span>
-            </div>
+            
             <div class="input-text-pickup-information">
                 <div class="row-form-custom">
                     <input name="id_product" type="hidden" value="<?php echo $product->get_id();?>">
@@ -65,6 +63,9 @@ function vanilla_booking_car_custom(){
                     </div>
                 </div>
                 
+            </div>
+            <div class="col-total-price-information">
+                <label>Total Price: </label><span > $<span id="price-total"><?php echo $current_price = $product->get_price();?></span><span id="default-price" style="display:none"><?php echo $current_price = $product->get_price();?></span></span>
             </div>
             <div class="row-form-custom col-1">
                     <div class="col-form-custom">
