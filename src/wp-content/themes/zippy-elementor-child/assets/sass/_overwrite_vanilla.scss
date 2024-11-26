@@ -125,10 +125,12 @@ textarea{
 
 [data-vc-theme=light] .vc-date__btn:hover{
     background-color: #06b6d4;
+    color: #f1192e;
 }
 
 [data-vc-theme=light] .vc-date[data-vc-date-holiday] .vc-date__btn:hover, [data-vc-theme=light] .vc-date[data-vc-date-weekend] .vc-date__btn:hover{
     background-color: #06b6d4;
+    color: #f1192e;
 }
 
 @media(max-width: 768px){
