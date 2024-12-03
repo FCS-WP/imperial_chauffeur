@@ -1,35 +1,52 @@
 import { Calendar, Options } from 'vanilla-calendar-pro';
 
-//option vanilla calendar js
-const options = {
-    
-  type: 'multiple',
-  displayMonthsCount: 2,
-  monthsToSwitch: 2,
-  displayDatesOutside: false,
-  disableDatesPast: true,
-  enableEdgeDatesOnly: true,
-  selectionDatesMode: 'multiple-ranged',
-  onClickDate(self) {
-    
-    var date_range = self.context.selectedDates;
-    const pickupdate = document.getElementById('pickupdate');
-    const DropOffDate = document.getElementById('DropOffDate');
-    pickupdate.value = convertDate(date_range[0]);
-    console.log("check");
-    if (date_range[1] === undefined) {
+$(document).ready(function(){
+  //option vanilla calendar js
+  const options = {
       
-    } else {
-      DropOffDate.value = convertDate(date_range[1]);
-      caculater_booking_total_price();
-    }
-    
-    
-  },
-};
+    type: 'multiple',
+    displayMonthsCount: 2,
+    monthsToSwitch: 2,
+    displayDatesOutside: false,
+    disableDatesPast: true,
+    enableEdgeDatesOnly: true,
+    selectionDatesMode: 'multiple-ranged',
+    onClickDate(self) {
+      
+      var date_range = self.context.selectedDates;
+      const pickupdate = document.getElementById('pickupdate');
+      const DropOffDate = document.getElementById('DropOffDate');
+      pickupdate.value = convertDate(date_range[0]);
+      console.log("check");
+      if (date_range[1] === undefined) {
+        
+      } else {
+        DropOffDate.value = convertDate(date_range[1]);
+        caculater_booking_total_price();
+      }
+      
+      
+    },
+  };
 
-const calendar = new Calendar('#calendar', options);
-calendar.init();
+  if ($('#calendar').length > 0) {
+    const calendar = new Calendar('#calendar', options);
+    calendar.init();
+  }
+
+  // Init date picker for hour booking
+  if ($('#tab_hour_picker').length > 0) {
+    const tabHourPicker = new Calendar('#tab_hour_picker', {
+      disableDatesPast: true,
+      onClickDate(self) {
+        let selectedDate = self.context.selectedDates[0];
+        $("#hbk_selected_date").val(selectedDate);
+      },
+    });
+    tabHourPicker.init();
+  }
+
+})
 
 //function covert format date from yyyy-mm-dd to dd-mm-yyyy
 function convertDate(inputDate) {
@@ -66,4 +83,6 @@ function caculater_booking_total_price(){
   priceElement.innerText = total_price;
 
 }
+
+
 
