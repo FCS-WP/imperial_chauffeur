@@ -1,100 +1,113 @@
 <?php
-// 1. Thêm tab "Bookings" vào menu WooCommerce trong admin
+// 1. Thêm menu "Bookings" vào WooCommerce
 function add_bookings_menu_item() {
     add_submenu_page(
         'woocommerce',
-        'Bookings',   
-        'Bookings',   
-        'manage_options',
-        'view-bookings', 
-        'view_bookings_page'
+        'Bookings', // Tên trang
+        'Bookings', // Tên menu
+        'manage_woocommerce', // Quyền
+        'view-bookings', // Slug của trang
+        'view_bookings_page' // Callback function
     );
 }
 add_action('admin_menu', 'add_bookings_menu_item');
 
-
+// 2. Hiển thị danh sách đơn hàng nhóm theo Customer ID
 function view_bookings_page() {
-    global $wpdb;
+    // Lấy danh sách tất cả đơn hàng
+    $args = array(
+        'limit' => -1, // Lấy tất cả đơn hàng
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
+    $orders = wc_get_orders($args);
 
-    // Truy vấn tất cả các đơn hàng từ bảng wp_posts và wp_postmeta
-    $results = $wpdb->get_results("
-        SELECT p.ID AS order_id, p.post_date AS order_date, p.post_status AS order_status, 
-               pm1.meta_value AS customer_first_name, pm2.meta_value AS customer_last_name, 
-               pm3.meta_value AS customer_id
-        FROM {$wpdb->prefix}posts AS p
-        LEFT JOIN {$wpdb->prefix}postmeta AS pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_billing_first_name'
-        LEFT JOIN {$wpdb->prefix}postmeta AS pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_billing_last_name'
-        LEFT JOIN {$wpdb->prefix}postmeta AS pm3 ON p.ID = pm3.post_id AND pm3.meta_key = '_customer_user'
-        WHERE p.post_type = 'shop_order_placehold'
-    ");
-    
+    // Nhóm đơn hàng theo Customer ID
+    $grouped_orders = array();
+    foreach ($orders as $order) {
+        $customer_id = $order->get_customer_id() ?: 'guest'; // Nếu không có ID, dùng "guest"
+        if (!isset($grouped_orders[$customer_id])) {
+            $grouped_orders[$customer_id] = array(
+                'customer_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+                'orders' => array(),
+            );
+        }
+        $grouped_orders[$customer_id]['orders'][] = $order;
+    }
+
     // Bắt đầu bảng HTML
     echo '<div class="wrap"><h1>Bookings</h1>';
     echo '<table class="wp-list-table widefat fixed striped">';
-    echo '<thead><tr><th>Order ID</th><th>Customer Name</th><th>Customer ID</th><th>Status</th><th>Action</th></tr></thead>';
+    echo '<thead><tr><th>Customer ID</th><th>Customer Name</th><th>Number of Orders</th><th>Action</th></tr></thead>';
     echo '<tbody>';
 
-    // Hiển thị từng booking
-    if ($results) {
-        foreach ($results as $order) {
-            // Kết hợp first name và last name để tạo tên khách hàng đầy đủ
-            $customer_name = $order->customer_first_name . ' ' . $order->customer_last_name;
+    // Hiển thị từng nhóm khách hàng
+    if (!empty($grouped_orders)) {
+        foreach ($grouped_orders as $customer_id => $data) {
+            $customer_name = $data['customer_name'];
+            $order_count = count($data['orders']);
 
             echo '<tr>';
-            echo '<td>' . $order->order_id . '</td>';
-            echo '<td>' . $customer_name . '</td>';
-            echo '<td>' . $order->customer_id . '</td>';
-            echo '<td>' . $order->order_status . '</td>';
-            echo '<td><a href="' . admin_url('admin.php?page=view-bookings&action=view&order_id=' . $order->order_id) . '">View</a></td>';
+            echo '<td>' . esc_html($customer_id === 'guest' ? 'Guest' : $customer_id) . '</td>';
+            echo '<td>' . esc_html($customer_name) . '</td>';
+            echo '<td>' . esc_html($order_count) . '</td>';
+            echo '<td><a href="' . esc_url(admin_url('admin.php?page=view-bookings&action=view&customer_id=' . $customer_id)) . '">View</a></td>';
             echo '</tr>';
         }
     } else {
-        echo '<tr><td colspan="6">No bookings found.</td></tr>';
+        echo '<tr><td colspan="4">No bookings found.</td></tr>';
     }
 
     echo '</tbody></table>';
     echo '</div>';
 }
 
-
-
+// 3. Xử lý chi tiết nhóm đơn hàng của một khách hàng
 function handle_view_booking() {
-    if (isset($_GET['action']) && $_GET['action'] == 'view' && isset($_GET['order_id'])) {
-        $order_id = $_GET['order_id'];
+    if (isset($_GET['action']) && $_GET['action'] === 'view' && isset($_GET['customer_id'])) {
+        $customer_id = sanitize_text_field($_GET['customer_id']);
+        $args = array(
+            'limit' => -1,
+            'customer_id' => $customer_id === 'guest' ? 0 : $customer_id,
+        );
+        $orders = wc_get_orders($args);
 
-        $order = wc_get_order($order_id);
+        if (!empty($orders)) {
+            echo '<div class="wrap"><h1>Order Details for Customer: ' . esc_html($customer_id) . '</h1>';
 
-        if ($order) {
-  
-            echo '<div class="wrap"><h1>Order Details</h1>';
-            echo '<table class="wp-list-table widefat fixed striped">';
-            echo '<tr><th>Order ID</th><td>' . $order->get_id() . '</td></tr>';
-            echo '<tr><th>Customer</th><td>' . $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() . '</td></tr>';
-            echo '<tr><th>Email</th><td>' . $order->get_billing_email() . '</td></tr>';
-            echo '<tr><th>Phone</th><td>' . $order->get_billing_phone() . '</td></tr>';
-            echo '<tr><th>Total</th><td>' . $order->get_total() . ' ' . $order->get_currency() . '</td></tr>';
-            echo '<tr><th>Status</th><td>' . $order->get_status() . '</td></tr>';
-            echo '</table>';
+            foreach ($orders as $order) {
+                echo '<h2>Order #' . esc_html($order->get_id()) . '</h2>';
+                echo '<table class="wp-list-table widefat fixed striped">';
+                echo '<tr><th>Order ID</th><td>' . esc_html($order->get_id()) . '</td></tr>';
+                echo '<tr><th>Date</th><td>' . esc_html($order->get_date_created()->date('Y-m-d H:i:s')) . '</td></tr>';
+                echo '<tr><th>Customer</th><td>' . esc_html($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()) . '</td></tr>';
+                echo '<tr><th>Email</th><td>' . esc_html($order->get_billing_email()) . '</td></tr>';
+                echo '<tr><th>Phone</th><td>' . esc_html($order->get_billing_phone()) . '</td></tr>';
+                echo '<tr><th>Total</th><td>' . esc_html(wc_price($order->get_total(), array('currency' => $order->get_currency()))) . '</td></tr>';
+                echo '<tr><th>Status</th><td>' . esc_html(wc_get_order_status_name($order->get_status())) . '</td></tr>';
+                echo '</table>';
 
-            echo '<h2>Products</h2><table class="wp-list-table widefat fixed striped">';
-            echo '<thead><tr><th>Product</th><th>Quantity</th><th>Price</th></tr></thead>';
-            echo '<tbody>';
+                echo '<h3>Products</h3>';
+                echo '<table class="wp-list-table widefat fixed striped">';
+                echo '<thead><tr><th>Product</th><th>Quantity</th><th>Price</th></tr></thead>';
+                echo '<tbody>';
 
-            foreach ($order->get_items() as $item_id => $item) {
-                echo '<tr>';
-                echo '<td>' . $item->get_name() . '</td>';
-                echo '<td>' . $item->get_quantity() . '</td>';
-                echo '<td>' . wc_price($item->get_total()) . '</td>';
-                echo '</tr>';
+                foreach ($order->get_items() as $item) {
+                    echo '<tr>';
+                    echo '<td>' . esc_html($item->get_name()) . '</td>';
+                    echo '<td>' . esc_html($item->get_quantity()) . '</td>';
+                    echo '<td>' . esc_html(wc_price($item->get_total())) . '</td>';
+                    echo '</tr>';
+                }
+
+                echo '</tbody></table>';
             }
 
-            echo '</tbody></table>';
             echo '</div>';
         } else {
-            echo '<div class="wrap"><h1>Order Not Found</h1></div>';
+            echo '<div class="wrap"><h1>No Orders Found for Customer ID: ' . esc_html($customer_id) . '</h1></div>';
         }
     }
 }
 add_action('admin_init', 'handle_view_booking');
-
 ?>
