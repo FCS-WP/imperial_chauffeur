@@ -1,0 +1,132 @@
+// Hour Booking Car 
+.layout-row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-column: auto;
+    gap: 16px;
+}
+
+.layout-col-6 {
+    grid-column: span 6;
+}
+
+.layout-col-4 {
+    grid-column: span 4; 
+}
+
+.layout-col-12 {
+    grid-column: span 12;
+}
+
+@media(max-width: 768px) {
+    .layout-col-6 {
+        grid-column: span 12;
+    }
+    .layout-col-4 {
+        grid-column: span 12; 
+    }
+}
+
+.overview-row {
+    display: flex;
+    justify-content: space-between;
+}
+.d-flex {
+    display: flex;
+    gap: 10px;
+}
+.d-none {
+    display: none;
+}
+.summary-information.no-flex {
+    display: block !important;
+    .col-summary-information{
+        width: 100% !important;
+        display: flex;
+    }
+    .col-summary-information label {
+        font-weight: 500;
+        font-size: 16px;
+    }
+}
+
+.value-summary {
+    border: none;
+    padding: 0px;
+    margin-left: 7px;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+// Responsive for form 
+@media (max-width: 768px) {
+    .row-form-custom {
+        flex-wrap: wrap;
+        row-gap: 10px;
+    }
+    .col-2 {
+        .col-form-custom {
+            width: 100%;
+        }
+    }
+    
+    .col-3 {
+        .col-form-custom {
+            width: 100%;
+        }
+    }
+}
+/* Popup container */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+/* Popup content */
+.popup-content {
+    position: relative;
+    background-color: white;
+    padding: 10px;
+    border-radius: 15px;
+    text-align: center;
+    width: 550px;
+}
+
+/* Close button */
+#closePopup{
+    width: 100%;
+    background-color: #f43f5e;
+    color:#fff;
+    border-radius: 10px;
+    font-weight: bolder;
+    padding: 13px;
+}
+
+#openPopup{
+    cursor: pointer;
+}
+
+.heading-custom-vanilla{
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+.label-pickup-time-vanilla{
+    margin-bottom: 0px;
+    margin-top: 20px;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+.calendar-box-custom .calendar-box #calendar{
+    margin-bottom: 10px;
+    border-radius: 10px;    
+}

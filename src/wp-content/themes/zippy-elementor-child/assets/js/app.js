@@ -1,7 +1,8 @@
 import { Calendar, Options } from 'vanilla-calendar-pro';
+import './hbk_form'
 
+//option vanilla calendar js
 $(document).ready(function(){
-  //option vanilla calendar js
   const options = {
       
     type: 'multiple',
@@ -28,24 +29,11 @@ $(document).ready(function(){
       
     },
   };
-
+  
   if ($('#calendar').length > 0) {
     const calendar = new Calendar('#calendar', options);
     calendar.init();
   }
-
-  // Init date picker for hour booking
-  if ($('#tab_hour_picker').length > 0) {
-    const tabHourPicker = new Calendar('#tab_hour_picker', {
-      disableDatesPast: true,
-      onClickDate(self) {
-        let selectedDate = self.context.selectedDates[0];
-        $("#hbk_selected_date").val(selectedDate);
-      },
-    });
-    tabHourPicker.init();
-  }
-
 })
 
 //function covert format date from yyyy-mm-dd to dd-mm-yyyy
@@ -83,6 +71,3 @@ function caculater_booking_total_price(){
   priceElement.innerText = total_price;
 
 }
-
-
-
