@@ -2,30 +2,55 @@ import { Calendar, Options } from 'vanilla-calendar-pro';
 
 //option vanilla calendar js
 const options = {
-    
-  type: 'multiple',
-  displayMonthsCount: 2,
-  monthsToSwitch: 2,
-  displayDatesOutside: false,
-  disableDatesPast: true,
-  enableEdgeDatesOnly: true,
-  selectionDatesMode: 'multiple-ranged',
-  onClickDate(self) {
-    
-    var date_range = self.context.selectedDates;
-    const pickupdate = document.getElementById('pickupdate');
-    const DropOffDate = document.getElementById('DropOffDate');
-    pickupdate.value = convertDate(date_range[0]);
-    console.log("check");
-    if (date_range[1] === undefined) {
+  selectionTimeMode: 24,
+  layouts: {
+    default: `
+      <h5 class="heading-custom-vanilla">Pick Up Date</h5>
+      <div class="vc-header" data-vc="header" role="toolbar" aria-label="Calendar Navigation">
+        <#ArrowPrev />  
+        <div class="vc-header__content" data-vc-header="content">
+          <#Year /> | <#Month />
+        </div>
+        <#ArrowNext />
+      </div>
+      <div class="vc-wrapper" data-vc="wrapper">
+        <#WeekNumbers />
+        <div class="vc-content" data-vc="content">
+          <#Week />
+          <#Dates />
+          <#DateRangeTooltip />
+        </div>
+        </div>
+      <#ControlTime />
+      <div class="time-avail">
+        <div class="time-avail__item">
+          <p>Pick up time</p><p id="get_time_pickup">00:00</p>
+        </div>
+        <div class="time-avail__item">
+          <p>Pick up date</p><p id="get_date_pickup">04-12-2024</p>
+        </div>
+      </div>
       
-    } else {
-      DropOffDate.value = convertDate(date_range[1]);
-      caculater_booking_total_price();
-    }
-    
-    
+    `,
   },
+  onClickDate(self) {
+    var date = self.context.selectedDates;
+    
+    if (date[0] !== undefined) {
+      const pickupdate = document.getElementById('pickupdate');
+      pickupdate.value = convertDate(date);
+      const get_date_pickup = document.getElementById('get_date_pickup');
+      get_date_pickup.innerText = convertDate(date);
+    }
+  },
+  onChangeTime(self) {
+    var time = self.context.selectedTime;
+    const get_time_pickup = document.getElementById('get_time_pickup');
+    get_time_pickup.innerText = time;
+    const pickuptime = document.getElementById('pickuptime');
+    pickuptime.value = time;
+  },
+
 };
 
 const calendar = new Calendar('#calendar', options);
@@ -42,28 +67,81 @@ function convertDate(inputDate) {
 }
 
 //function caculater booking total price after change date range
-function caculater_booking_total_price(){
-  const DefaultpriceText = document.getElementById("default-price").textContent;
-  const priceElement = document.getElementById("price-total");
-  const DefaultpriceNumber = parseFloat(DefaultpriceText.replace(/,/g, ''));
-  const pickupDateValue = document.getElementById("pickupdate").value;
-  const dropOffDateValue = document.getElementById("DropOffDate").value;
-  const [pickupDay, pickupMonth, pickupYear] = pickupDateValue.split('-').map(Number);
-  const [dropOffDay, dropOffMonth, dropOffYear] = dropOffDateValue.split('-').map(Number);
 
-  const pickupDate = new Date(pickupYear, pickupMonth - 1, pickupDay); 
-  const dropOffDate = new Date(dropOffYear, dropOffMonth - 1, dropOffDay);
+const insideradioInput = document.getElementById('inside_additional_stop');
+const outsideradioInput = document.getElementById('outside_additional_stop');
+const oneradioInput = document.getElementById('1perway');
+const tworadioInput = document.getElementById('2perway');
+const default_price = document.getElementById('default-price');
+const result_price = document.getElementById('price-total');
+var default_price_number = default_price.textContent;
+var total_price = 0;
+var additional_stop = 0;
+var result_price_number = 0;
 
-  const differenceInTime = dropOffDate - pickupDate;
+insideradioInput.addEventListener('change', function (event) {
+  if (event.target.checked) {
+    additional_stop = 0;
+    result_price_number = result_price.textContent;
+    result_price.innerHTML = (Number(result_price_number) -25);
+    
+  }
+});
 
-  const differenceInDays = differenceInTime / (1000 * 60 * 60 * 24);  
+outsideradioInput.addEventListener('change', function (event) {
+  if (event.target.checked) {
+    additional_stop = 25;
+    result_price_number = result_price.textContent;
+    result_price.innerHTML = (Number(result_price_number) + 25);
+  }
+});
+
+
+oneradioInput.addEventListener('change', function (event) {
+  if (event.target.checked) {
+    total_price = Number(default_price_number)*1 + additional_stop ;
+    result_price.innerHTML = total_price;
+  }
+});
+
+
+tworadioInput.addEventListener('change', function (event) {    
+  if (event.target.checked) {
+    total_price = Number(default_price_number)*2 + additional_stop ;
+    result_price.innerHTML = total_price;
+  }
+});
+
+
+const openPopupButton = document.getElementById('openPopup');
+const closePopupButton = document.getElementById('closePopup');
+const popup = document.getElementById('popup');
+
+// Open popup
+openPopupButton.addEventListener('click', () => {
+    popup.style.display = 'flex';
+});
+
+// Close popup
+closePopupButton.addEventListener('click', () => {
+    popup.style.display = 'none';
+});
+
+// Close popup when clicking outside the content
+popup.addEventListener('click', (event) => {
+    if (event.target === popup) {
+        popup.style.display = 'none';
+    }
+});
+
+
+document.getElementById('servicetype').addEventListener('change', function() {
+  var selectedValue = this.value; 
+  var inputFlightDiv = document.getElementById('input-flight'); 
   
-  var priceNumber = DefaultpriceNumber;
-
-  
-  var total_price = priceNumber * differenceInDays;
-  
-  priceElement.innerText = total_price;
-
-}
-
+  if (selectedValue === 'Point-to-point Transfer') {
+      inputFlightDiv.style.display = 'none'; 
+  } else {
+      inputFlightDiv.style.display = 'flex';
+  }
+});

@@ -178,45 +178,6 @@ function process_form_submission() {
 }
 add_action('init', 'process_form_submission');
 
-
-function display_car_booking_meta_in_admin($order) {
-    $product_name = $order->get_meta('_car_booking_product_name');
-    $service_type = $order->get_meta('_car_booking_service_type');
-    $product_id = $order->get_meta('_car_booking_product_id');
-    $pickupdate = $order->get_meta('_car_booking_pickupdate');
-    $key_member = $order->get_meta('_car_booking_key_member');
-    $pickuptime = $order->get_meta('_car_booking_pickuptime');
-    $flight_details = $order->get_meta('_car_booking_flight_details');
-    $pickuplocation = $order->get_meta('_car_booking_pickuplocation');
-    $dropofflocation = $order->get_meta('_car_booking_dropofflocation');
-    $salutation = $order->get_meta('_car_booking_salutation');
-    $firstname = $order->get_meta('_car_booking_firstname');
-    $lastname = $order->get_meta('_car_booking_lastname');
-    $tel = $order->get_meta('_car_booking_tel');
-    $email = $order->get_meta('_car_booking_email');
-    $numpassengers = $order->get_meta('_car_booking_numpassengers');
-    $numbaggage = $order->get_meta('_car_booking_numbaggage');
-    $requests = $order->get_meta('_car_booking_requests');
-    ?>
-
-    <div class="car-booking-infor">
-        <p style="font-size:14px"><b>Information Customer</b></p>
-        <div class="name-booking"><b>Name:</b> <?php echo $salutation . ' ' . $firstname . ' ' . $lastname; ?></div>
-        <div class="pickup-booking"><b>Pick Up Location:</b> <?php echo $pickuplocation; ?></div>
-        <div class="drop-off-booking"><b>Drop Off Location:</b> <?php echo $dropofflocation; ?></div>
-        <div class="pickuptime"><b>Time:</b> <?php echo $pickuptime; ?> - <b>Date:</b> <?php echo $pickupdate; ?></div>
-        <div class="service-type-booking"><b>Service Type:</b> <?php echo $service_type; ?></div>
-        <div class="flight-details"><b>Flight Details:</b> <?php echo $flight_details; ?></div>
-        <div class="numpassengers"><b>No. of Passengers:</b> <?php echo $numpassengers; ?></div>
-        <div class="numbaggage"><b>No. of Baggage:</b> <?php echo $numbaggage; ?></div>
-        <div class="requests"><b>Special Requests:</b> <?php echo $requests; ?></div>
-        <div class="keymember"><b>Key: </b> <?php echo $key_member;?></div>
-    </div>
-
-    <?php
-}
-add_action('woocommerce_admin_order_data_after_billing_address', 'display_car_booking_meta_in_admin');
-
 function book_car_page(){
     global $product;
     $args = array(
