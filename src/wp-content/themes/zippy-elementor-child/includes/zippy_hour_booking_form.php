@@ -24,7 +24,7 @@ function hour_booking_form(){
                     <input name="id_product" type="hidden" value="<?php echo $product->get_id();?>">
                     <input name="key_member" type="hidden" value="<?php echo $key_member;?>">
                     <input name="hbk_type" type="hidden" value="hour">
-                    <input name="hbk_service_fees" id="hbk_service_fees" type="hidden" value="20">
+                    <input name="hbk_midnight_fee" id="hbk_midnight_fee" type="hidden" value="0">
                 </div>
                 <!-- Get product categories & check min hour -->
                 <?php 
@@ -41,25 +41,28 @@ function hour_booking_form(){
                     }
                 ?>
                 <div class="row-form-custom col-2">
-                            <div class="col-form-custom">
-                                <label for="hbk_pickup_date">Pick Up Date & Time</label>
+                            <div class="col-form-custom position-relative">
+                                <div class="d-flex flex-wrap mb-1">
+                                    <label for="hbk_pickup_date">Pick Up Date & Time <span style="color:red;">*</span></label>
+                                    <span class="note-midnight-fee" id="note_midnight_fee" style="display: none;">(Midnight fee has been applied.)</span>
+                                </div>
                                 <div class="d-flex" id="openPopup">
-                                    <input type="text" id="hbk_pickup_date" name="hbk_pickup_date" placeholder="Select date" readonly required/>
-                                    <input type="text" id="hbk_pickup_time" name="hbk_pickup_time"readonly required/>
+                                    <input type="text" id="hbk_pickup_date" name="hbk_pickup_date" placeholder="Select date" autocomplete="off" required/>
+                                    <input type="text" id="hbk_pickup_time" name="hbk_pickup_time" autocomplete="off" required/>
                                 </div>
                             </div>
                             <div class="col-form-custom">
-                                <label for="hbk_pickup_type">Pick Up type</label>
-                                <select class="" id="hbk_pickup_type" name="hbk_pickup_type">
-                                    <option value="domestic" data-price="20" selected>Domestic (+ $20)</option>
-                                    <option value="international" data-price="50">International (+ $50)</option>
+                                <label for="hbk_pickup_fee">Pick Up type <span style="color:red;">*</span></label>
+                                <select class="" id="hbk_pickup_fee" name="hbk_pickup_fee">
+                                    <option value="0" data-price="0" selected>Inside Singapore</option>
+                                    <option value="1" data-price="25">Outside Singapore</option>
                                 </select>
                             </div>
                         </div>
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
-                        <label for="hbk_time_value">Time</label>
-                        <select class="" id="hbk_time_value" name="hbk_time_value">
+                        <label for="hbk_time_value">Time <span style="color:red;">*</span></label>
+                        <select class="" id="hbk_time_value" name="hbk_time_value" required>
                             <option value="" selected>Please choose an option</option>
                             <?php 
                                 if ($isMin3h) {
@@ -78,44 +81,46 @@ function hour_booking_form(){
                         </select>
                     </div>
                     <div class="col-form-custom">
-                        <label for="hbk_flight_details">Flight Details<span style="color:red;">*</span></label>
-                        <input size="40" maxlength="400" class="" id="hbk_flight_details" aria-required="true" aria-invalid="false" placeholder="Enter your flight details" value="" type="text" name="hbk_flight_details">
+                        <label for="hbk_pickup_location">Pick Up Location <span style="color:red;">*</span></label>
+                        <input size="40" maxlength="60" class="" id="hbk_pickup_location" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="hbk_pickup_location" required>
                     </div>
                 </div>
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
-                        <label for="hbk_pickup_location">Pick Up Location</label>
-                        <input size="40" maxlength="60" class="" id="hbk_pickup_location" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="hbk_pickup_location">
+                        <label for="hbk_number_of_passengers">Number of Passengers <span style="color:red;">*</span></label>
+                        <input size="40" maxlength="60" class="" id="hbk_number_of_passengers" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="hbk_number_of_passengers" required>
                     </div>
                     <div class="col-form-custom">
-                        <label for="hbk_dropoff_location">Drop Off Location</label>
-                        <input size="40" maxlength="50" class="" id="hbk_dropoff_location" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="hbk_dropoff_location">
+                        <label for="hbk_dropoff_location">Drop Off Location <span style="color:red;">*</span></label>
+                        <input size="40" maxlength="50" class="" id="hbk_dropoff_location" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="hbk_dropoff_location" required> 
                     </div>
                 </div>
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
-                        <label for="hbk_number_of_passengers">Number of Passengers</label>
-                        <input size="40" maxlength="60" class="" id="hbk_number_of_passengers" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="hbk_number_of_passengers">
+                        <label for="hbk_number_of_baggages">Number of Baggages <span style="color:red;">*</span></label>
+                        <input size="40" maxlength="50" class="" id="hbk_number_of_baggages" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="hbk_number_of_baggages" required>
                     </div>
-                    <div class="col-form-custom">
-                        <label for="hbk_number_of_baggages">Number of Baggages</label>
-                        <input size="40" maxlength="50" class="" id="hbk_number_of_baggages" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="hbk_number_of_baggages">
-                    </div>
-                </div>
-                
-                <div class="row-form-custom col-1">
                     <div class="col-form-custom">
                         <label for="hbk_special_requests">Special Requests</label>
                         <input size="40" maxlength="400" class="" id="hbk_special_requests" aria-invalid="false" placeholder="Enter your flight details" value="" type="text" name="hbk_special_requests">
                     </div>
                 </div>
             </div>
+            <div class="confirm-terms">
+                <input class="terms-checkbox" type="checkbox" name="agree_terms" value="1" id="agree_terms" required>
+                <label for="agree_terms">
+                    <ul class="list-terms">
+                        <li class="show-title">I submit this form to request for the services listed above. I understand that my booking will only be confirmed after I have received an email confirmation.</li>
+                        <li class="show-title">I have read and understood the terms and conditions</li>
+                    </ul>
+                </label>
+            </div>
             <div class="col-total-price-information">
                 <!-- <label>Total Price: </label><span > $<span id="price-total"><?php echo $current_price = $product->get_price();?></span><span id="default-price" style="display:none"><?php echo $current_price = $product->get_price();?></span></span> -->
                 <label>Total Price: </label>
                 <span > $
                     <span id="hbk_total_price" data-product-price="<?php echo $current_price = $product->get_price();?>">
-                        <?php echo ($current_price = $product->get_price() + 20);?>
+                        <?php echo ($current_price = $product->get_price());?>
                     </span>
                 </span>
             </div>
@@ -172,14 +177,15 @@ function hbk_add_custom_cart_item_data_time($cart_item_data)
         $pickup_time = sanitize_text_field($_POST['hbk_pickup_time']);
         $pickup_type = sanitize_text_field($_POST['hbk_pickup_type']);
         $time_val = sanitize_text_field($_POST['hbk_time_value']);
-        $flight_details = sanitize_text_field($_POST['hbk_flight_details']);
         $pickup_location = sanitize_text_field($_POST['hbk_pickup_location']);
         $dropoff_location = sanitize_text_field($_POST['hbk_dropoff_location']);
         $number_of_passengers = sanitize_text_field($_POST['hbk_number_of_passengers']);
         $number_of_baggages = sanitize_text_field($_POST['hbk_number_of_baggages']);
         $special_requests = !empty($_POST['hbk_special_requests']) ? sanitize_text_field($_POST['hbk_special_requests']) : '';
         $service_type = sanitize_text_field($_POST['hbk_type']);
-        $service_fee = sanitize_text_field($_POST['hbk_service_fees']);
+        $pickup_fee = sanitize_text_field($_POST['hbk_pickup_fee']);
+        $midnight_fee = sanitize_text_field($_POST['hbk_midnight_fee']);
+        $agree_terms = sanitize_text_field($_POST['agree_terms']);
 
         $cart_item_data['time_booking'] = array(
             'key_member' => $key_member,
@@ -194,7 +200,9 @@ function hbk_add_custom_cart_item_data_time($cart_item_data)
             'number_of_baggages' => $number_of_baggages,
             'special_requests' => $special_requests,
             'service_type' => $service_type,
-            'service_fee' => $service_fee,
+            'pickup_fee' => $pickup_fee,
+            'midnight_fee' => $midnight_fee,
+            'agree_terms' => $agree_terms,
         );
     }
     return $cart_item_data;

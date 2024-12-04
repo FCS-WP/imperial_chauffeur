@@ -35,6 +35,9 @@
     display: flex;
     gap: 10px;
 }
+.flex-wrap {
+    flex-wrap: wrap;
+}
 .d-none {
     display: none;
 }
@@ -129,4 +132,36 @@
 .calendar-box-custom .calendar-box #calendar{
     margin-bottom: 10px;
     border-radius: 10px;    
+}
+.confirm-terms {
+    display: flex;
+    margin-top: 16px;
+    gap: 10px;
+    align-items: start;
+    .list-terms {
+        padding-left: 0;
+    }
+    .show-title {
+        padding-bottom: 8px;
+        font-weight: 600;
+        font-size: 12px;
+        display: block;
+    }
+    .terms-checkbox {
+        width: 30px;
+        height: 20px;
+        accent-color: #f1192e;
+        color: white;
+    }
+}
+.note-midnight-fee {
+    font-size: 12px;
+    font-weight: 600;
+    color: #f1192e;
+}
+.position-relative {
+    position: relative;
+}
+.mb-1 {
+    margin-bottom: 6px;
 }
