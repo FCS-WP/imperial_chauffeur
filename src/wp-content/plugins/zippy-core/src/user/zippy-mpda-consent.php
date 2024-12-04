@@ -36,18 +36,20 @@ class Zippy_MPDA_Consent
 
     protected function set_hooks()
     {
-        add_action('admin_init', [$this, 'mpda_consent_settings_init']);
-        add_shortcode('privacy_policy_link', [$this, 'privacy_policy_link_shortcode']);
-        add_shortcode('mpda_consent_checkbox', [$this, 'mpda_consent_checkbox_shortcode']);
-        add_action('woocommerce_register_form', [$this, 'add_consent_checkbox_to_registration_form']);
-        add_action('wp_footer', [$this, 'disable_submit_if_consent_not_checked']);
-        add_filter('woocommerce_registration_errors', [$this, 'validate_consent_checkbox'], 10, 3);
-        add_action('woocommerce_created_customer', [$this, 'save_consent_checkbox_data']);
-        add_action('show_user_profile', [$this, 'show_consent_in_user_profile'],19,2);
-        add_action('edit_user_profile', [$this, 'show_consent_in_user_profile'],19,2);
-        add_action('personal_options_update', [$this, 'save_consent_in_user_profile'],19,2);
-        add_action('edit_user_profile_update', [$this, 'save_consent_in_user_profile'],19,2);
-        register_activation_hook(__FILE__, [$this, 'set_default_consent_time']);
+        if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+            add_action('admin_init', [$this, 'mpda_consent_settings_init']);
+            add_shortcode('privacy_policy_link', [$this, 'privacy_policy_link_shortcode']);
+            add_shortcode('mpda_consent_checkbox', [$this, 'mpda_consent_checkbox_shortcode']);
+            add_action('woocommerce_register_form', [$this, 'add_consent_checkbox_to_registration_form']);
+            add_action('wp_footer', [$this, 'disable_submit_if_consent_not_checked']);
+            add_filter('woocommerce_registration_errors', [$this, 'validate_consent_checkbox'], 10, 3);
+            add_action('woocommerce_created_customer', [$this, 'save_consent_checkbox_data']);
+            add_action('show_user_profile', [$this, 'show_consent_in_user_profile'],19,2);
+            add_action('edit_user_profile', [$this, 'show_consent_in_user_profile'],19,2);
+            add_action('personal_options_update', [$this, 'save_consent_in_user_profile'],19,2);
+            add_action('edit_user_profile_update', [$this, 'save_consent_in_user_profile'],19,2);
+            register_activation_hook(__FILE__, [$this, 'set_default_consent_time']);
+        }
     }
 
     public function mpda_consent_settings_init()
