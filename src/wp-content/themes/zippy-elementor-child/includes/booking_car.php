@@ -217,7 +217,7 @@ function display_car_booking_meta_in_admin($order) {
 }
 add_action('woocommerce_admin_order_data_after_billing_address', 'display_car_booking_meta_in_admin');
 
-function book_car_page(){
+function book_car_page_admin(){
     global $product;
     $args = array(
         'post_type'      => 'product',
@@ -262,4 +262,4 @@ function book_car_page(){
 
 
 }
-add_shortcode('booking-car-list', 'book_car_page');
+add_shortcode('booking-car-list', 'book_car_page_admin');
