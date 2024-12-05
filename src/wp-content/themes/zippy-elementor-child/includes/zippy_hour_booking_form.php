@@ -24,7 +24,7 @@ function hour_booking_form(){
                     <input name="id_product" type="hidden" value="<?php echo $product->get_id();?>">
                     <input name="key_member" type="hidden" value="<?php echo $key_member;?>">
                     <input name="service_type" type="hidden" value="Hourly/Disposal">
-                    <input name="midnight_fee" id="midnight_fee" type="hidden" value="0">
+                    <input name="midnight_fee" id="hbk_midnight_fee" type="hidden" value="0">
                 </div>
                 <!-- Get product categories & check min hour -->
                 <?php 
@@ -87,7 +87,7 @@ function hour_booking_form(){
                 </div>
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
-                        <label for="no_of_passengers">Number of Passengers <span style="color:red;">*</span></label>
+                        <label for="no_of_passengers">No. of Passengers <span style="color:red;">*</span></label>
                         <input size="40" maxlength="60" class="" id="hbk_number_of_passengers" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="no_of_passengers" required>
                     </div>
                     <div class="col-form-custom">
@@ -97,7 +97,7 @@ function hour_booking_form(){
                 </div>
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
-                        <label for="no_of_baggage">Number of Baggages <span style="color:red;">*</span></label>
+                        <label for="no_of_baggage">No. of Baggage <span style="color:red;">*</span></label>
                         <input size="40" maxlength="50" class="" id="hbk_number_of_baggages" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="no_of_baggage" required>
                     </div>
                     <div class="col-form-custom">
@@ -119,8 +119,8 @@ function hour_booking_form(){
                 <!-- <label>Total Price: </label><span > $<span id="price-total"><?php echo $current_price = $product->get_price();?></span><span id="default-price" style="display:none"><?php echo $current_price = $product->get_price();?></span></span> -->
                 <label>Total Price: </label>
                 <span > $
-                    <span id="hbk_total_price" data-product-price="<?php echo $current_price = $product->get_price();?>">
-                        <?php echo ($current_price = $product->get_price());?>
+                    <span id="hbk_total_price" data-product-price="<?php echo $_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true);?>">
+                        <?php echo ($_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true));?>
                     </span>
                 </span>
             </div>

@@ -261,3 +261,4 @@ function save_disposal_price_custom_field($post_id) {
 add_action('woocommerce_process_product_meta', 'save_disposal_price_custom_field');
 
 
+

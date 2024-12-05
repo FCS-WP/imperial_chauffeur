@@ -1,6 +1,6 @@
 <?php
 //shortcode vanilla_booking_car_custom create form booking on single product page
-function vanilla_booking_car_custom(){
+function trip_booking_form(){
     global $product;
     if (is_product()){
     $today = date('d-m-Y');
@@ -24,14 +24,14 @@ function vanilla_booking_car_custom(){
                 <div class="row-form-custom">
                     <input name="id_product" type="hidden" value="<?php echo $product->get_id();?>">
                     <input name="key_member" type="hidden" value="<?php echo $key_member;?>">
-                    <input name="midnight_fee" id="midnight_fee" type="hidden" value="0">
+                    <input name="midnight_fee" id="trip_midnight_fee" type="hidden" value="0">
                     <input name="time_use" id="time_use" type="hidden" value="1">
                 </div>
                 <div class="row-form-custom col-2">
                             <div class="col-form-custom position-relative" id="openPopup">
                                 <div class="d-flex flex-wrap mb-1">
                                     <label for="hbk_pickup_date">Pick Up Date & Time <span style="color:red;">*</span></label>
-                                    <span class="note-midnight-fee" id="note_midnight_fee" style="display: none;">(Midnight fee has been applied.)</span>
+                                    <span class="note-midnight-fee note-trip-midnight" style="display: none;">(Midnight fee has been applied.)</span>
                                 </div>
                                 <div class="d-flex">
                                 <input class="pickupdate" id="pickupdate" value="<?php echo $today;?>" type="text" name="pick_up_date" required>
@@ -119,7 +119,7 @@ function vanilla_booking_car_custom(){
     <?php
     }
 }
-add_shortcode('vanilla_booking_car_custom', 'vanilla_booking_car_custom');
+add_shortcode('trip_booking_form', 'trip_booking_form');
 
 //function process submit pick up information
 function process_booking_time(){
@@ -128,15 +128,18 @@ function process_booking_time(){
         $time_use = 1;
         $id_product = sanitize_text_field($_POST['id_product']);
         $time_use = sanitize_text_field($_POST['time_use']);
+        $service_type = sanitize_text_field($_POST['service_type']);
         
         $cart = WC()->cart;
 
         $cart->empty_cart();
         $cart->add_to_cart($id_product, $time_use);
         
+        
         $status_redirect = true;
         
     }
+    
     if($status_redirect == true){
         wp_redirect(wc_get_checkout_url());
         exit;
@@ -199,19 +202,27 @@ function add_custom_cart_item_data_time($cart_item_data)
     return $cart_item_data;
 }
 
+add_action('woocommerce_before_calculate_totals', 'custom_set_cart_item_price', 10, 1);
 
+function custom_set_cart_item_price($cart) {
+    
+    
+    $cart = WC()->cart;
 
-add_action( 'woocommerce_cart_calculate_fees', 'additional_purchase' );
-function additional_purchase( $cart ) {
-    $fee = 0;
     foreach ($cart->get_cart() as $cart_item){
-        if($cart_item['booking_information']['additional_stop'] == 1){
-            $fee = $fee + 25;
+        if($cart_item['booking_information']['service_type'] ==  "Hourly/Disposal"){
+            foreach ($cart->get_cart() as $cart_item) {
+                
+                $product = $cart_item['data'];
+                $_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true);
+                $product->set_price($_price_per_hour);
+                if($cart_item['booking_information']['additional_stop'] == 1){
+                    $cart->add_fee( 'Additional Stop Fee Purchase', 25 );
+                }
+                if($cart_item['booking_information']['midnight_fee'] == 1){
+                    $cart->add_fee( 'Additional Midnight Fee Purchase', 25 );
+                }
+            }
         }
-        if($cart_item['booking_information']['midnight_fee'] == 1){
-            $fee = $fee + 25;
-        }
-    }  
-    $cart->add_fee( 'Additional Fee Purchase', $fee );
-	
-} 
+    }
+}
