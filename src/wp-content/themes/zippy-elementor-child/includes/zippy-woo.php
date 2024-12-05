@@ -1,55 +1,4 @@
 <?php
-//function to create booking car list on shop page
-function book_car_page(){
-    global $product;
-    $args = array(
-        'post_type'      => 'product',
-        'posts_per_page' => '',        
-        'orderby'        => 'date',    
-        'order'          => 'DESC',   
-    );
-
-    $query = new WP_Query($args);
-
-    if ($query->have_posts()) {
-        ?>
-        <div class="products-grid">
-
-        <?php while ($query->have_posts()) { 
-            $query->the_post();
-            global $product;
-            $full_description = $product->get_description();
-        ?>    
-        <div class="products-row">
-            <div class="product-item-col">
-                <?php echo get_the_post_thumbnail(get_the_ID(), 'medium'); ?>
-                
-            </div>
-            <div class="product-item-col">
-                <h2 class="product-title"> <?php echo get_the_title(); ?></h2>
-                <div class="product-full-description"><?php echo $full_description; ?></div>
-            </div>
-            <div class="product-item-col center-product-col">
-                <button><a href="<?php echo get_the_permalink(); ?>">Enquire Now</a></button>
-                <form>
-                    <input type="hidden" name="productID" value="<?php echo $product->get_id(); ?>">
-                </form>
-            </div>
-        </div>
-        <?php } ?>
-
-        </div>
-        <?php } else { ?>
-        <p>No products found.</p>
-    <?php
-    }
-
-    wp_reset_postdata();
-
-
-}
-add_shortcode('booking-car-list', 'book_car_page');
-
 //function remove basic field on checkout page
 add_filter('woocommerce_checkout_fields', 'remove_billing_details');
 function remove_billing_details($fields) {
@@ -70,96 +19,86 @@ function remove_billing_details($fields) {
 add_filter('woocommerce_checkout_fields', 'add_multiple_custom_checkout_fields');
 function add_multiple_custom_checkout_fields($fields) {
     $cart = WC()->cart;
+     
     foreach ($cart->get_cart() as $cart_item){
     
     $fields['billing']['no_of_passengers'] = array(
-        'type'        => 'text',
-        'label'       => __('No. of Passengers', 'woocommerce'),
+        'type'        => 'hidden',
         'placeholder' => __('Enter no. of Passengers', 'woocommerce'),
-        'required'    => true, 
         'class'       => array('form-row-wide'),
         'clear'       => true,
+        'default'     => $cart_item['booking_information']['no_of_passengers']
     );
     
     $fields['billing']['no_of_baggage'] = array(
-        'type'        => 'text',
-        'label'       => __('No. of Baggage', 'woocommerce'),
+        'type'        => 'hidden',
         'placeholder' => __('Enter no. of Baggage', 'woocommerce'),
-        'required'    => true,
         'class'       => array('form-row-wide'),
         'clear'       => true,
+        'default'     => $cart_item['booking_information']['no_of_baggage']
     );
 
-    $fields['billing']['servicetype'] = array(
+    $fields['billing']['service_type'] = array(
         'type'        => 'hidden', 
-        'required'    => true,
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['servicetype']
+        'default'     => $cart_item['booking_information']['service_type']
+    );
+
+    $fields['billing']['eta_time'] = array(
+        'type'        => 'hidden', 
+        'class'       => array('form-row-wide hidden-field'),
+        'clear'       => true,
+        'default'     => $cart_item['booking_trip']['eta_time']
     );
 
     $fields['billing']['flight_details'] = array(
         'type'        => 'hidden', 
-        'required'    => true,
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['flight_details']
+        'default'     => $cart_item['booking_trip']['flight_details']
     );
 
     $fields['billing']['key_member'] = array(
         'type'        => 'hidden', 
-        'required'    => true,
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['key_member']
+        'default'     => $cart_item['booking_information']['key_member']
     );
 
-    $fields['billing']['pickupdate'] = array(
+    $fields['billing']['pick_up_date'] = array(
         'type'        => 'hidden',
-        'required'    => true,
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['pickupdate']
+        'default'     => $cart_item['booking_information']['pick_up_date']
     );
 
-    $fields['billing']['pickuptime'] = array(
+    $fields['billing']['pick_up_time'] = array(
         'type'        => 'hidden',
-        'required'    => true,
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['pickuptime']
+        'default'     => $cart_item['booking_information']['pick_up_time']
     );
 
-    $fields['billing']['DropOffDate'] = array(
+    $fields['billing']['pick_up_location'] = array(
         'type'        => 'hidden',
-        'required'    => true,
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['DropOffDate']
+        'default'     => $cart_item['booking_information']['pick_up_location']
     );
 
-    $fields['billing']['DropOffTime'] = array(
+    $fields['billing']['drop_off_location'] = array(
         'type'        => 'hidden',
-        'required'    => true,
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['DropOffTime']
+        'default'     => $cart_item['booking_information']['drop_off_location']
     );
 
-    $fields['billing']['pickuplocation'] = array(
+    $fields['billing']['special_requests'] = array(
         'type'        => 'hidden',
-        'required'    => true,
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['pickuplocation']
-    );
-
-    $fields['billing']['dropofflocation'] = array(
-        'type'        => 'hidden',
-        'required'    => true,
-        'class'       => array('form-row-wide hidden-field'),
-        'clear'       => true,
-        'default'     => $cart_item['time_booking']['dropofflocation']
+        'default'     => $cart_item['booking_information']['special_requests']
     );
     }
     return $fields;
@@ -177,32 +116,32 @@ function save_multiple_custom_checkout_fields($order_id) {
         update_post_meta($order_id, 'no_of_baggage', sanitize_text_field($_POST['no_of_baggage']));
     }
 
-    if (!empty($_POST['servicetype'])) {
-        update_post_meta($order_id, 'servicetype', sanitize_text_field($_POST['servicetype']));
+    if (!empty($_POST['service_type'])) {
+        update_post_meta($order_id, 'service_type', sanitize_text_field($_POST['service_type']));
     }
     if (!empty($_POST['flight_details'])) {
         update_post_meta($order_id, 'flight_details', sanitize_text_field($_POST['flight_details']));
     }
+    if (!empty($_POST['eta_time'])) {
+        update_post_meta($order_id, 'eta_time', sanitize_text_field($_POST['eta_time']));
+    }
     if (!empty($_POST['key_member'])) {
         update_post_meta($order_id, 'key_member', sanitize_text_field($_POST['key_member']));
     }
-    if (!empty($_POST['pickupdate'])) {
-        update_post_meta($order_id, 'pickupdate', sanitize_text_field($_POST['pickupdate']));
+    if (!empty($_POST['pick_up_date'])) {
+        update_post_meta($order_id, 'pick_up_date', sanitize_text_field($_POST['pick_up_date']));
     }
-    if (!empty($_POST['pickuptime'])) {
-        update_post_meta($order_id, 'pickuptime', sanitize_text_field($_POST['pickuptime']));
+    if (!empty($_POST['pick_up_time'])) {
+        update_post_meta($order_id, 'pick_up_time', sanitize_text_field($_POST['pick_up_time']));
     }
-    if (!empty($_POST['DropOffDate'])) {
-        update_post_meta($order_id, 'DropOffDate', sanitize_text_field($_POST['DropOffDate']));
+    if (!empty($_POST['pick_up_location'])) {
+        update_post_meta($order_id, 'pick_up_location', sanitize_text_field($_POST['pick_up_location']));
     }
-    if (!empty($_POST['DropOffTime'])) {
-        update_post_meta($order_id, 'DropOffTime', sanitize_text_field($_POST['DropOffTime']));
+    if (!empty($_POST['drop_off_location'])) {
+        update_post_meta($order_id, 'drop_off_location', sanitize_text_field($_POST['drop_off_location']));
     }
-    if (!empty($_POST['pickuplocation'])) {
-        update_post_meta($order_id, 'pickuplocation', sanitize_text_field($_POST['pickuplocation']));
-    }
-    if (!empty($_POST['dropofflocation'])) {
-        update_post_meta($order_id, 'dropofflocation', sanitize_text_field($_POST['dropofflocation']));
+    if (!empty($_POST['special_requests'])) {
+        update_post_meta($order_id, 'special_requests', sanitize_text_field($_POST['special_requests']));
     }
     
 
@@ -211,6 +150,23 @@ add_action('woocommerce_admin_order_data_after_billing_address', 'display_multip
 
 //function display information booking to order details page
 function display_multiple_custom_checkout_fields_in_admin($order) {
+
+
+    $service_type = get_post_meta($order->get_id(), 'service_type', true);
+    if ($service_type) {
+        echo '<p><strong>' . __('Service Type: ', 'woocommerce') . ':</strong> ' . esc_html($service_type) . '</p>';
+    }
+
+    $flight_details = get_post_meta($order->get_id(), 'flight_details', true);
+    if ($flight_details) {
+        echo '<p><strong>' . __('Flight Details: ', 'woocommerce') . ':</strong> ' . esc_html($flight_details) . '</p>';
+    }
+
+    $eta_time = get_post_meta($order->get_id(), 'eta_time', true);
+    if ($eta_time) {
+        echo '<p><strong>' . __('ETE/ETA Time: ', 'woocommerce') . ':</strong> ' . esc_html($eta_time) . '</p>';
+    }
+
 
     $no_of_passengers = get_post_meta($order->get_id(), 'no_of_passengers', true);
     if ($no_of_passengers) {
@@ -222,49 +178,34 @@ function display_multiple_custom_checkout_fields_in_admin($order) {
         echo '<p><strong>' . __('No Of Baggage: ', 'woocommerce') . ':</strong> ' . esc_html($no_of_baggage) . '</p>';
     }
 
-    $servicetype = get_post_meta($order->get_id(), 'servicetype', true);
-    if ($servicetype) {
-        echo '<p><strong>' . __('Service Type: ', 'woocommerce') . ':</strong> ' . esc_html($servicetype) . '</p>';
-    }
-
-    $flight_details = get_post_meta($order->get_id(), 'flight_details', true);
-    if ($flight_details) {
-        echo '<p><strong>' . __('Flight Details: ', 'woocommerce') . ':</strong> ' . esc_html($flight_details) . '</p>';
-    }
-
     $key_member = get_post_meta($order->get_id(), 'key_member', true);
     if ($key_member) {
         echo '<p><strong>' . __('Key Member: ', 'woocommerce') . ':</strong> ' . esc_html($key_member) . '</p>';
     }
 
-    $pickupdate = get_post_meta($order->get_id(), 'pickupdate', true);
-    if ($pickupdate) {
-        echo '<p><strong>' . __('Pick Up Date: ', 'woocommerce') . ':</strong> ' . esc_html($pickupdate) . '</p>';
+    $pick_up_date = get_post_meta($order->get_id(), 'pick_up_date', true);
+    if ($pick_up_date) {
+        echo '<p><strong>' . __('Pick Up Date: ', 'woocommerce') . ':</strong> ' . esc_html($pick_up_date) . '</p>';
     }
 
-    $pickuptime = get_post_meta($order->get_id(), 'pickuptime', true);
-    if ($pickuptime) {
-        echo '<p><strong>' . __('Pick Up Time: ', 'woocommerce') . ':</strong> ' . esc_html($pickuptime) . '</p>';
+    $pick_up_time = get_post_meta($order->get_id(), 'pick_up_time', true);
+    if ($pick_up_time) {
+        echo '<p><strong>' . __('Pick Up Time: ', 'woocommerce') . ':</strong> ' . esc_html($pick_up_time) . '</p>';
     }
 
-    $DropOffDate = get_post_meta($order->get_id(), 'DropOffDate', true);
-    if ($DropOffDate) {
-        echo '<p><strong>' . __('Drop Off Date: ', 'woocommerce') . ':</strong> ' . esc_html($DropOffDate) . '</p>';
+    $pick_up_location = get_post_meta($order->get_id(), 'pick_up_location', true);
+    if ($pick_up_location) {
+        echo '<p><strong>' . __('Pick Up Location: ', 'woocommerce') . ':</strong> ' . esc_html($pick_up_location) . '</p>';
     }
 
-    $DropOffTime = get_post_meta($order->get_id(), 'DropOffTime', true);
-    if ($DropOffTime) {
-        echo '<p><strong>' . __('Drop Off Time: ', 'woocommerce') . ':</strong> ' . esc_html($DropOffTime) . '</p>';
+    $drop_off_location = get_post_meta($order->get_id(), 'drop_off_location', true);
+    if ($drop_off_location) {
+        echo '<p><strong>' . __('Drop Off Location: ', 'woocommerce') . ':</strong> ' . esc_html($drop_off_location) . '</p>';
     }
 
-    $pickuplocation = get_post_meta($order->get_id(), 'pickuplocation', true);
-    if ($pickuplocation) {
-        echo '<p><strong>' . __('Pick Up Location: ', 'woocommerce') . ':</strong> ' . esc_html($pickuplocation) . '</p>';
-    }
-
-    $dropofflocation = get_post_meta($order->get_id(), 'dropofflocation', true);
-    if ($dropofflocation) {
-        echo '<p><strong>' . __('Drop Off Location: ', 'woocommerce') . ':</strong> ' . esc_html($dropofflocation) . '</p>';
+    $special_requests = get_post_meta($order->get_id(), 'special_requests', true);
+    if ($special_requests) {
+        echo '<p><strong>' . __('Special Reuest: ', 'woocommerce') . ':</strong> ' . esc_html($special_requests) . '</p>';
     }
 
 }
@@ -293,4 +234,30 @@ function restrict_payment_methods_for_logged_in_users($available_gateways) {
 
     return $available_gateways;
 }
+
+function add_disposal_price_custom_field() {
+    global $post;
+
+    echo '<div class="options_group">';
+    
+    woocommerce_wp_text_input(
+        array(
+            'id'          => '_disposal_price',
+            'label'       => __('Disposal Price', 'woocommerce'),
+            'desc_tip'    => 'true',
+            'description' => __('Enter the disposal price for this product.', 'woocommerce'),
+            'type'        => 'text',
+        )
+    );
+
+    echo '</div>';
+}
+add_action('woocommerce_product_options_general_product_data', 'add_disposal_price_custom_field');
+
+function save_disposal_price_custom_field($post_id) {
+    $disposal_price = isset($_POST['_disposal_price']) ? sanitize_text_field($_POST['_disposal_price']) : '';
+    update_post_meta($post_id, '_disposal_price', $disposal_price);
+}
+add_action('woocommerce_process_product_meta', 'save_disposal_price_custom_field');
+
 

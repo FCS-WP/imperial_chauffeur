@@ -2,7 +2,7 @@
 @import 'vanilla-calendar-pro/styles/themes/light.css'; // Light theme
 @import 'vanilla-calendar-pro/styles/themes/dark.css'; // Dark theme
 @import 'overwrite_vanilla';
-@import 'product-single';
+@import 'hour_booking_form';
 .elementor-element-c80aafb,
 .elementor-element-f6c6b9a {
     padding: 0;
@@ -62,6 +62,10 @@
 .col-1 {
     .col-form-custom {
         width: 100%;
+        input{
+            margin-right: 10px;
+        }
+        
     }
 }
 
@@ -292,6 +296,16 @@
     display: none;
 }
 
+.input-radio-box{
+    display: flex;
+    flex-direction: column;
+    .input-radio-box-col{
+        width: 100% !important;
+        display: flex;
+        margin-top: 10px;
+    }
+}
+
 .col-total-price-information{
     margin-top: 20px;
     padding-top: 10px;
@@ -362,9 +376,88 @@
     
 }
 .summary-information{
+    display: flex;
     flex-wrap: wrap;
-    .col-summary-information{
-        width: 50% !important;
-        
+    .label-summary-infor{
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+
+/* Popup container */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+/* Popup content */
+.popup-content {
+    position: relative;
+    background-color: white;
+    padding: 10px;
+    border-radius: 15px;
+    text-align: center;
+    width: 550px;
+}
+
+/* Close button */
+#closePopup{
+    width: 100%;
+    background-color: #f43f5e;
+    color:#fff;
+    border-radius: 10px;
+    font-weight: bolder;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#openPopup{
+    cursor: pointer;
+}
+
+.heading-custom-vanilla{
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+.label-pickup-time-vanilla{
+    margin-bottom: 0px;
+    margin-top: 20px;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+.calendar-box-custom .calendar-box #calendar{
+    border-radius: 10px;    
+}
+
+.time-avail{
+    margin-top: 10px;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 10px;
+    .time-avail__item{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        p{
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+    }
+}
+
+.input-radio-box-col{
+    label{
+        margin-left: 10px;
     }
 }
