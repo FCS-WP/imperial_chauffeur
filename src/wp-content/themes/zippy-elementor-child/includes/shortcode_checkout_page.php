@@ -27,6 +27,12 @@ function information_basic_booking_car(){
             </div>
         </div>
         <div class="dropdown-form">
+            <label>Time Use</label>
+            <div class="wrap-form">
+                <span class="value"><?php echo $cart_item['booking_hour']['time_use']; ?></span>
+            </div>
+        </div>
+        <div class="dropdown-form">
             <label>No. of Passengers</label>
             <div class="wrap-form">
                 <span class="value"><?php echo $cart_item['booking_information']['no_of_passengers']; ?></span>

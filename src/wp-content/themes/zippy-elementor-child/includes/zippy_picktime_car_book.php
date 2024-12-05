@@ -125,7 +125,7 @@ add_shortcode('vanilla_booking_car_custom', 'vanilla_booking_car_custom');
 function process_booking_time(){
     $status_redirect = false;
     if (isset($_POST['submit_car_booking_time']) || isset($_POST['submit_hour_booking_form'])) {
-        
+        $time_use = 1;
         $id_product = sanitize_text_field($_POST['id_product']);
         $time_use = sanitize_text_field($_POST['time_use']);
         
@@ -205,10 +205,10 @@ add_action( 'woocommerce_cart_calculate_fees', 'additional_purchase' );
 function additional_purchase( $cart ) {
     $fee = 0;
     foreach ($cart->get_cart() as $cart_item){
-        if($cart_item['time_booking']['additional_stop'] == 1){
+        if($cart_item['booking_information']['additional_stop'] == 1){
             $fee = $fee + 25;
         }
-        if($cart_item['time_booking']['midnight_fee'] == 1){
+        if($cart_item['booking_information']['midnight_fee'] == 1){
             $fee = $fee + 25;
         }
     }  
