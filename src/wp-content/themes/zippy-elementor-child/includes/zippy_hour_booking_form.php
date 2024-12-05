@@ -51,7 +51,7 @@ function hour_booking_form(){
                                     <input type="text" id="hbk_pickup_time" name="pick_up_time" autocomplete="off" required/>
                                 </div>
                             </div>
-                            <div class="col-form-custom">
+                            <div class="col-form-custom pickup-type">
                                 <label for="additional_stop">Pick Up type <span style="color:red;">*</span></label>
                                 <select class="" id="hbk_pickup_fee" name="additional_stop">
                                     <option value="0" data-price="0" selected>Inside Singapore</option>
@@ -107,8 +107,8 @@ function hour_booking_form(){
                 </div>
             </div>
             <div class="confirm-terms">
-                <input class="terms-checkbox" type="checkbox" name="agree_terms" value="1" id="agree_terms" required>
-                <label for="agree_terms">
+                <input class="terms-checkbox" type="checkbox" name="agree_terms" value="1" id="agree_terms_booing_hours" required>
+                <label for="agree_terms_booing_hours">
                     <ul class="list-terms">
                         <li class="show-title">I submit this form to request for the services listed above. I understand that my booking will only be confirmed after I have received an email confirmation.</li>
                         <li class="show-title">I have read and understood the terms and conditions</li>

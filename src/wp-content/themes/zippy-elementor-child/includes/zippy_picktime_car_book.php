@@ -38,7 +38,7 @@ function trip_booking_form(){
                                 <input type="text" id="pickuptime" name="pick_up_time" min="00:00" max="24:00" value="<?php echo date("H:i"); ?>" required>
                                 </div>
                             </div>
-                            <div class="col-form-custom">
+                            <div class="col-form-custom pickup-type">
                                 <label for="hbk_pickup_fee">Pick Up type <span style="color:red;">*</span></label>
                                 <select class="" id="additional_stop" name="additional_stop">
                                     <option id="inside_additional_stop" value="0" data-price="0" selected>Inside Singapore</option>
@@ -48,7 +48,7 @@ function trip_booking_form(){
                         </div>
                 
                 <div class="row-form-custom col-1">
-                    <div class="col-form-custom">
+                    <div class="col-form-custom ">
                         <label for="servicetype">Type Services</label>
                         <select class="" id="servicetype" name="service_type" required>
                             <option value="">Please choose an option</option>
@@ -107,7 +107,7 @@ function trip_booking_form(){
                 </label>
             </div>
             <div class="col-total-price-information">
-                <label>Total Price: </label><span > $<span id="price-total"><?php echo $current_price = $product->get_price();?></span><span id="default-price" style="display:none"><?php echo $current_price = $product->get_price();?></span></span>
+                <label>Total Price: </label><span > $<span id="price-total" data-product-price="<?php echo $current_price = $product->get_price();?>"><?php echo $current_price = $product->get_price();?></span></span>
             </div>
             <div class="row-form-custom col-1">
                     <div class="col-form-custom">
@@ -210,19 +210,49 @@ function custom_set_cart_item_price($cart) {
     $cart = WC()->cart;
 
     foreach ($cart->get_cart() as $cart_item){
+        if($cart_item['booking_information']['additional_stop'] == 1){
+            $cart->add_fee( 'Additional Stop Fee Purchase', 25 );
+        }
+        if($cart_item['booking_information']['midnight_fee'] == 1){
+            $cart->add_fee( 'Additional Midnight Fee Purchase', 25 );
+        }
         if($cart_item['booking_information']['service_type'] ==  "Hourly/Disposal"){
             foreach ($cart->get_cart() as $cart_item) {
                 
                 $product = $cart_item['data'];
                 $_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true);
                 $product->set_price($_price_per_hour);
-                if($cart_item['booking_information']['additional_stop'] == 1){
-                    $cart->add_fee( 'Additional Stop Fee Purchase', 25 );
-                }
-                if($cart_item['booking_information']['midnight_fee'] == 1){
-                    $cart->add_fee( 'Additional Midnight Fee Purchase', 25 );
-                }
+                
             }
         }
     }
 }
+
+
+//shortcode title tab booking car form
+function title_booking_trip(){
+    global $product;
+    if (is_product()){
+        $current_price = $product->get_price();
+        
+        if(!empty($current_price)){
+            $price = "<span =class='price_booking_text'>(<bdi>$</bdi><span class='price_trip'>" . $current_price . "</span>/Trip )</span>";
+        }
+        echo "<span class='label-title'>Booking By Trip</span> " .$price;
+        
+    }
+}
+add_shortcode('title_booking_trip', 'title_booking_trip');
+
+function title_booking_hour(){
+    global $product;
+    if (is_product()){
+        $_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true);
+        if(!empty($_price_per_hour)){
+            $price = "<span class='price_booking_text'>(<bdi>$</bdi><span class='price_trip'>" . $_price_per_hour . "</span>/Trip )</span>";
+        }
+        echo "<span class='label-title'>Booking By Trip</span> " . $price;
+        
+    }
+}
+add_shortcode('title_booking_hour', 'title_booking_hour');

@@ -235,30 +235,3 @@ function restrict_payment_methods_for_logged_in_users($available_gateways) {
     return $available_gateways;
 }
 
-function add_disposal_price_custom_field() {
-    global $post;
-
-    echo '<div class="options_group">';
-    
-    woocommerce_wp_text_input(
-        array(
-            'id'          => '_disposal_price',
-            'label'       => __('Disposal Price', 'woocommerce'),
-            'desc_tip'    => 'true',
-            'description' => __('Enter the disposal price for this product.', 'woocommerce'),
-            'type'        => 'text',
-        )
-    );
-
-    echo '</div>';
-}
-add_action('woocommerce_product_options_general_product_data', 'add_disposal_price_custom_field');
-
-function save_disposal_price_custom_field($post_id) {
-    $disposal_price = isset($_POST['_disposal_price']) ? sanitize_text_field($_POST['_disposal_price']) : '';
-    update_post_meta($post_id, '_disposal_price', $disposal_price);
-}
-add_action('woocommerce_process_product_meta', 'save_disposal_price_custom_field');
-
-
-
