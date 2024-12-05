@@ -4,7 +4,6 @@ $(document).ready(function () {
   // Init date picker for hourly booking
   const options = {
     disableDatesPast: true,
-    selectedTheme: "dark",
     selectionTimeMode: 24,
     onClickDate(self) {
       const selectedDate = self.context.selectedDates[0];
@@ -58,24 +57,24 @@ $(document).ready(function () {
     });
   }
 
-  const openPopupButton = document.getElementById("openPopup");
-  const closePopupButton = document.getElementById("closePopup");
-  const popup = document.getElementById("popup");
+  const openPopupButtonHour = document.getElementById("openPopupHour");
+  const closePopupButtonHour = document.getElementById("closePopupHour");
+  const popupHour = document.getElementById("popupHour");
 
   // Open popup
-  openPopupButton.addEventListener("click", () => {
-    popup.style.display = "flex";
+  openPopupButtonHour.addEventListener("click", () => {
+    popupHour.style.display = "flex";
   });
 
   // Close popup
-  closePopupButton.addEventListener("click", () => {
-    popup.style.display = "none";
+  closePopupButtonHour.addEventListener("click", () => {
+    popupHour.style.display = "none";
   });
 
   // Close popup when clicking outside the content
-  popup.addEventListener("click", (event) => {
+  popupHour.addEventListener("click", (event) => {
     if (event.target === popup) {
-      popup.style.display = "none";
+      popupHour.style.display = "none";
     }
   });
 });
