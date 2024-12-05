@@ -1,5 +1,5 @@
 import { Calendar, Options } from 'vanilla-calendar-pro';
-
+import './hbk_form'
 //option vanilla calendar js
 const options = {
   selectionTimeMode: 24,
@@ -70,8 +70,6 @@ function convertDate(inputDate) {
 
 const insideradioInput = document.getElementById('inside_additional_stop');
 const outsideradioInput = document.getElementById('outside_additional_stop');
-const oneradioInput = document.getElementById('1perway');
-const tworadioInput = document.getElementById('2perway');
 const default_price = document.getElementById('default-price');
 const result_price = document.getElementById('price-total');
 var default_price_number = default_price.textContent;
@@ -93,22 +91,6 @@ outsideradioInput.addEventListener('change', function (event) {
     additional_stop = 25;
     result_price_number = result_price.textContent;
     result_price.innerHTML = (Number(result_price_number) + 25);
-  }
-});
-
-
-oneradioInput.addEventListener('change', function (event) {
-  if (event.target.checked) {
-    total_price = Number(default_price_number)*1 + additional_stop ;
-    result_price.innerHTML = total_price;
-  }
-});
-
-
-tworadioInput.addEventListener('change', function (event) {    
-  if (event.target.checked) {
-    total_price = Number(default_price_number)*2 + additional_stop ;
-    result_price.innerHTML = total_price;
   }
 });
 
