@@ -27,7 +27,7 @@ function add_multiple_custom_checkout_fields($fields) {
         'placeholder' => __('Enter no. of Passengers', 'woocommerce'),
         'class'       => array('form-row-wide'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['no_of_passengers']
+        'default'     => $cart_item['booking_information']['no_of_passengers']
     );
     
     $fields['billing']['no_of_baggage'] = array(
@@ -35,56 +35,70 @@ function add_multiple_custom_checkout_fields($fields) {
         'placeholder' => __('Enter no. of Baggage', 'woocommerce'),
         'class'       => array('form-row-wide'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['no_of_baggage']
+        'default'     => $cart_item['booking_information']['no_of_baggage']
     );
 
     $fields['billing']['service_type'] = array(
         'type'        => 'hidden', 
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['service_type']
+        'default'     => $cart_item['booking_information']['service_type']
+    );
+
+    $fields['billing']['eta_time'] = array(
+        'type'        => 'hidden', 
+        'class'       => array('form-row-wide hidden-field'),
+        'clear'       => true,
+        'default'     => $cart_item['booking_trip']['eta_time']
     );
 
     $fields['billing']['flight_details'] = array(
         'type'        => 'hidden', 
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['flight_details']
+        'default'     => $cart_item['booking_trip']['flight_details']
     );
 
     $fields['billing']['key_member'] = array(
         'type'        => 'hidden', 
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['key_member']
+        'default'     => $cart_item['booking_information']['key_member']
     );
 
     $fields['billing']['pick_up_date'] = array(
         'type'        => 'hidden',
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['pick_up_date']
+        'default'     => $cart_item['booking_information']['pick_up_date']
     );
 
     $fields['billing']['pick_up_time'] = array(
         'type'        => 'hidden',
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['pick_up_time']
+        'default'     => $cart_item['booking_information']['pick_up_time']
     );
 
     $fields['billing']['pick_up_location'] = array(
         'type'        => 'hidden',
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['pick_up_location']
+        'default'     => $cart_item['booking_information']['pick_up_location']
     );
 
     $fields['billing']['drop_off_location'] = array(
         'type'        => 'hidden',
         'class'       => array('form-row-wide hidden-field'),
         'clear'       => true,
-        'default'     => $cart_item['time_booking']['drop_off_location']
+        'default'     => $cart_item['booking_information']['drop_off_location']
+    );
+
+    $fields['billing']['special_requests'] = array(
+        'type'        => 'hidden',
+        'class'       => array('form-row-wide hidden-field'),
+        'clear'       => true,
+        'default'     => $cart_item['booking_information']['special_requests']
     );
     }
     return $fields;
@@ -108,6 +122,9 @@ function save_multiple_custom_checkout_fields($order_id) {
     if (!empty($_POST['flight_details'])) {
         update_post_meta($order_id, 'flight_details', sanitize_text_field($_POST['flight_details']));
     }
+    if (!empty($_POST['eta_time'])) {
+        update_post_meta($order_id, 'eta_time', sanitize_text_field($_POST['eta_time']));
+    }
     if (!empty($_POST['key_member'])) {
         update_post_meta($order_id, 'key_member', sanitize_text_field($_POST['key_member']));
     }
@@ -122,6 +139,9 @@ function save_multiple_custom_checkout_fields($order_id) {
     }
     if (!empty($_POST['drop_off_location'])) {
         update_post_meta($order_id, 'drop_off_location', sanitize_text_field($_POST['drop_off_location']));
+    }
+    if (!empty($_POST['special_requests'])) {
+        update_post_meta($order_id, 'special_requests', sanitize_text_field($_POST['special_requests']));
     }
     
 
@@ -141,6 +161,12 @@ function display_multiple_custom_checkout_fields_in_admin($order) {
     if ($flight_details) {
         echo '<p><strong>' . __('Flight Details: ', 'woocommerce') . ':</strong> ' . esc_html($flight_details) . '</p>';
     }
+
+    $eta_time = get_post_meta($order->get_id(), 'eta_time', true);
+    if ($eta_time) {
+        echo '<p><strong>' . __('ETE/ETA Time: ', 'woocommerce') . ':</strong> ' . esc_html($eta_time) . '</p>';
+    }
+
 
     $no_of_passengers = get_post_meta($order->get_id(), 'no_of_passengers', true);
     if ($no_of_passengers) {
@@ -175,6 +201,11 @@ function display_multiple_custom_checkout_fields_in_admin($order) {
     $drop_off_location = get_post_meta($order->get_id(), 'drop_off_location', true);
     if ($drop_off_location) {
         echo '<p><strong>' . __('Drop Off Location: ', 'woocommerce') . ':</strong> ' . esc_html($drop_off_location) . '</p>';
+    }
+
+    $special_requests = get_post_meta($order->get_id(), 'special_requests', true);
+    if ($special_requests) {
+        echo '<p><strong>' . __('Special Reuest: ', 'woocommerce') . ':</strong> ' . esc_html($special_requests) . '</p>';
     }
 
 }
