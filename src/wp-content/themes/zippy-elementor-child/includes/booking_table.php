@@ -57,7 +57,6 @@ function view_bookings_page()
                     var customer_id = $(this).data("customer-id");
                     var month_year = $(this).data("month-year");
                     
-                    // AJAX yêu cầu tạo đơn hàng
                     $.ajax({
                         url: ajaxurl,
                         method: "POST",
@@ -69,7 +68,7 @@ function view_bookings_page()
                         success: function(response) {
                             if (response.success) {
                                 alert("Order created successfully: Order #" + response.data.order_id);
-                                location.reload(); // Reload lại trang để cập nhật danh sách
+                                location.reload(); 
                             } else {
                                 alert("Failed to create order: " + response.data.message);
                             }
@@ -84,10 +83,9 @@ function view_bookings_page()
 
             $grouped_by_month = array();
             foreach ($orders as $order) {
-                // Check if the order already has the 'is_monthly_payment_order' meta key
                 $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
 
-                // If the 'is_monthly_payment_order' key is not set, include the order
+               
                 if (!$is_monthly_payment_order) {
                     $order_date = $order->get_date_created();
                     $month_year = $order_date->format('F Y');
@@ -208,12 +206,10 @@ function view_bookings_page()
             foreach ($grouped_orders as $customer_id => $data) {
                 $customer_name = $data['customer_name'];
 
-                // Filter out orders that have the 'is_monthly_payment_order' meta key set to true
                 $filtered_orders = array_filter($data['orders'], function ($order) {
                     return !$order->get_meta('is_monthly_payment_order');
                 });
 
-                // Count the filtered orders
                 $order_count = count($filtered_orders);
 
                 echo '<tr>';
@@ -260,7 +256,6 @@ function create_payment_order()
     $billing_last_name = get_user_meta($customer_id, 'billing_last_name', true);
     $customer_name = trim($billing_first_name . ' ' . $billing_last_name);
 
-    // Retrieve orders for the specific customer
     $args = array(
         'customer_id' => $customer_id,
         'limit' => -1,
@@ -274,11 +269,8 @@ function create_payment_order()
         $order_date = $order->get_date_created();
         $order_month_year = $order_date->format('F Y');
 
-        if ($order_month_year === $month_year) {
-            if (get_post_meta($order->get_id(), 'is_monthly_payment_order', true)) {
-                continue;  // Skip orders already marked as monthly payment
-            }
-
+        $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
+        if ($order_month_year === $month_year && !$is_monthly_payment_order) {
             $total_for_month += $order->get_total();
             $selected_orders[] = $order->get_id();
         }
@@ -289,14 +281,13 @@ function create_payment_order()
         return;
     }
 
-    // Create new order for the payment
     $order = wc_create_order();
     $order->set_customer_id($customer_id);
     $order->set_billing_first_name($billing_first_name);
     $order->set_billing_last_name($billing_last_name);
     $order->set_billing_email($user_info->user_email);
     $order->set_billing_phone(get_user_meta($customer_id, 'billing_phone', true));
-    $order->set_status('pending');  // Set status to pending
+    $order->set_status('pending');
 
     $product_name = 'Payment for ' . $month_year . ' - ' . $customer_name;
     $item = new WC_Order_Item_Product();
@@ -306,15 +297,16 @@ function create_payment_order()
 
     $order->add_item($item);
 
-    // Add the list of selected orders as a note
     $order->add_order_note('Included Orders: ' . implode(', ', $selected_orders));
 
-    // Set metadata to mark this order as a monthly payment order
     $order->update_meta_data('is_monthly_payment_order', true);
     $order->update_meta_data('month_year', $month_year);
+
+    $custom_order_number = $order->get_id() .' '. $month_year . '-' ;
+    $order->update_meta_data('_custom_order_number', $custom_order_number);
+
     $order->calculate_totals();
 
-    // Save the order
     $order_id = $order->save();
 
     if ($order_id) {
@@ -322,4 +314,15 @@ function create_payment_order()
     } else {
         wp_send_json_error(['message' => 'Failed to create order']);
     }
+}
+
+add_filter('woocommerce_order_number', 'custom_order_number_display', 10, 2);
+
+function custom_order_number_display($order_number, $order) {
+    $custom_order_number = $order->get_meta('_custom_order_number');
+    if ($custom_order_number) {
+        return $custom_order_number;
+    }
+
+    return $order_number;
 }
