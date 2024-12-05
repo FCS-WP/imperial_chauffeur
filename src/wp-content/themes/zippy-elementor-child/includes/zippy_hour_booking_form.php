@@ -13,7 +13,7 @@ function hour_booking_form(){
         <div class="popup-content">
             <div class="calendar-box-custom">
                 <div class="calendar-box"><div id="tab_hour_picker"></div></div>
-                <button class="close-btn" id="closePopupHour">Continute Booking</button>
+                <button class="close-btn close-popup-btn" id="closePopupHour">Continute Booking</button>
             </div>
         </div>
     </div>

@@ -41,6 +41,7 @@ const options = {
       pickupdate.value = convertDate(date);
       const get_date_pickup = document.getElementById('get_date_pickup');
       get_date_pickup.innerText = convertDate(date);
+      midnightCheck(self.context.selectedTime);
     }
   },
   onChangeTime(self) {
@@ -49,6 +50,7 @@ const options = {
     get_time_pickup.innerText = time;
     const pickuptime = document.getElementById('pickuptime');
     pickuptime.value = time;
+    midnightCheck(self.context.selectedTime);
   },
 
 };
@@ -127,3 +129,15 @@ document.getElementById('servicetype').addEventListener('change', function() {
       inputFlightDiv.style.display = 'flex';
   }
 });
+
+function midnightCheck(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+  if (hours > 22 || hours < 7) {
+    $(".note-trip-midnight").show();
+    $("#trip_midnight_fee").val(1);
+  } else {
+    $(".note-trip-midnight").hide();
+    $("#trip_midnight_fee").val(0);
+  }
+  return true;
+}

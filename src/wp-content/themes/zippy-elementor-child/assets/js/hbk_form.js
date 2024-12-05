@@ -5,11 +5,46 @@ $(document).ready(function () {
   const options = {
     disableDatesPast: true,
     selectionTimeMode: 24,
+    layouts: {
+      default: `
+        <h5 class="heading-custom-vanilla">Pick Up Date</h5>
+        <div class="vc-header" data-vc="header" role="toolbar" aria-label="Calendar Navigation">
+          <#ArrowPrev />  
+          <div class="vc-header__content" data-vc-header="content">
+            <#Year /> | <#Month />
+          </div>
+          <#ArrowNext />
+        </div>
+        <div class="vc-wrapper" data-vc="wrapper">
+          <#WeekNumbers />
+          <div class="vc-content" data-vc="content">
+            <#Week />
+            <#Dates />
+            <#DateRangeTooltip />
+          </div>
+          </div>
+        <#ControlTime />
+        <div class="time-avail">
+          <div class="time-avail__item">
+            <p>Pick up time</p><p id="get_hbk_time_pickup">00:00</p>
+          </div>
+          <div class="time-avail__item">
+            <p>Pick up date</p><p id="get_hbk_date_pickup">04-12-2024</p>
+          </div>
+        </div>
+        
+      `,
+    },
     onClickDate(self) {
+      
       const selectedDate = self.context.selectedDates[0];
       const selectedTime = self.context.selectedTime;
-      $("#hbk_pickup_date").val(selectedDate);
+      const dateConverted = convertDate(selectedDate);
+
+      $("#hbk_pickup_date").val(dateConverted);
       $("#hbk_pickup_time").val(selectedTime);
+      const get_hbk_date_pickup = document.getElementById("get_hbk_date_pickup");
+      get_hbk_date_pickup.innerText = dateConverted;
 
       if (isToday(selectedDate)) {
         let today = new Date();
@@ -17,23 +52,85 @@ $(document).ready(function () {
           selectedDates: self.context.selectedDates,
           timeMinHour: today.getHours() + 1,
           timeMaxHour: 23,
+          layouts: {
+            default: `
+              <h5 class="heading-custom-vanilla">Pick Up Date</h5>
+              <div class="vc-header" data-vc="header" role="toolbar" aria-label="Calendar Navigation">
+                <#ArrowPrev />  
+                <div class="vc-header__content" data-vc-header="content">
+                  <#Year /> | <#Month />
+                </div>
+                <#ArrowNext />
+              </div>
+              <div class="vc-wrapper" data-vc="wrapper">
+                <#WeekNumbers />
+                <div class="vc-content" data-vc="content">
+                  <#Week />
+                  <#Dates />
+                  <#DateRangeTooltip />
+                </div>
+                </div>
+              <#ControlTime />
+              <div class="time-avail">
+                <div class="time-avail__item">
+                  <p>Pick up time</p><p id="get_hbk_time_pickup">${selectedTime}</p>
+                </div>
+                <div class="time-avail__item">
+                  <p>Pick up date</p><p id="get_hbk_date_pickup">${dateConverted}</p>
+                </div>
+              </div>
+              
+            `,
+          },
         });
         let newHours = today.getHours() + ':0'; 
-        midnightCheck(newHours);
+        hbkMidnightCheck(newHours);
       } else {
         self.set({
           selectedDates: self.context.selectedDates,
           timeMinHour: 0,
           timeMaxHour: 23,
+          layouts: {
+            default: `
+              <h5 class="heading-custom-vanilla">Pick Up Date</h5>
+              <div class="vc-header" data-vc="header" role="toolbar" aria-label="Calendar Navigation">
+                <#ArrowPrev />  
+                <div class="vc-header__content" data-vc-header="content">
+                  <#Year /> | <#Month />
+                </div>
+                <#ArrowNext />
+              </div>
+              <div class="vc-wrapper" data-vc="wrapper">
+                <#WeekNumbers />
+                <div class="vc-content" data-vc="content">
+                  <#Week />
+                  <#Dates />
+                  <#DateRangeTooltip />
+                </div>
+                </div>
+              <#ControlTime />
+              <div class="time-avail">
+                <div class="time-avail__item">
+                  <p>Pick up time</p><p id="get_hbk_time_pickup">00:00</p>
+                </div>
+                <div class="time-avail__item">
+                  <p>Pick up date</p><p id="get_hbk_date_pickup">${dateConverted}</p>
+                </div>
+              </div>
+              
+            `,
+          },
         });
-        midnightCheck("0:0");
+        hbkMidnightCheck("0:0");
       }
 
     },
     onChangeTime(self) {
-      midnightCheck(self.context.selectedTime);
+      hbkMidnightCheck(self.context.selectedTime);
       $("#hbk_pickup_time").val(self.context.selectedTime);
+      $("#get_hbk_time_pickup").html(self.context.selectedTime);
     },
+
   };
   if ($("#tab_hour_picker").length > 0) {
     const tabHourPicker = new Calendar("#tab_hour_picker", options);
@@ -103,7 +200,7 @@ function isToday(compareDate) {
   return true;
 }
 
-function midnightCheck(time) {
+function hbkMidnightCheck(time) {
   const [hours, minutes] = time.split(":").map(Number);
   if (hours > 22 || hours < 7) {
     $("#hbk_midnight_fee").val("1");
@@ -114,4 +211,12 @@ function midnightCheck(time) {
   }
   calcHbkPrices();
   return true;
+}
+function convertDate(inputDate = new Date()) {
+  const date = new Date(inputDate);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+ return `${day}-${month}-${year}`;
 }
