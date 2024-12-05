@@ -7,6 +7,7 @@ src/wp-content/themes/*/*/dist
 
 # Ignore large folder and folder cache
 src/wp-content/*
+src/wp-content/plugins/zippy-booking-car
 
 # wp-content/uploads
 !src/wp-content/themes
