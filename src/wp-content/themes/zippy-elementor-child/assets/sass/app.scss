@@ -261,36 +261,41 @@
         }
     }
 }
-
-.dropdown-form {
-    position: relative;
+.row-checkout-form{
     display: flex;
-    flex-direction: column;
-    grid-gap: 8px;
-    gap: 8px;
-    padding: 12px;
-    border: 1px solid #e0e0e0;
-    background: #fff;
-    border-radius: 10px;
-    margin-bottom: 12px;
-
-    label {
-        font-size: .875rem;
-        font-weight: 500;
-        color: #333;
-    }
-
-    .wrap-form {
+    justify-content: space-between;
+    .dropdown-form {
         position: relative;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        span.value {
-            font-weight: 600;
-            color: #000;
+        display: flex;
+        flex-direction: column;
+        grid-gap: 8px;
+        gap: 8px;
+        width: 49%;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        background: #fff;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    
+        label {
+            font-size: .875rem;
+            font-weight: 500;
+            color: #333;
+        }
+    
+        .wrap-form {
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+    
+            span.value {
+                font-weight: 600;
+                color: #000;
+            }
         }
     }
+    
 }
 
 .woocommerce-checkout-review-order-table {
@@ -563,22 +568,57 @@
 }
 
 
-    .form_booking_car{
-        .elementor-tabs .elementor-tabs-wrapper {
-            display: flex !important;
-            .elementor-tab-title{
-               padding: 10px 15px ;
-                text-transform: uppercase;
-                width: 50%;
-                font-size: 16px;
-                line-height: 20px;
+.form_booking_car{
+    .elementor-tabs .elementor-tabs-wrapper {
+        display: flex !important;
+        .elementor-tab-title{
+           padding: 10px 15px ;
+            text-transform: uppercase;
+            width: 50%;
+            font-size: 16px;
+            line-height: 20px;
 
-                @include tablet{
-                    padding: 20px 25px;
-                }
-                }
+            @include tablet{
+                padding: 20px 25px;
             }
-        .elementor-tab-mobile-title{
-            display: none !important;
         }
     }
+    .elementor-tab-mobile-title{
+        display: none !important;
+    }
+}
+
+.dropdown-form-checkout-total{
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    &_title{
+        label{
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    }
+    &_value{
+        font-weight: bold;
+    }
+}
+
+.box-billing{
+    border-top: 1px solid #e0e0e0;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    &-flex{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        &_col{
+            span{
+                font-weight: bold;
+            }
+        }
+    } 
+}

@@ -120,7 +120,14 @@ function hour_booking_form(){
                 <label>Total Price: </label>
                 <span > $
                     <span id="hbk_total_price" data-product-price="<?php echo $_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true);?>">
-                        <?php echo ($_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true));?>
+                        <?php 
+                        $_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true);
+                        if(!empty($_price_per_hour)){
+                            echo $_price_per_hour;
+                        }else{
+                            echo "0";
+                        }
+                         ?>
                     </span>
                 </span>
             </div>

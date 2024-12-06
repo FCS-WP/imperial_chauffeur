@@ -74,18 +74,18 @@ function trip_booking_form(){
                         <input size="40" maxlength="400" class="" id="flight" aria-required="true" aria-invalid="false" placeholder="Enter your flight details" value="" type="text" name="flight_details">
                     </div>
                     <div class="col-form-custom">
-                        <label for="eta_time">ETE/ETA</label>
-                        <input type="text" name="eta_time" id="eta_time" placeholder="Enter time">
+                        <label for="eta_time">ETE/ETA Time</label>
+                        <input type="time" name="eta_time" id="eta_time" placeholder="Enter time">
                     </div>
                 </div>
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
                         <label for="noofpassengers">No. of Passengers</label>
-                        <input class="" id="noofpassengers" aria-required="true" aria-invalid="false" placeholder="Enter No. of Passengers" value="" type="text" name="no_of_passengers" required>
+                        <input class="" id="noofpassengers" aria-required="true" aria-invalid="false" placeholder="Enter No. of Passengers" value="" type="number" name="no_of_passengers" min="1" max="100" required>
                     </div>
                     <div class="col-form-custom">
                         <label for="noofbaggage">No. of Baggage</label>
-                        <input class="" id="noofbaggage" aria-required="true" aria-invalid="false" placeholder="Enter No. of Baggage" value="" type="text" name="no_of_baggage" required>
+                        <input class="" id="noofbaggage" aria-required="true" aria-invalid="false" placeholder="Enter No. of Baggage" value="" type="number" name="no_of_baggage" min="1" max="100" required>
                     </div>
                 </div>
                 <div class="row-form-custom col-1">
