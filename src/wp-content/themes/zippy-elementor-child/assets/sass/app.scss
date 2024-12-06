@@ -264,6 +264,10 @@
 .row-checkout-form{
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    .location_checkout{
+        width: 100% !important;
+    }
     .dropdown-form {
         position: relative;
         display: flex;
@@ -276,7 +280,7 @@
         background: #fff;
         border-radius: 10px;
         margin-bottom: 12px;
-    
+        
         label {
             font-size: .875rem;
             font-weight: 500;
@@ -619,6 +623,7 @@
             span{
                 font-weight: bold;
             }
+            
         }
     } 
 }

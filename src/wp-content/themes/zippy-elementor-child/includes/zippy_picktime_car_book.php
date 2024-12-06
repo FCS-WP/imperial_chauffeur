@@ -49,7 +49,7 @@ function trip_booking_form(){
                 
                 <div class="row-form-custom col-1">
                     <div class="col-form-custom ">
-                        <label for="servicetype">Type Services</label>
+                        <label for="servicetype">Type Services <span style="color:red;">*</span></label>
                         <select class="" id="servicetype" name="service_type" required>
                             <option value="">Please choose an option</option>
                             <option value="Airport Arrival Transfer">Airport Arrival Transfer</option>
@@ -60,11 +60,11 @@ function trip_booking_form(){
                 </div>
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
-                        <label for="pickuplocation">Pick Up</label>
+                        <label for="pickuplocation">Pick Up <span style="color:red;">*</span></label>
                         <input size="40" maxlength="60" class="" id="pickuplocation" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="pick_up_location" required>
                     </div>
                     <div class="col-form-custom">
-                        <label for="doaddress">Drop Off</label>
+                        <label for="doaddress">Drop Off <span style="color:red;">*</span></label>
                         <input size="40" maxlength="50" class="" id="dolocation" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="drop_off_location" required>
                     </div>
                 </div>
@@ -80,18 +80,18 @@ function trip_booking_form(){
                 </div>
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
-                        <label for="noofpassengers">No. of Passengers</label>
+                        <label for="noofpassengers">No. of Passengers <span style="color:red;">*</span></label>
                         <input class="" id="noofpassengers" aria-required="true" aria-invalid="false" placeholder="Enter No. of Passengers" value="" type="number" name="no_of_passengers" min="1" max="100" required>
                     </div>
                     <div class="col-form-custom">
-                        <label for="noofbaggage">No. of Baggage</label>
+                        <label for="noofbaggage">No. of Baggage <span style="color:red;">*</span></label>
                         <input class="" id="noofbaggage" aria-required="true" aria-invalid="false" placeholder="Enter No. of Baggage" value="" type="number" name="no_of_baggage" min="1" max="100" required>
                     </div>
                 </div>
                 <div class="row-form-custom col-1">
                     <div class="col-form-custom">
                     <label for="special_requests">Special Requests</label>
-                    <input size="40" maxlength="400" class="" id="hbk_special_requests" aria-invalid="false" placeholder="Enter your flight details" value="" type="text" name="special_requests">
+                    <input size="40" maxlength="400" class="" id="hbk_special_requests" aria-invalid="false" placeholder="Enter your request" value="" type="text" name="special_requests">
                     </div>
                     
                 </div>

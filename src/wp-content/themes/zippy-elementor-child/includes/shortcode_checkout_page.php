@@ -51,13 +51,13 @@ function information_basic_booking_car(){
             </div>
         </div>
         <div class="row-checkout-form">
-            <div class="dropdown-form">
+            <div class="dropdown-form location_checkout">
                 <label>Pick Up Location</label>
                 <div class="wrap-form">
                     <span class="value"><?php echo $cart_item['booking_information']['pick_up_location']; ?></span>
                 </div>
             </div>
-            <div class="dropdown-form">
+            <div class="dropdown-form location_checkout">
                 <label>Drop Off Location</label>
                 <div class="wrap-form">
                     <span class="value"><?php echo $cart_item['booking_information']['drop_off_location']; ?></span>
