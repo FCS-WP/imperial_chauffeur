@@ -238,7 +238,7 @@ function title_booking_trip(){
         if(!empty($current_price)){
             $price = "<span =class='price_booking_text'>(<bdi>$</bdi><span class='price_trip'>" . $current_price . "</span>/Trip )</span>";
         }
-        echo "<span class='label-title'>Booking By Trip</span> " .$price;
+        echo "<span class='label-title'>Booking Per Trip</span> " .$price;
         
     }
 }
@@ -249,9 +249,9 @@ function title_booking_hour(){
     if (is_product()){
         $_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true);
         if(!empty($_price_per_hour)){
-            $price = "<span class='price_booking_text'>(<bdi>$</bdi><span class='price_trip'>" . $_price_per_hour . "</span>/Trip )</span>";
+            $price = "<span class='price_booking_text'>(<bdi>$</bdi><span class='price_trip'>" . $_price_per_hour . "</span>/Hour )</span>";
         }
-        echo "<span class='label-title'>Booking By Trip</span> " . $price;
+        echo "<span class='label-title'>Disposal (Min 3 hours) </span> " . $price;
         
     }
 }

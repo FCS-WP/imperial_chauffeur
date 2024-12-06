@@ -527,6 +527,12 @@
             flex-direction: column;
             justify-content: space-around;
         }
+        .pickupdate{
+            pointer-events: none;
+        }
+        #pickuptime{
+            pointer-events: none;
+        }
         label{
             margin-bottom: 0px;
             font-size: 12px;
@@ -541,7 +547,7 @@
             font-size: 14px;
             height: auto !important;
             cursor: pointer;
-            pointer-events: none;
+            
         }
         select{
             border: 0 !important;
