@@ -141,4 +141,4 @@ function hour_booking_form(){
     <?php
     }
 }
-add_shortcode('hour_booking_form', 'hour_booking_form');
+// add_shortcode('hour_booking_form', 'hour_booking_form');
