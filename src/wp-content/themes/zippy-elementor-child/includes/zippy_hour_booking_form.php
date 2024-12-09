@@ -88,7 +88,7 @@ function hour_booking_form(){
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
                         <label for="no_of_passengers">No. of Passengers <span style="color:red;">*</span></label>
-                        <input size="40" maxlength="60" class="" id="hbk_number_of_passengers" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="no_of_passengers" required>
+                        <input size="40" maxlength="60" class="" id="hbk_number_of_passengers" aria-required="true" aria-invalid="false" placeholder="Enter number" value="" type="text" name="no_of_passengers" required>
                     </div>
                     <div class="col-form-custom">
                         <label for="drop_off_location">Drop Off Location <span style="color:red;">*</span></label>
@@ -98,11 +98,11 @@ function hour_booking_form(){
                 <div class="row-form-custom col-2">
                     <div class="col-form-custom">
                         <label for="no_of_baggage">No. of Baggage <span style="color:red;">*</span></label>
-                        <input size="40" maxlength="50" class="" id="hbk_number_of_baggages" aria-required="true" aria-invalid="false" placeholder="Enter location" value="" type="text" name="no_of_baggage" required>
+                        <input size="40" maxlength="50" class="" id="hbk_number_of_baggages" aria-required="true" aria-invalid="false" placeholder="Enter number" value="" type="text" name="no_of_baggage" required>
                     </div>
                     <div class="col-form-custom">
                         <label for="special_requests">Special Requests</label>
-                        <input size="40" maxlength="400" class="" id="hbk_special_requests" aria-invalid="false" placeholder="Enter your flight details" value="" type="text" name="special_requests">
+                        <input size="40" maxlength="400" class="" id="hbk_special_requests" aria-invalid="false" placeholder="Enter your request" value="" type="text" name="special_requests">
                     </div>
                 </div>
             </div>
@@ -120,7 +120,14 @@ function hour_booking_form(){
                 <label>Total Price: </label>
                 <span > $
                     <span id="hbk_total_price" data-product-price="<?php echo $_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true);?>">
-                        <?php echo ($_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true));?>
+                        <?php 
+                        $_price_per_hour = get_post_meta($product->get_id(), '_price_per_hour', true);
+                        if(!empty($_price_per_hour)){
+                            echo $_price_per_hour;
+                        }else{
+                            echo "0";
+                        }
+                         ?>
                     </span>
                 </span>
             </div>
