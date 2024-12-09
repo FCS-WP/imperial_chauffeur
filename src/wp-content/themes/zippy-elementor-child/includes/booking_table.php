@@ -282,6 +282,7 @@ function create_payment_order()
 
     $total_for_month = 0;
     $selected_orders = [];
+    $selected_order_ids = []; 
 
     foreach ($orders as $order) {
         $order_date = $order->get_date_created();
@@ -291,6 +292,7 @@ function create_payment_order()
         if ($order_month_year === $month_year && !$is_monthly_payment_order) {
             $total_for_month += $order->get_total();
             $selected_orders[] = $order;
+            $selected_order_ids[] = $order->get_id();
         }
     }
 
@@ -325,6 +327,7 @@ function create_payment_order()
 
     $custom_order_number = $order->get_id() . ' ' . $month_year . '-';
     $order->update_meta_data('_custom_order_number', $custom_order_number);
+    $order->update_meta_data('list_of_orders', serialize($selected_order_ids));
 
     $order->calculate_totals();
 
