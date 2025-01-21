@@ -27,4 +27,8 @@ add_shortcode('random_slide', 'show_random_slide');
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
+// if (is_checkout() && get_query_var('order-pay')) {
+//     return true;
+// }
+// return false;
 
