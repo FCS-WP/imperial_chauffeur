@@ -20,12 +20,3 @@ function remove_pay_action( $actions, $order ) {
     unset( $actions['pay'] );
     return $actions;
 }
-
-
-
-
-
-
-
-
-
