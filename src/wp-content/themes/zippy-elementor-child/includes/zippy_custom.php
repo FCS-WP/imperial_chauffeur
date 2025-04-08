@@ -14,3 +14,9 @@ function shin_scripts()
 	// wp_enqueue_script('vanilla-scripts-js', THEME_URL . '-child' . '/assets/lib/vanilla-calendar.min.js', array('jquery'), $version, true);
 }
 
+add_filter( 'woocommerce_my_account_my_orders_actions', 'remove_pay_action', 10, 2 );
+
+function remove_pay_action( $actions, $order ) {
+    unset( $actions['pay'] );
+    return $actions;
+}
