@@ -38,7 +38,7 @@ class Zippy_Core
 
     add_action('login_enqueue_scripts', array($this, 'my_login_stylesheet'));
 
-    add_filter('plugin_action_links', array($this, 'disable_plugin_deactivation'), 10, 4); //Prevent deactive
+    add_filter('plugin_action_links', array($this, 'disable_plugin_deactivation'), 10, 4); //Prevent deactive 
   }
 
   public function setup_phpmailer_init($phpmailer)

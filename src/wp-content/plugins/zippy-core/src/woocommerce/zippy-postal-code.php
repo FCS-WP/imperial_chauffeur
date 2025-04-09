@@ -31,7 +31,7 @@ class Zippy_Postal_code
   public function __construct()
   {
     if (!Zippy_Utils_Core::check_exits_woocommerce()) return;
-    if (!Zippy_Utils_Core::check_is_active_feature('_zippy_postal_code')) return;
+    if (!Zippy_Utils_Core::check_is_active_feature('_zippy_postal_code') || is_admin()) return;
     //load all class in here
     $this->set_hooks();
   }
