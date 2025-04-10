@@ -24,6 +24,19 @@ function add_confirmed_status($statuses)
 add_filter('wc_order_statuses', 'remove_processing_status');
 add_filter('wc_order_statuses', 'add_confirmed_status');
 
+
+function register_custom_order_status() {
+  register_post_status('wc-confirmed', array(
+      'label'                     => 'Confirmed',
+      'public'                    => true,
+      'exclude_from_search'       => false,
+      'show_in_admin_all_list'    => true,
+      'show_in_admin_status_list' => true,
+      'label_count'               => _n_noop('Confirmed <span class="count">(%s)</span>', 'Confirmed <span class="count">(%s)</span>')
+  ));
+}
+add_action('init', 'register_custom_order_status');
+
 add_action('woocommerce_thankyou', 'custom_woocommerce_auto_complete_order');
 function custom_woocommerce_auto_complete_order($order_id)
 {
