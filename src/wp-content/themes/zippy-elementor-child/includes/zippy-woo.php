@@ -40,6 +40,10 @@ function confirm_email_woocommerce_order_actions($actions, $order)
 
   $status = $order->get_status();
 
+  if (!$order->get_customer_id()) {
+    $actions['send_order_details'] =  __('Send order details to Visitor', 'send_order_details');
+  }
+
   if ($is_monthly_payment_order || $status != 'on-hold') return $actions;
 
   unset($actions['send_order_details']);
