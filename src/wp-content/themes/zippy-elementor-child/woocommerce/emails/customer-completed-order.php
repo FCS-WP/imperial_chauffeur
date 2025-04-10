@@ -21,7 +21,7 @@ $total = $subtotal + $gst + $cc_fee;
             <p>We have finished processing your order.</p>
 
             <h2 style="color:#e91e21">
-                [Order #<?php echo $order->get_order_number(); ?>] (<?php echo $order->get_date_created()->format('d/m/Y'); ?>)
+                [Order #<?php echo $order->get_order_number(); ?>] (<?php echo $order->get_date_created()->setTimezone( new DateTimeZone('Asia/Singapore') )->format('d/m/Y'); ?>)
             </h2>
 
             <table cellspacing="0" cellpadding="6" style="width:100%;border:2px solid #e5e5e5;border-collapse:collapse;text-align:left" border="2">
