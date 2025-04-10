@@ -11,6 +11,7 @@ function remove_processing_status($statuses)
   if (isset($statuses['wc-processing'])) {
     unset($statuses['wc-processing']);
   }
+  $statuses['wc-confirmed'] = __('Confirmed', 'send_order_details');
   return $statuses;
 }
 add_filter('wc_order_statuses', 'remove_processing_status');
@@ -48,7 +49,7 @@ function confirm_email_woocommerce_order_actions($actions, $order)
 
   unset($actions['send_order_details']);
 
-  $actions['send-confirmation-email'] = __('Send Confirmation Email', 'send-confirmation-email');
+  $actions['send-confirmation-email'] = __('Send confirmation email to member', 'send-confirmation-email');
 
   return $actions;
 }
@@ -89,6 +90,8 @@ function confirm_email_woocommerce_order_action_execute($post_id)
   $message .= "<p>Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
 
   wp_mail($user_email, $subject, $message, $headers);
-
+  if ($order->has_status('on-hold')) {
+    $order->update_status('confirmed');
+  }
   $order->add_order_note(__('Sent confirmation email to customer', 'send-confirmation-email'));
 }
