@@ -21,6 +21,20 @@ function remove_pay_action( $actions, $order ) {
     return $actions;
 }
 
+
+add_filter( 'woocommerce_email_recipient_customer_completed_order', 'override_email_recipient_for_testing', 10, 2 );
+
+function override_email_recipient_for_testing( $recipient, $order ) {
+    if ( is_a( $order, 'WC_Order' ) ) {
+        // Kiểm tra nếu đang ở chế độ test
+        // if ( defined('WC_EMAIL_TEST_MODE') && WC_EMAIL_TEST_MODE ) {
+            $recipient = 'tai.phan@floatingcube.com'; // Thay bằng địa chỉ email test của bạn
+        // }
+    }
+    return $recipient;
+}
+
+
 add_filter( 'woocommerce_email_enabled_customer_completed_order', 'disable_completed_email_for_non_monthly_orders', 10, 2 );
 
 function disable_completed_email_for_non_monthly_orders( $enabled, $order ) {
