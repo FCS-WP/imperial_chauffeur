@@ -11,10 +11,18 @@ function remove_processing_status($statuses)
   if (isset($statuses['wc-processing'])) {
     unset($statuses['wc-processing']);
   }
+  return $statuses;
+}
+
+function add_confirmed_status($statuses)
+{
+
   $statuses['wc-confirmed'] = __('Confirmed', 'send_order_details');
   return $statuses;
 }
+
 add_filter('wc_order_statuses', 'remove_processing_status');
+add_filter('wc_order_statuses', 'add_confirmed_status');
 
 add_action('woocommerce_thankyou', 'custom_woocommerce_auto_complete_order');
 function custom_woocommerce_auto_complete_order($order_id)
