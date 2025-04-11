@@ -39,8 +39,8 @@ function show_is_first_order_checkbox()
   $selected = isset($_GET['metadata']) ? esc_attr($_GET['metadata']) : '';
   $options  = array(
     ''              => __('By order type', 'woocommerce'),
-    'public'  => __('Public orders', 'woocommerce'),
-    'member'  => __('Member Orders', 'woocommerce')
+    '0'  => __('Public orders', 'woocommerce'),
+    '1'  => __('Member Orders', 'woocommerce')
   );
 
   echo '<select name="metadata" id="dropdown_shop_order_metadata">';
@@ -53,9 +53,15 @@ function show_is_first_order_checkbox()
 add_filter('woocommerce_order_query_args', 'filter_woocommerce_orders_in_the_table');
 function filter_woocommerce_orders_in_the_table($query_args)
 {
-  if (isset($_GET['metadata']) && $_GET['metadata']) {
-    $query_args['meta_key']   = 'member_type';
-    $query_args['meta_value'] = $_GET['metadata'];
+
+  if (isset($_GET['metadata'])) {
+    $meta_query[] = array(
+      'key' => 'member_type',
+      'value' => intval($_GET['metadata']),
+      'compare' => 'AND'
+    );
+
+    $query_args['meta_query'] = $meta_query;
   }
   return $query_args;
 }
@@ -75,4 +81,17 @@ function custom_order_number_display_type($order_number, $order)
   }
 
   return $order_number . '-Public';
+}
+
+add_filter('woocommerce_my_account_my_orders_query', 'filter_my_account_orders_query');
+
+function filter_my_account_orders_query($query_args)
+{
+  // $query_args['meta_query'][] = array(
+  //     'key'     => 'is_monthly_payment_order',
+  //     'value'   => '1',
+  //     'compare' => '='
+  // );
+
+  return $query_args;
 }
