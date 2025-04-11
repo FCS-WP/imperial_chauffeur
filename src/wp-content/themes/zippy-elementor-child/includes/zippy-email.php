@@ -69,7 +69,7 @@ function confirm_email_woocommerce_order_action_execute($post_id)
 
   $subject = 'Thank you for your order. Your booking has been confirmed – Imperial Chauffeur Services Pte. Ltd';
 
-  $message = "<p>Thank you for your order! We're excited to let you know that your order successfully received and confirmed.</p>";
+  $message = "<p>Thank you for your order! We're excited to let you know that we have successfully received and confirmed your order.</p>";
 
   $message .= "<br><h3>Preferred Contact Method:</h3>";
   $message .= "<p>OFFICE TELEPHONE +65 6734 0428 (24Hours)</p>";
