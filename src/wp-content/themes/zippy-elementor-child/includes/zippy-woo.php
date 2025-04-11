@@ -18,6 +18,7 @@ function confirm_email_woocommerce_order_actions($actions, $order)
   $status = $order->get_status();
 
   unset($actions['regenerate_download_permissions']);
+  unset($actions['send_order_details_admin']);
 
   if (!$order->get_customer_id()) {
     $actions['send_order_details'] =  __('Send order details to Visitor', 'send_order_details');
