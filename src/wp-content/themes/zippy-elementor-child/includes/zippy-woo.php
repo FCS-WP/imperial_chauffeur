@@ -66,7 +66,7 @@ function custom_order_number_display_type($order_number, $order)
 {
   $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
 
-  if ($is_monthly_payment_order) return $order_number;
+  if ($is_monthly_payment_order || !is_admin()) return $order_number;
 
   $is_member = $order->get_customer_id();
 
