@@ -6,51 +6,6 @@ function disable_password_reset()
 
 add_filter('allow_password_reset', 'disable_password_reset');
 
-function remove_processing_status($statuses)
-{
-  if (isset($statuses['wc-processing'])) {
-    unset($statuses['wc-processing']);
-  }
-  return $statuses;
-}
-
-function add_confirmed_status($statuses)
-{
-
-  $statuses['wc-confirmed'] = __('Confirmed', 'send_order_details');
-  return $statuses;
-}
-
-add_filter('wc_order_statuses', 'remove_processing_status');
-add_filter('wc_order_statuses', 'add_confirmed_status');
-
-
-function register_custom_order_status() {
-  register_post_status('wc-confirmed', array(
-      'label'                     => 'Confirmed',
-      'public'                    => true,
-      'exclude_from_search'       => false,
-      'show_in_admin_all_list'    => true,
-      'show_in_admin_status_list' => true,
-      'label_count'               => _n_noop('Confirmed <span class="count">(%s)</span>', 'Confirmed <span class="count">(%s)</span>')
-  ));
-}
-add_action('init', 'register_custom_order_status');
-
-add_action('woocommerce_thankyou', 'custom_woocommerce_auto_complete_order');
-function custom_woocommerce_auto_complete_order($order_id)
-{
-  if (! $order_id) {
-    return;
-  }
-
-  $order = wc_get_order($order_id);
-
-  if ($order->has_status('processing')) {
-    $order->update_status('completed');
-  }
-}
-
 
 add_filter('woocommerce_order_actions', 'confirm_email_woocommerce_order_actions', 10, 2);
 
@@ -62,6 +17,8 @@ function confirm_email_woocommerce_order_actions($actions, $order)
 
   $status = $order->get_status();
 
+  unset($actions['regenerate_download_permissions']);
+
   if (!$order->get_customer_id()) {
     $actions['send_order_details'] =  __('Send order details to Visitor', 'send_order_details');
   }
@@ -70,49 +27,52 @@ function confirm_email_woocommerce_order_actions($actions, $order)
 
   unset($actions['send_order_details']);
 
-  $actions['send-confirmation-email'] = __('Send confirmation email to member', 'send-confirmation-email');
+  $actions['send-confirmation-email'] = __('Send confirmation email to Member', 'send-confirmation-email');
 
   return $actions;
 }
 
-/**
- * Save meta box data.
- *
- * @param int $post_id Post ID.
- * @param WP_Post $post Post Object.
- */
-function confirm_email_woocommerce_order_action_execute($post_id)
+
+add_action('woocommerce_order_list_table_restrict_manage_orders', 'show_is_first_order_checkbox', 20);
+function show_is_first_order_checkbox()
 {
-  if (filter_input(INPUT_POST, 'wc_order_action') !== 'send-confirmation-email') {
-    return;
+  $selected = isset($_GET['metadata']) ? esc_attr($_GET['metadata']) : '';
+  $options  = array(
+    ''              => __('By order type', 'woocommerce'),
+    'public'  => __('Public orders', 'woocommerce'),
+    'member'  => __('Member Orders', 'woocommerce')
+  );
+
+  echo '<select name="metadata" id="dropdown_shop_order_metadata">';
+  foreach ($options as $value => $label_name) {
+    printf('<option value="%s" %s>%s</option>', $value, selected($selected, $value, false), $label_name);
+  }
+  echo '</select>';
+}
+
+add_filter('woocommerce_order_query_args', 'filter_woocommerce_orders_in_the_table');
+function filter_woocommerce_orders_in_the_table($query_args)
+{
+  if (isset($_GET['metadata']) && $_GET['metadata']) {
+    $query_args['meta_key']   = 'member_type';
+    $query_args['meta_value'] = $_GET['metadata'];
+  }
+  return $query_args;
+}
+
+add_filter('woocommerce_order_number', 'custom_order_number_display_type', 10, 2);
+
+function custom_order_number_display_type($order_number, $order)
+{
+  $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
+
+  if ($is_monthly_payment_order) return $order_number;
+
+  $is_member = $order->get_customer_id();
+
+  if ($is_member) {
+    return $order_number . '-Member';
   }
 
-  $order = wc_get_order($post_id);
-  $user_email = $order->get_user()->user_email;
-
-  //function send email to customer when website has new order
-  $headers = [
-    'Content-Type: text/html; charset=UTF-8',
-    'From: Imperial <impls@singnet.com.sg>'
-  ];
-
-  $subject = 'Thank you for your order. Your booking has been confirmed – Imperial Chauffeur Services Pte. Ltd';
-
-  $message = "<p>Thank you for your order! We're excited to let you know that your order has been successfully received and is now being processed.</p>";
-
-  $message .= "<br><h3>Preferred Contact Method:</h3>";
-  $message .= "<p>OFFICE TELEPHONE +65 6734 0428 (24Hours)</p>";
-  $message .= "<p>EMAIL: impls@singnet.com.sg</p>";
-  $message .= "<br><p>Our team will review your request and respond within 24 hours. If you have any urgent concerns, feel free to contact us.</p>";
-  $message .= "<p>We appreciate your patience and look forward to assisting you.</p><br>";
-  $message .= "<p>Best regards,</p>";
-  $message .= "<p>Imperial Chauffeur Services Pte. Ltd</p>";
-  $message .= "<p>Email: impls@singnet.com.sg</p>";
-  $message .= "<p>Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
-
-  wp_mail($user_email, $subject, $message, $headers);
-  if ($order->has_status('on-hold')) {
-    $order->update_status('confirmed');
-  }
-  $order->add_order_note(__('Sent confirmation email to customer', 'send-confirmation-email'));
+  return $order_number . '-Public';
 }
