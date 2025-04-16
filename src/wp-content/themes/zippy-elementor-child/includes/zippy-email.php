@@ -45,6 +45,7 @@ function custom_woocommerce_auto_complete_order($order_id)
     $order->update_status('completed');
   }
 }
+add_action('woocommerce_process_shop_order_meta', 'confirm_email_woocommerce_order_action_execute', 50, 2);
 
 /**
  * Save meta box data.
@@ -59,6 +60,7 @@ function confirm_email_woocommerce_order_action_execute($post_id)
   }
 
   $order = wc_get_order($post_id);
+
   $user_email = $order->get_user()->user_email;
 
   //function send email to customer when website has new order
