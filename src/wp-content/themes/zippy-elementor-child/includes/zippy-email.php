@@ -41,27 +41,60 @@ function custom_woocommerce_auto_complete_order($order_id)
 
   $order = wc_get_order($order_id);
 
-  if ($order->has_status('processing')) {
+  if ($order->has_status('processing') || $order->has_status('on-hold')) {
     $order->update_status('completed');
   }
 }
 
-/**
- * Save meta box data.
- *
- * @param int $post_id Post ID.
- * @param WP_Post $post Post Object.
- */
+
+add_filter('woocommerce_order_actions', 'confirm_email_woocommerce_order_actions', 10, 2);
+
+function confirm_email_woocommerce_order_actions($actions, $order)
+{
+  $is_monthly = $order->get_meta('is_monthly_payment_order', true);
+
+  $status = $order->get_status();
+  $is_guest = !$order->get_customer_id();
+  unset($actions['regenerate_download_permissions']);
+  unset($actions['send_order_details_admin']);
+
+  if ($is_guest) {
+    $actions['send_order_details'] = __('Send order details to Visitor', 'send_order_details');
+  }
+
+  if ($is_monthly || $status !== 'on-hold' || $is_guest) {
+    if ($status == 'completed') {
+      $actions['send_completed_order'] = $is_guest
+        ? __('Send completed order to Visitor', 'send_completed_order')
+        : __('Send completed order to Member', 'send_completed_order');
+    }
+    return apply_filters('custom_wc_order_actions', $actions, $order);
+  }
+
+  unset($actions['send_order_details']);
+
+  $actions['send-confirmation-email'] = __('Send confirmation email to Member', 'send-confirmation-email');
+
+
+  return apply_filters('custom_wc_order_actions', $actions, $order);
+}
+
+
+add_action('woocommerce_process_shop_order_meta', 'confirm_email_woocommerce_order_action_execute', 50, 2);
+
 function confirm_email_woocommerce_order_action_execute($post_id)
 {
+
+
   if (filter_input(INPUT_POST, 'wc_order_action') !== 'send-confirmation-email') {
+
     return;
   }
 
   $order = wc_get_order($post_id);
+
   $user_email = $order->get_user()->user_email;
 
-  //function send email to customer when website has new order
   $headers = [
     'Content-Type: text/html; charset=UTF-8',
     'From: Imperial <impls@singnet.com.sg>'
@@ -87,3 +120,35 @@ function confirm_email_woocommerce_order_action_execute($post_id)
   }
   $order->add_order_note(__('Sent confirmation email to customer', 'send-confirmation-email'));
 }
+
+add_action('woocommerce_process_shop_order_meta', 'completed_email_woocommerce_order_action_execute', 50, 2);
+
+
+function completed_email_woocommerce_order_action_execute($post_id)
+{
+  if (filter_input(INPUT_POST, 'wc_order_action') !== 'send_completed_order') {
+    return;
+  }
+
+  $order = wc_get_order($post_id);
+
+  $order_id = $order->get_id();
+
+  // Make sure the order status is completed (optional check)
+  if ($order->get_status() !== 'completed') {
+    $order->update_status('completed', __('Manually marked as completed for email trigger', 'your-textdomain'));
+  }
+
+  add_filter('woocommerce_email_enabled_customer_completed_order', '__return_true');
+
+  // Load the WooCommerce email class
+  $mailer = WC()->mailer();
+  $mails = $mailer->get_emails();
+
+  if (!empty($mails['WC_Email_Customer_Completed_Order'])) {
+    $mails['WC_Email_Customer_Completed_Order']->trigger($order_id, $order);
+  }
+  $order->add_order_note(__('Sent completed email to customer', 'send-confirmation-email'));
+}
+
+add_filter('woocommerce_email_enabled_customer_completed_order', '__return_false');
