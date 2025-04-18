@@ -65,7 +65,7 @@ $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
 				if (! in_array($target_order_id, $seen_orders)) {
 					$seen_orders[] = $target_order_id;
 					$monthly_order_url = wc_get_endpoint_url('view-order', $target_order_id, wc_get_page_permalink('myaccount'));
-					echo '<small><a href="' . esc_url($monthly_order_url) . '">' . esc_html__('View', 'woocommerce') . '</a></small>';
+					echo '<small><a class="button button-black" href="' . esc_url($monthly_order_url) . '">' . esc_html__('View', 'woocommerce') . '</a></small>';
 				}
 			}
 

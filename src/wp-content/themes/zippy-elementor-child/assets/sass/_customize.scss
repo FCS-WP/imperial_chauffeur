@@ -89,7 +89,7 @@
         border: 1px solid #666;
         border-radius: 3px;
         padding: 0.5rem 1rem;
-        width: 250px !important;
+        width: 400px !important;
         margin-top: 10px;
       }
     }
@@ -101,7 +101,7 @@
   gap: 20px;
   .account-sidebar {
     width: 25%;
-    background-color: hsla(0, 0%, 50.2%, .0705882353);
+    background-color: hsla(0, 0%, 50.2%, 0.0705882353);
     padding: 10px;
     border-radius: 5px;
     .woocommerce-MyAccount-navigation {
@@ -116,11 +116,14 @@
         &:last-child {
           border-bottom: none;
         }
-        padding: 10px 15px;
+
         a {
           color: black;
           text-decoration: none;
           font-weight: bold;
+          width: 100%;
+          display: block;
+          padding: 10px 15px;
         }
         border-bottom: 1px solid hsla(0, 0%, 50%, 0.473);
         margin: 0;
@@ -195,7 +198,7 @@
                   color: #fff;
                 }
               }
-              &.cancelled{
+              &.cancelled {
                 span {
                   background-color: #f34747d8;
                   color: #fff;
@@ -208,7 +211,8 @@
     }
   }
 }
-.woocommerce-button.button.next , .woocommerce-button.button.prev{
+.woocommerce-button.button.next,
+.woocommerce-button.button.prev {
   background-color: rgb(92, 88, 88);
   color: white;
   padding: 10px 15px;
@@ -216,12 +220,66 @@
   text-decoration: none;
   font-size: 14px;
   font-weight: normal;
-  
+}
+.button-black {
+  background-color: rgb(92, 88, 88) !important;
+  color: white !important;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none !important;
+  font-size: 14px;
+  font-weight: normal;
+  border: none !important;
+}
+.order-again {
+  display: none;
+}
+
+mark {
+  background-color: transparent !important;
+}
+.woocommerce-table__product-name {
+  text-decoration: none !important;
+  color: black;
+  font-weight: bold !important;
+  a {
+    text-decoration: none !important;
+    color: black;
+    font-weight: bold !important;
+  }
+}
+.woocommerce-table.shop_table.order_details {
+  thead {
+    tr {
+      th {
+        border: none !important;
+        padding: 15px;
+      }
+    }
+  }
+  tbody {
+    tr {
+      td {
+        border: none !important;
+        padding: 15px;
+      }
+    }
+  }
+}
+.mb-2 {
+  margin-bottom: 20px !important;
 }
 @media (max-width: 768px) {
   .woocommerce-order-custom-fields {
     .field-columns p {
       width: 100%;
+      input {
+        border: 1px solid #666;
+        border-radius: 3px;
+        padding: 0.5rem 1rem;
+        width: 250px !important;
+        margin-top: 10px;
+      }
     }
   }
 }
