@@ -73,22 +73,136 @@
 }
 
 .woocommerce-order-custom-fields {
-	.field-columns {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
+  .field-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 
-		p {
-			width: calc(50% - 15px);
-			box-sizing: border-box;
-			margin: 0 0 20px;
-		}
-	}
+    p {
+      width: calc(50% - 15px);
+      box-sizing: border-box;
+      margin: 0 0 20px;
+      strong {
+        margin-bottom: 10px;
+      }
+      input {
+        border: 1px solid #666;
+        border-radius: 3px;
+        padding: 0.5rem 1rem;
+        width: 250px !important;
+        margin-top: 10px;
+      }
+    }
+  }
 }
+.woocommerce-my-account-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  .account-sidebar {
+    width: 25%;
+    background-color: #dad7d7b9;
+    padding: 10px;
+    .woocommerce-MyAccount-navigation {
+      margin-bottom: 0;
+      p {
+        &.is-active {
+          background-color: #f1192e;
+          a {
+            color: white !important;
+          }
+        }
+        &:last-child {
+          border-bottom: none;
+        }
+        padding: 10px 15px;
+        a {
+          color: black;
+          text-decoration: none;
+        }
+        border-bottom: 1px solid #c2bdbdc5;
+        margin: 0;
+      }
+    }
+  }
+  .account-content {
+    width: 75%;
+    .woocommerce-orders-table {
+      thead {
+        tr {
+          th {
+            padding: 15px;
+            border: none;
+          }
+        }
+      }
+      tbody {
+        tr {
+          td {
+            padding: 15px;
+            border: none;
+            a {
+              text-decoration: none;
+              color: #f1192e;
+            }
+            &.order-actions {
+              a {
+                margin: 0 5px;
+                &.woocommerce-button.button.view {
+                  background-color: black;
+                  color: white;
+                  padding: 10px 20px;
+                  border-radius: 5px;
+                }
+                &.woocommerce-button.button.cancel {
+                  background-color: #f1192e;
+                  color: white;
+                  padding: 10px 20px;
+                  border-radius: 5px;
+                }
+              }
+            }
+            &.order-status {
+              span {
+                padding: 10px;
+                border-radius: 5px;
+              }
+              &.completed {
+                span {
+                  background-color: #c8d7e1;
+                  color: #003d66;
+                }
+              }
+              &.on-hold {
+                span {
+                  background-color: #f8dda7;
+                  color: #573b00;
+                }
+              }
+              &.pending {
+                span {
+                  background-color: #e5e5e5;
+                  color: #454545;
+                }
+              }
+              &.cancelled{
+                span {
+                  background-color: #f34747d8;
+                  color: #fff;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 768px) {
-	.woocommerce-order-custom-fields {
-		.field-columns p {
-			width: 100%;
-		}
-	}
+  .woocommerce-order-custom-fields {
+    .field-columns p {
+      width: 100%;
+    }
+  }
 }
