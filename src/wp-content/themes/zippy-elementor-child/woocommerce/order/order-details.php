@@ -30,8 +30,8 @@ if (! $order) {
 
 $order_items        = $order->get_items(apply_filters('woocommerce_purchase_order_item_types', 'line_item'));
 $show_purchase_note = $order->has_status(apply_filters('woocommerce_purchase_note_order_statuses', array('completed', 'processing')));
-$downloads          = $order->get_downloadable_items();
-
+// $downloads          = $order->get_downloadable_items();
+$is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
 // We make sure the order belongs to the user. This will also be true if the user is a guest, and the order belongs to a guest (userID === 0).
 $show_customer_details = $order->get_user_id() === get_current_user_id();
 
@@ -45,7 +45,12 @@ $show_customer_details = $order->get_user_id() === get_current_user_id();
 
 		<thead>
 			<tr>
-				<th class="woocommerce-table__product-name product-name"><?php esc_html_e('Product', 'woocommerce'); ?></th>
+				<?php if ($is_monthly_payment_order): ?>
+					<th class="woocommerce-table__product-name product-name"><?php esc_html_e('Order at Total', 'woocommerce'); ?></th>
+					<th class="woocommerce-table__action action"><?php esc_html_e('Action', 'woocommerce'); ?></th>
+				<?php else: ?>
+					<th class="woocommerce-table__product-name product-name"><?php esc_html_e('Item', 'woocommerce'); ?></th>
+				<?php endif; ?>
 			</tr>
 		</thead>
 
@@ -73,7 +78,7 @@ $show_customer_details = $order->get_user_id() === get_current_user_id();
 		</tbody>
 
 		<tfoot>
-			
+
 			<?php if ($order->get_customer_note()) : ?>
 				<tr>
 					<th><?php esc_html_e('Note:', 'woocommerce'); ?></th>
@@ -86,13 +91,10 @@ $show_customer_details = $order->get_user_id() === get_current_user_id();
 	<?php do_action('woocommerce_order_details_after_order_table', $order); ?>
 </section>
 <?php
-// Chỉ hiển thị nếu không có metakey 'is_monthly_payment_order'
-$is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
-
 if (empty($is_monthly_payment_order)) :
 ?>
 	<div class="woocommerce-order-custom-fields">
-		<h2><?php esc_html_e('Additional Information', 'woocommerce'); ?></h2>
+		<h2><?php esc_html_e('Booking Information', 'woocommerce'); ?></h2>
 		<?php
 		$custom_fields = array(
 			'service_type'       => __('Service Type', 'woocommerce'),
@@ -105,18 +107,57 @@ if (empty($is_monthly_payment_order)) :
 			'pick_up_time'       => __('Pick Up Time', 'woocommerce'),
 			'pick_up_location'   => __('Pick Up Location', 'woocommerce'),
 			'drop_off_location'  => __('Drop Off Location', 'woocommerce'),
-			'special_requests'   => __('Special Requests', 'woocommerce'),
 		);
 
-		foreach ($custom_fields as $key => $label) {
-			$value = get_post_meta($order->get_id(), $key, true);
-			if (! empty($value)) {
-				echo '<p><strong>' . esc_html($label) . ':</strong> ' . esc_html($value) . '</p>';
+		$order_id = $order->get_id();
+		$is_editing = isset($_GET['edit_order']) && $_GET['edit_order'] == $order_id && current_user_can('edit_shop_orders');
+
+		if ($is_editing && $_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('save_custom_fields_' . $order_id)) {
+			foreach ($custom_fields as $key => $label) {
+				if (isset($_POST[$key])) {
+					update_post_meta($order_id, $key, sanitize_text_field($_POST[$key]));
+				}
+			}
+
+			$redirect_url = remove_query_arg('edit_order', wp_unslash($_SERVER['REQUEST_URI']));
+			echo '<script>window.location.href = "' . esc_url($redirect_url) . '";</script>';
+			exit;
+		}
+
+		if ($is_editing) {
+			echo '<form method="post">';
+			wp_nonce_field('save_custom_fields_' . $order_id);
+			echo '<div class="field-columns">';
+
+			foreach ($custom_fields as $key => $label) {
+				$value = get_post_meta($order_id, $key, true);
+				echo '<p><label><strong>' . esc_html($label) . ':</strong><br />';
+				echo '<input type="text" name="' . esc_attr($key) . '" value="' . esc_attr($value) . '" style="width:100%;" />';
+				echo '</label></p>';
+			}
+
+			echo '</div>';
+			echo '<p><button type="submit" class="button button-primary">Save</button></p>';
+			echo '</form>';
+		} else {
+			echo '<div class="field-columns">';
+			foreach ($custom_fields as $key => $label) {
+
+				$value = get_post_meta($order_id, $key, true);
+				if (! empty($value)) {
+
+					echo '<p><strong>' . esc_html($label) . ':</strong> ' . esc_html($value) . '</p>';
+				}
+			}
+			echo '</div>';
+			if (current_user_can('edit_shop_orders')) {
+				echo '<p><a class="button" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
 			}
 		}
 		?>
 	</div>
 <?php endif; ?>
+
 
 
 <?php

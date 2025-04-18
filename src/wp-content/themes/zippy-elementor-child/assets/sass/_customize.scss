@@ -71,3 +71,24 @@
     width: 100%;
   }
 }
+
+.woocommerce-order-custom-fields {
+	.field-columns {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+
+		p {
+			width: calc(50% - 15px);
+			box-sizing: border-box;
+			margin: 0 0 20px;
+		}
+	}
+}
+@media (max-width: 768px) {
+	.woocommerce-order-custom-fields {
+		.field-columns p {
+			width: 100%;
+		}
+	}
+}
