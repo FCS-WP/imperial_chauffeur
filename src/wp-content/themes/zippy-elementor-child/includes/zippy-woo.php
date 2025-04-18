@@ -6,8 +6,7 @@ function disable_password_reset()
 }
 
 add_filter('allow_password_reset', 'disable_password_reset');
-
-
+  
 add_action('woocommerce_order_list_table_restrict_manage_orders', 'show_is_first_order_checkbox', 20);
 function show_is_first_order_checkbox()
 {
