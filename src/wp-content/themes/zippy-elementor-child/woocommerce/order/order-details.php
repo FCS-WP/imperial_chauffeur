@@ -34,12 +34,19 @@ $show_purchase_note = $order->has_status(apply_filters('woocommerce_purchase_not
 $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
 // We make sure the order belongs to the user. This will also be true if the user is a guest, and the order belongs to a guest (userID === 0).
 $show_customer_details = $order->get_user_id() === get_current_user_id();
-
+$order_date = $order->get_date_created();
 ?>
 <section class="woocommerce-order-details">
 	<?php do_action('woocommerce_order_details_before_order_table', $order); ?>
 
 	<h2 class="woocommerce-order-details__title"><?php esc_html_e('Order details', 'woocommerce'); ?></h2>
+
+
+	<?php
+	if ($is_monthly_payment_order && $order_date) {
+		echo '<p><strong>Order Created:</strong> ' . esc_html($order_date->date('H:i d/m/Y')) . '</?php>';
+	}
+	?>
 
 	<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
 
@@ -87,6 +94,7 @@ $show_customer_details = $order->get_user_id() === get_current_user_id();
 			<?php endif; ?>
 		</tfoot>
 	</table>
+	
 
 	<?php do_action('woocommerce_order_details_after_order_table', $order); ?>
 </section>
@@ -132,7 +140,15 @@ if (empty($is_monthly_payment_order)) :
 			foreach ($custom_fields as $key => $label) {
 				$value = get_post_meta($order_id, $key, true);
 				echo '<p><label><strong>' . esc_html($label) . ':</strong><br />';
-				echo '<input type="text" name="' . esc_attr($key) . '" value="' . esc_attr($value) . '" style="width:100%;" />';
+				$type = 'text';
+				if ($key === 'pick_up_date') {
+					$type = 'date';
+				} elseif ($key === 'pick_up_time') {
+					$type = 'time';
+				}
+
+				echo '<input type="' . esc_attr($type) . '" name="' . esc_attr($key) . '" value="' . esc_attr($value) . '" style="width:100%;" />';
+
 				echo '</label></p>';
 			}
 
