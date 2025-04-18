@@ -153,7 +153,7 @@ if (empty($is_monthly_payment_order)) :
 			}
 
 			echo '</div>';
-			echo '<p><button type="submit" class="button button-primary">Save</button></p>';
+			echo '<p><button type="submit" class="button button-black ">Save</button></p>';
 			echo '</form>';
 		} else {
 			echo '<div class="field-columns">';
@@ -167,7 +167,7 @@ if (empty($is_monthly_payment_order)) :
 			}
 			echo '</div>';
 			if (current_user_can('edit_shop_orders')) {
-				echo '<p><a class="button" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
+				echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
 			}
 		}
 		?>
