@@ -34,3 +34,22 @@ function disable_completed_email_for_non_monthly_orders( $enabled, $order ) {
 
     return $enabled;
 }
+
+add_filter( 'woocommerce_account_menu_items', 'remove_my_account_downloads_tab', 99 );
+function remove_my_account_downloads_tab( $items ) {
+    unset( $items['downloads'] );
+    return $items;
+}
+
+add_filter('woocommerce_order_again_button', 'custom_hide_order_again_button_detail', 10, 1);
+
+function custom_hide_order_again_button_detail($button_html) {
+    global $order;
+    if (is_account_page() && is_wc_endpoint_url('view-order')) {
+        if ($order && is_a($order, 'WC_Order') && $order->has_status('completed')) {
+            return '';
+        }
+    }
+
+    return $button_html;
+}
