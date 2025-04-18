@@ -121,7 +121,7 @@
           color: black;
           text-decoration: none;
           font-weight: bold;
-          width: 100%;
+          width: 100% !important;
           display: block;
           padding: 10px 15px;
         }
@@ -279,6 +279,21 @@ mark {
         padding: 0.5rem 1rem;
         width: 250px !important;
         margin-top: 10px;
+      }
+    }
+  }
+  .woocommerce-my-account-wrapper {
+    display: block;
+    .account-sidebar {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    .account-content {
+      width: 100%;
+      .shop_table_responsive {
+        .order-actions {
+          text-align: right !important;
+        }
       }
     }
   }
