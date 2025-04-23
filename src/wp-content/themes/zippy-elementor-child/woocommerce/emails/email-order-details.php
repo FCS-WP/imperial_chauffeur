@@ -76,16 +76,17 @@ $tax_rate = intval($tax_percent->tax_rate);
 		<tfoot>
 			<?php
 			$custom_subtotal = 0;
-
 			foreach ($order->get_items() as $item_id => $item) {
 				$line_total = $item->get_total();
 				$line_total_excl_tax = $line_total / (1 + ($tax_rate / 100));
 				$custom_subtotal += $line_total_excl_tax;
 			}
 
+			$order_total = $order->get_total();
 			?>
+
 			<tr>
-				<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
+				<th class="td" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
 					<?php esc_html_e('Subtotal', 'woocommerce'); ?>
 				</th>
 				<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
@@ -94,7 +95,7 @@ $tax_rate = intval($tax_percent->tax_rate);
 			</tr>
 
 			<tr>
-				<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>;">
+				<th class="td" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>;">
 					<?php echo esc_html($tax_rate_label); ?>
 				</th>
 				<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
@@ -102,24 +103,15 @@ $tax_rate = intval($tax_percent->tax_rate);
 				</td>
 			</tr>
 
-			<?php
-			$item_totals = $order->get_order_item_totals();
-			if ($item_totals) {
-				foreach ($item_totals as $key => $total) {
-					if (strpos(strtolower($total['label']), 'subtotal') !== false) {
-						continue;
-					}
-			?>
-					<tr>
-						<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php echo wp_kses_post($total['label']); ?></th>
-						<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php echo wp_kses_post($total['value']); ?></td>
-					</tr>
-			<?php
-				}
-			}
-			?>
+			<tr>
+				<th class="td" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>;">
+					<?php esc_html_e('Total', 'woocommerce'); ?>
+				</th>
+				<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+					<?php echo wc_price($order_total); ?>
+				</td>
+			</tr>
 		</tfoot>
-
 
 	</table>
 </div>
