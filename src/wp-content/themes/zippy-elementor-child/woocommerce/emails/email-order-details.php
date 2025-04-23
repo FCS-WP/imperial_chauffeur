@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Order details table shown in emails.
  *
@@ -15,23 +16,27 @@
  * @version 3.7.0
  */
 
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
 $text_align = is_rtl() ? 'right' : 'left';
+$tax_percent = get_tax_percent();
+$tax_rate_label = $tax_percent->tax_rate_name;
+$tax_rate = intval($tax_percent->tax_rate);
 
-//do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plain_text, $email ); ?>
+//do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plain_text, $email );
+?>
 <br>
 <h2>
 	<?php
-	if ( $sent_to_admin ) {
-		$before = '<a class="link" href="' . esc_url( $order->get_edit_order_url() ) . '">';
+	if ($sent_to_admin) {
+		$before = '<a class="link" href="' . esc_url($order->get_edit_order_url()) . '">';
 		$after  = '</a>';
 	} else {
 		$before = '';
 		$after  = '';
 	}
 	/* translators: %s: Order ID. */
-	echo wp_kses_post( $before . sprintf( __( '[Order #%s]', 'woocommerce' ) . $after . ' (<time datetime="%s">%s</time>)', $order->get_order_number(), $order->get_date_created()->format( 'c' ), wc_format_datetime( $order->get_date_created() ) ) );
+	echo wp_kses_post($before . sprintf(__('[Order #%s]', 'woocommerce') . $after . ' (<time datetime="%s">%s</time>)', $order->get_order_number(), $order->get_date_created()->format('c'), wc_format_datetime($order->get_date_created())));
 	?>
 </h2>
 
@@ -39,52 +44,84 @@ $text_align = is_rtl() ? 'right' : 'left';
 	<table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
 		<thead>
 			<tr>
-				<th class="td" scope="col" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
-				<th class="td" scope="col" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
-				<th class="td" scope="col" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
+				<th class="td" scope="col" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Product', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Quantity', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Price', 'woocommerce'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php
-			echo wc_get_email_order_items( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				$order,
-				array(
-					'show_sku'      => $sent_to_admin,
-					'show_image'    => false,
-					'image_size'    => array( 32, 32 ),
-					'plain_text'    => $plain_text,
-					'sent_to_admin' => $sent_to_admin,
-				)
-			);
+			foreach ($order->get_items() as $item_id => $item) :
+				$product_name = $item->get_name();
+				$product_quantity = $item->get_quantity();
+				$product_price_with_tax = $order->get_formatted_line_subtotal($item);
+
+				$price_excl_tax = wc_format_decimal($item->get_total() / (1 + ($tax_rate / 100)));
+				$product_price_excl_tax = wc_price($price_excl_tax);
+
 			?>
+				<tr>
+					<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+						<?php echo esc_html($product_name); ?>
+					</td>
+					<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+						<?php echo esc_html($product_quantity); ?>
+					</td>
+					<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+						<?php echo wp_kses_post($product_price_excl_tax); ?>
+					</td>
+				</tr>
+			<?php endforeach; ?>
 		</tbody>
 		<tfoot>
 			<?php
-			$item_totals = $order->get_order_item_totals();
+			$custom_subtotal = 0;
 
-			if ( $item_totals ) {
-				$i = 0;
-				foreach ( $item_totals as $total ) {
-					$i++;
-					?>
-					<tr>
-						<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr( $text_align ); ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo wp_kses_post( $total['label'] ); ?></th>
-						<td class="td" style="text-align:<?php echo esc_attr( $text_align ); ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo wp_kses_post( $total['value'] ); ?></td>
-					</tr>
-					<?php
-				}
+			foreach ($order->get_items() as $item_id => $item) {
+				$line_total = $item->get_total();
+				$line_total_excl_tax = $line_total / (1 + ($tax_rate / 100));
+				$custom_subtotal += $line_total_excl_tax;
 			}
-			if ( $order->get_customer_note() ) {
-				?>
-				<tr>
-					<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php esc_html_e( 'Note:', 'woocommerce' ); ?></th>
-					<td class="td" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php echo wp_kses( nl2br( wptexturize( $order->get_customer_note() ) ), array() ); ?></td>
-				</tr>
-				<?php
+
+			?>
+			<tr>
+				<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
+					<?php esc_html_e('Subtotal', 'woocommerce'); ?>
+				</th>
+				<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
+					<?php echo wc_price($custom_subtotal); ?>
+				</td>
+			</tr>
+
+			<tr>
+				<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>;">
+					<?php echo esc_html($tax_rate_label); ?>
+				</th>
+				<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+					<?php echo esc_html($tax_rate) . '%'; ?>
+				</td>
+			</tr>
+
+			<?php
+			$item_totals = $order->get_order_item_totals();
+			if ($item_totals) {
+				foreach ($item_totals as $key => $total) {
+					if (strpos(strtolower($total['label']), 'subtotal') !== false) {
+						continue;
+					}
+			?>
+					<tr>
+						<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php echo wp_kses_post($total['label']); ?></th>
+						<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php echo wp_kses_post($total['value']); ?></td>
+					</tr>
+			<?php
+				}
 			}
 			?>
 		</tfoot>
+
+
 	</table>
 </div>
 
-<?php do_action( 'woocommerce_email_after_order_table', $order, $sent_to_admin, $plain_text, $email ); ?>
+<?php do_action('woocommerce_email_after_order_table', $order, $sent_to_admin, $plain_text, $email); ?>

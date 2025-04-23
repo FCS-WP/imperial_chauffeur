@@ -53,3 +53,19 @@ function custom_hide_order_again_button_detail($button_html) {
 
     return $button_html;
 }
+function get_tax_percent()
+{
+  $all_tax_rates = [];
+  $tax_classes = WC_Tax::get_tax_classes();
+  if (!in_array('', $tax_classes)) {
+    array_unshift($tax_classes, '');
+  }
+
+  foreach ($tax_classes as $tax_class) {
+    $taxes = WC_Tax::get_rates_for_tax_class($tax_class);
+    $all_tax_rates = array_merge($all_tax_rates, $taxes);
+  }
+
+  if (empty($all_tax_rates)) return;
+  return $all_tax_rates[0];
+}
