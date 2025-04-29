@@ -44,7 +44,11 @@ $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
 			$qty_display = esc_html($qty);
 		}
 
-		echo apply_filters('woocommerce_order_item_quantity_html', ' <strong class="product-quantity">' . sprintf('&times;&nbsp;%s', $qty_display) . '</strong>', $item); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		if($service_type != "Hourly/Disposal"){
+			echo apply_filters('woocommerce_order_item_quantity_html', ' <strong class="product-quantity">' . sprintf('&times;&nbsp;%s', $qty_display) . '</strong>', $item); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		
 
 		do_action('woocommerce_order_item_meta_start', $item_id, $item, $order, false);
 
