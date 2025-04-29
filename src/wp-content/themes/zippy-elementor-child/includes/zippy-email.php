@@ -1,5 +1,20 @@
 <?php
 
+function render_email_template($template_name, $data = array()) {
+  ob_start();
+
+  $template_path = get_template_directory() . '-child' . '/site-structure/blocks/mail/' . $template_name . '.php';
+
+  if (file_exists($template_path)) {
+    extract($data);
+    include $template_path;
+  }
+
+  return ob_get_clean();
+}
+
+
+
 function remove_processing_status($statuses)
 {
   if (isset($statuses['wc-processing'])) {
@@ -126,40 +141,37 @@ add_action('woocommerce_process_shop_order_meta', 'completed_email_woocommerce_o
 add_filter('woocommerce_email_enabled_customer_completed_order', '__return_false');
 
 
-function completed_email_woocommerce_order_action_execute($post_id)
+function completed_email_woocommerce_order_action_execute($order_id)
 {
   if (filter_input(INPUT_POST, 'wc_order_action') !== 'send_completed_order') {
     return;
   }
 
-  $order = wc_get_order($post_id);
+  $order = wc_get_order($order_id);
 
-  $user_name = !empty($order->get_user()->display_name) ? $order->get_user()->display_name : $order->get_formatted_billing_full_name();
+  $user = $order->get_user();
 
-  $user_email = !empty($order->get_user()->user_email) ? $order->get_user()->user_email : $order->get_billing_email();
+  $user_name = !empty($user->display_name) ? $user->display_name : $order->get_formatted_billing_full_name();
 
+  $user_email = !empty($user->user_email) ? $user->user_email : $order->get_billing_email();
+  
   $headers = [
     'Content-Type: text/html; charset=UTF-8',
     'From: Imperial <impls@singnet.com.sg>'
   ];
 
-  $subject = 'Thank you for your order. Your payment has been received  – Imperial Chauffeur Services Pte. Ltd';
+  $subject = "Thank you for your order. Your payment has been received  – Imperial Chauffeur Services Pte. Ltd";
 
-  $message = "<p>Hi " . $user_name .  "</p>";
+  $data = [
+    "user_name" => $user_name,
+    "order_id" => $order_id,
+  ];
 
-  $message .= "<p>Your payment has been received and we will send the driver details to you one day before the booking.</p>";
-  $message .= "<p>If you have any queries, kindly contact us.</p>";
+  $body = render_email_template('complete-email', $data);
 
-  $message .= "<br><h3>Preferred Contact Method:</h3>";
-  $message .= "<p>OFFICE TELEPHONE +65 6734 0428 (24Hours)</p>";
-  $message .= "<p>EMAIL: impls@singnet.com.sg</p>";
+  $mail = wp_mail($user_email, $subject, $body, $headers);
 
-  $message .= "<p>Best regards,</p>";
-  $message .= "<p>Imperial Chauffeur Services Pte. Ltd</p>";
-  $message .= "<p>Email: impls@singnet.com.sg</p>";
-  $message .= "<p>Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
-
-  wp_mail($user_email, $subject, $message, $headers);
-
-  $order->add_order_note(__('Sent completed email to customer', 'send-confirmation-email'));
+  if($mail){
+    $order->add_order_note(__('Sent completed email to customer', 'send-confirmation-email'));
+  }
 }

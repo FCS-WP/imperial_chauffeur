@@ -29,9 +29,13 @@ if (! $order) {
 }
 
 $order_items        = $order->get_items(apply_filters('woocommerce_purchase_order_item_types', 'line_item'));
+
+$order_quantity = 0;
+
 $show_purchase_note = $order->has_status(apply_filters('woocommerce_purchase_note_order_statuses', array('completed', 'processing')));
 // $downloads          = $order->get_downloadable_items();
 $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
+$service_type = get_post_meta($order_id, 'service_type', true);
 // We make sure the order belongs to the user. This will also be true if the user is a guest, and the order belongs to a guest (userID === 0).
 $show_customer_details = $order->get_user_id() === get_current_user_id();
 $order_date = $order->get_date_created();
@@ -67,6 +71,7 @@ $order_date = $order->get_date_created();
 
 			foreach ($order_items as $item_id => $item) {
 				$product = $item->get_product();
+				$order_quantity = $item->get_quantity();
 				wc_get_template(
 					'order/order-details-item.php',
 					array(
@@ -76,6 +81,7 @@ $order_date = $order->get_date_created();
 						'show_purchase_note' => $show_purchase_note,
 						'purchase_note'      => $product ? $product->get_purchase_note() : '',
 						'product'            => $product,
+						'service_type'       => $service_type,
 					)
 				);
 			}
@@ -102,7 +108,6 @@ $order_date = $order->get_date_created();
 if (empty($is_monthly_payment_order)) :
 ?>
 	<div class="woocommerce-order-custom-fields">
-		<h2><?php esc_html_e('Booking Information', 'woocommerce'); ?></h2>
 		<?php
 		$custom_fields = array(
 			'service_type'       => __('Service Type', 'woocommerce'),
@@ -115,8 +120,9 @@ if (empty($is_monthly_payment_order)) :
 			'pick_up_time'       => __('Pick Up Time', 'woocommerce'),
 			'pick_up_location'   => __('Pick Up Location', 'woocommerce'),
 			'drop_off_location'  => __('Drop Off Location', 'woocommerce'),
+			'staff_name'  			=> __('Staff Name', 'woocommerce'),
 		);
-
+		
 		$order_id = $order->get_id();
 		$is_editing = isset($_GET['edit_order']) && $_GET['edit_order'] == $order_id && current_user_can('edit_shop_orders');
 
@@ -164,6 +170,9 @@ if (empty($is_monthly_payment_order)) :
 
 					echo '<p><strong>' . esc_html($label) . ':</strong> ' . esc_html($value) . '</p>';
 				}
+			}
+			if($service_type == "Hourly/Disposal"){
+				echo "<p><strong>Duration: </strong> $order_quantity Hours</p>";
 			}
 			echo '</div>';
 			if (current_user_can('edit_shop_orders')) {
