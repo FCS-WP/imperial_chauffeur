@@ -6,15 +6,14 @@ function disable_password_reset()
 }
 
 add_filter('allow_password_reset', 'disable_password_reset');
-
-
+  
 add_action('woocommerce_order_list_table_restrict_manage_orders', 'show_is_first_order_checkbox', 20);
 function show_is_first_order_checkbox()
 {
   $selected = isset($_GET['metadata']) ? esc_attr($_GET['metadata']) : '';
   $options  = array(
     ''              => __('By order type', 'woocommerce'),
-    '0'  => __('Visitor orders', 'woocommerce'),
+    '0'  => __('Visitor Orders', 'woocommerce'),
     '1'  => __('Member Orders', 'woocommerce')
   );
 
@@ -34,7 +33,6 @@ function filter_woocommerce_orders_in_the_table($query_args)
       'value' => intval($_GET['metadata']),
       'compare' => 'AND'
     );
-
     $query_args['meta_query'] = $meta_query;
   }
   return $query_args;

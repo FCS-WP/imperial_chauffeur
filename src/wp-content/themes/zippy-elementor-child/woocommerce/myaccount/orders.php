@@ -1,6 +1,9 @@
 <?php
 defined('ABSPATH') || exit;
 
+$current_orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'date_created';
+$current_order   = isset($_GET['order']) ? strtolower(sanitize_text_field($_GET['order'])) : 'desc';
+
 do_action('woocommerce_before_account_orders', $has_orders); ?>
 
 <?php if ($has_orders) : ?>
@@ -8,12 +11,21 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 	<table class="woocommerce-orders-table shop_table shop_table_responsive my_account_orders account-orders-table">
 		<thead>
 			<tr>
-				<th><?php esc_html_e('Order', 'woocommerce'); ?></th>
-				<th><?php esc_html_e('Date', 'woocommerce'); ?></th>
+				<th>
+					<?php echo build_sort_link(__('Order Number', 'woocommerce'), 'id', $current_orderby, $current_order); ?>
+				</th>
+				<th><?php esc_html_e('Staff Name', 'woocommerce'); ?></th>
+				<th>
+					<?php echo build_sort_link(__('Booking Date', 'woocommerce'), 'date_created', $current_orderby, $current_order); ?>
+				</th>
+				<th><?php esc_html_e('Type of service', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Status', 'woocommerce'); ?></th>
-				<th><?php esc_html_e('Vehicle', 'woocommerce'); ?></th>
-				<th><?php esc_html_e('Total', 'woocommerce'); ?></th>
-				<th></th>
+				<<<<<<< HEAD
+					<th><?php esc_html_e('Vehicle', 'woocommerce'); ?></th>
+					<th><?php esc_html_e('Total', 'woocommerce'); ?></th>
+					=======
+					>>>>>>> master
+					<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -31,22 +43,25 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 				}
 			?>
 				<tr class="woocommerce-orders-table__row order">
-					<td data-title="<?php esc_attr_e('Order', 'woocommerce'); ?>">
+					<td data-title="<?php esc_attr_e('Order Number', 'woocommerce'); ?>">
 						<a href="<?php echo esc_url($order->get_view_order_url()); ?>">
 							<?php echo esc_html(_x('#', 'hash before order number', 'woocommerce') . $order->get_order_number()); ?>
 						</a>
 					</td>
-					<td data-title="<?php esc_attr_e('Date', 'woocommerce'); ?>">
+					<td>
+						<?php echo get_post_meta($order->get_order_number(), "staff_name", true) ?>
+					</td>
+					<td data-title="<?php esc_attr_e('Date & time of booking', 'woocommerce'); ?>">
 						<time datetime="<?php echo esc_attr($order->get_date_created()->date('c')); ?>">
 							<?php echo esc_html(wc_format_datetime($order->get_date_created())); ?>
 						</time>
 					</td>
+					<td><?php echo get_post_meta($order->get_order_number(), "service_type", true) ?></td>
 					<td class="order-status <?php echo sanitize_html_class($order->get_status()); ?>" data-title="<?php esc_attr_e('Status', 'woocommerce'); ?>">
 						<span><?php echo esc_html(wc_get_order_status_name($order->get_status())); ?></span>
 					</td>
 					<td data-title="<?php esc_attr_e('Vehicle', 'woocommerce'); ?>">
 						<?php echo esc_html($product_name); ?>
-						
 					</td>
 					<td data-title="<?php esc_attr_e('Total', 'woocommerce'); ?>">
 						<?php if ($order->get_meta('is_monthly_payment_order')) :

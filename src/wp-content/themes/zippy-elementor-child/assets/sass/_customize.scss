@@ -143,6 +143,10 @@
       }
       tbody {
         tr {
+          margin-bottom: 15px;
+          @include tablet {
+            margin-bottom: 0px;
+          }
           td {
             padding: 15px;
             border: none;
@@ -296,5 +300,28 @@ mark {
         }
       }
     }
+  }
+}
+
+.account-content {
+  p {
+    input,
+    label,
+    em {
+      font-size: 13px;
+
+      @include tablet {
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+.woocommerce-account main {
+  margin-top: 100px;
+  margin-bottom: 50px;
+  @include tablet {
+    margin-top: 170px;
+    margin-bottom: 100px;
   }
 }

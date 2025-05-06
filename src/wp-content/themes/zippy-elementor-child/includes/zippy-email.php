@@ -1,5 +1,20 @@
 <?php
 
+function render_email_template($template_name, $data = array()) {
+  ob_start();
+
+  $template_path = get_template_directory() . '-child' . '/site-structure/blocks/mail/' . $template_name . '.php';
+
+  if (file_exists($template_path)) {
+    extract($data);
+    include $template_path;
+  }
+
+  return ob_get_clean();
+}
+
+
+
 function remove_processing_status($statuses)
 {
   if (isset($statuses['wc-processing'])) {
@@ -115,6 +130,7 @@ function confirm_email_woocommerce_order_action_execute($post_id)
   $message .= "<p>Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
 
   wp_mail($user_email, $subject, $message, $headers);
+
   if ($order->has_status('on-hold')) {
     $order->update_status('confirmed');
   }
@@ -122,33 +138,38 @@ function confirm_email_woocommerce_order_action_execute($post_id)
 }
 
 add_action('woocommerce_process_shop_order_meta', 'completed_email_woocommerce_order_action_execute', 50, 2);
+add_filter('woocommerce_email_enabled_customer_completed_order', '__return_false');
 
 
-function completed_email_woocommerce_order_action_execute($post_id)
+function completed_email_woocommerce_order_action_execute($order_id)
 {
   if (filter_input(INPUT_POST, 'wc_order_action') !== 'send_completed_order') {
     return;
   }
 
-  $order = wc_get_order($post_id);
+  $order = wc_get_order($order_id);
 
-  $order_id = $order->get_id();
+  $user = $order->get_user();
 
-  // Make sure the order status is completed (optional check)
-  if ($order->get_status() !== 'completed') {
-    $order->update_status('completed', __('Manually marked as completed for email trigger', 'your-textdomain'));
+  $user_email = !empty($user->user_email) ? $user->user_email : $order->get_billing_email();
+  
+  $headers = [
+    'Content-Type: text/html; charset=UTF-8',
+    'From: Imperial <impls@singnet.com.sg>'
+  ];
+
+  $subject = "Thank you for your order. Your payment has been received  – Imperial Chauffeur Services Pte. Ltd";
+
+  $data = [
+    "user" => $user,
+    "order" => $order,
+  ];
+
+  $body = render_email_template('complete-email', $data);
+
+  $mail = wp_mail($user_email, $subject, $body, $headers);
+
+  if($mail){
+    $order->add_order_note(__('Sent completed email to customer', 'send-confirmation-email'));
   }
-
-  add_filter('woocommerce_email_enabled_customer_completed_order', '__return_true');
-
-  // Load the WooCommerce email class
-  $mailer = WC()->mailer();
-  $mails = $mailer->get_emails();
-
-  if (!empty($mails['WC_Email_Customer_Completed_Order'])) {
-    $mails['WC_Email_Customer_Completed_Order']->trigger($order_id, $order);
-  }
-  $order->add_order_note(__('Sent completed email to customer', 'send-confirmation-email'));
 }
-
-add_filter('woocommerce_email_enabled_customer_completed_order', '__return_false');

@@ -37,7 +37,16 @@ function disable_completed_email_for_non_monthly_orders( $enabled, $order ) {
 
 add_filter( 'woocommerce_account_menu_items', 'remove_my_account_downloads_tab', 99 );
 function remove_my_account_downloads_tab( $items ) {
-    unset( $items['downloads'] );
+    $links = [
+        "downloads",
+        "edit-address",
+        "edit-account",
+    ];
+
+    foreach ($links as $link) {
+        unset( $items[$link] );        
+    }
+
     return $items;
 }
 
@@ -68,4 +77,48 @@ function get_tax_percent()
 
   if (empty($all_tax_rates)) return;
   return $all_tax_rates[0];
+}
+
+
+add_filter('woocommerce_my_account_my_orders_query', function($args) {
+    $orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'date_created';
+    $order   = isset($_GET['order']) && strtolower($_GET['order']) === 'asc' ? 'ASC' : 'DESC';
+
+    switch ($orderby) {
+        case 'id':
+            $args['orderby'] = 'ID';
+            break;
+        case 'date_created':
+            $args['orderby'] = 'date';
+            break;
+        default:
+            $args['orderby'] = 'date';
+    }
+
+    $args['order'] = $order;
+
+    return $args;
+});
+
+
+function build_sort_link($label, $orderby_field, $current_orderby, $current_order) {
+    $base_url = wc_get_endpoint_url('orders');
+    $params = $_GET;
+
+    $is_active = ($orderby_field === $current_orderby);
+    $new_order = ($is_active && $current_order === 'asc') ? 'desc' : 'asc';
+    $arrow = '';
+
+    if ($is_active) {
+        $arrow = $current_order === 'asc' ? ' ▲' : ' ▼'; // Arrow
+    } else {
+        $arrow = ' ⇅';
+    }
+
+    $params['orderby'] = $orderby_field;
+    $params['order'] = $new_order;
+
+    $url = esc_url(add_query_arg($params, $base_url));
+
+    return "<a href='{$url}'>{$label}<span>{$arrow}</span></a>";
 }
