@@ -151,8 +151,6 @@ function completed_email_woocommerce_order_action_execute($order_id)
 
   $user = $order->get_user();
 
-  $user_name = !empty($user->display_name) ? $user->display_name : $order->get_formatted_billing_full_name();
-
   $user_email = !empty($user->user_email) ? $user->user_email : $order->get_billing_email();
   
   $headers = [
@@ -163,8 +161,8 @@ function completed_email_woocommerce_order_action_execute($order_id)
   $subject = "Thank you for your order. Your payment has been received  – Imperial Chauffeur Services Pte. Ltd";
 
   $data = [
-    "user_name" => $user_name,
-    "order_id" => $order_id,
+    "user" => $user,
+    "order" => $order,
   ];
 
   $body = render_email_template('complete-email', $data);
