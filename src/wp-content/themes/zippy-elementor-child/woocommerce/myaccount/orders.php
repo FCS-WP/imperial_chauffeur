@@ -11,6 +11,7 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 				<th><?php esc_html_e('Order', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Date', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Status', 'woocommerce'); ?></th>
+				<th><?php esc_html_e('Vehicle', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Total', 'woocommerce'); ?></th>
 				<th></th>
 			</tr>
@@ -19,6 +20,15 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 			<?php foreach ($customer_orders->orders as $customer_order) :
 				$order = wc_get_order($customer_order);
 				$item_count = $order->get_item_count() - $order->get_item_count_refunded();
+				foreach ($order->get_items() as $item) {
+
+					$product = $item->get_product();
+
+					if ($product) {
+						$product_ids = $product->get_id();
+						$product_name = $product->get_name();
+					}
+				}
 			?>
 				<tr class="woocommerce-orders-table__row order">
 					<td data-title="<?php esc_attr_e('Order', 'woocommerce'); ?>">
@@ -33,6 +43,10 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 					</td>
 					<td class="order-status <?php echo sanitize_html_class($order->get_status()); ?>" data-title="<?php esc_attr_e('Status', 'woocommerce'); ?>">
 						<span><?php echo esc_html(wc_get_order_status_name($order->get_status())); ?></span>
+					</td>
+					<td data-title="<?php esc_attr_e('Vehicle', 'woocommerce'); ?>">
+						<?php echo esc_html($product_name); ?>
+						
 					</td>
 					<td data-title="<?php esc_attr_e('Total', 'woocommerce'); ?>">
 						<?php if ($order->get_meta('is_monthly_payment_order')) :
