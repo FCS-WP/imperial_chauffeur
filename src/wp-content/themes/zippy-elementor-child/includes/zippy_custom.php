@@ -124,7 +124,7 @@ function build_sort_link($label, $orderby_field, $current_orderby, $current_orde
 }
 
 function add_history_menu_item( $items ) {
-    $items['history'] = 'History';
+    $items['history'] = 'Edit History';
     return $items;
 }
 add_filter( 'woocommerce_account_menu_items', 'add_history_menu_item' );
@@ -145,7 +145,7 @@ function display_history_content() {
         'customer' => get_current_user_id(),
     ) );
 
-    echo '<h2>Order History</h2>';
+    echo '<h2>Edit History</h2>';
 
     if ( ! empty( $customer_orders ) ) {
         echo '<table class="shop_table shop_table_responsive my_account_orders">';
