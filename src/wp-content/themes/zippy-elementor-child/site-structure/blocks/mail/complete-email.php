@@ -42,7 +42,7 @@
         </tr>
 </table>
 
-<h3>Enquiry Details:</h3>
+<h3>Order Information:</h3>
 <ul>
     <li>Service Type: <?php echo $service_type ?></li>
     <?php  if ($service_type == "Hourly/Disposal") { ?>
