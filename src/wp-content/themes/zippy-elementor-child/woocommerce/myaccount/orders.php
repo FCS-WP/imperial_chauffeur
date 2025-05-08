@@ -20,12 +20,8 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 				</th>
 				<th><?php esc_html_e('Type of service', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Status', 'woocommerce'); ?></th>
-				<<<<<<< HEAD
-					<th><?php esc_html_e('Vehicle', 'woocommerce'); ?></th>
-					<th><?php esc_html_e('Total', 'woocommerce'); ?></th>
-					=======
-					>>>>>>> master
-					<th></th>
+				<th><?php esc_html_e('Type of vehicle', 'woocommerce'); ?></th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -62,13 +58,6 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 					</td>
 					<td data-title="<?php esc_attr_e('Vehicle', 'woocommerce'); ?>">
 						<?php echo esc_html($product_name); ?>
-					</td>
-					<td data-title="<?php esc_attr_e('Total', 'woocommerce'); ?>">
-						<?php if ($order->get_meta('is_monthly_payment_order')) :
-							echo wp_kses_post(sprintf(_n('%1$s for %2$s item', '%1$s for %2$s items', $item_count, 'woocommerce'), $order->get_formatted_order_total(), $item_count));
-						else :
-							echo '';
-						endif; ?>
 					</td>
 					<td class="order-actions">
 						<?php
