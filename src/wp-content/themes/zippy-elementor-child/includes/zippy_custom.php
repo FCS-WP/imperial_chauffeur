@@ -151,14 +151,12 @@ function display_history_content() {
         'customer' => get_current_user_id(),
     ) );
 
-    echo '<h2>Edit History</h2>';
-
     if ( ! empty( $customer_orders ) ) {
-        echo '<table class="shop_table shop_table_responsive my_account_orders">';
+        echo '<table class="shop_table shop_table_responsive my_account_orders woocommerce-orders-table">';
         echo '<thead>';
         echo '<tr>';
         echo '<th class="order-number">Order Number</th>';
-        echo '<th class="order-actions">Action</th>';
+        echo '<th class="order-actions"></th>';
         echo '</tr>';
         echo '</thead>';
         echo '<tbody>';
@@ -203,6 +201,7 @@ function display_order_history_content() {
 
     $order_notes = wc_get_order_notes( array(
         'order_id' => $order->get_id(),
+        'type'     => 'customer',
         'order_by' => 'date_created',
         'order'    => 'DESC',
     ) );
@@ -210,7 +209,7 @@ function display_order_history_content() {
     echo '<h2>Order #' . $order->get_order_number() . '</h2>';
 
     if ( ! empty( $order_notes ) ) {
-        echo '<table class="shop_table shop_table_responsive order_notes_table">';
+        echo '<table class="shop_table shop_table_responsive order_notes_table woocommerce-orders-table">';
         echo '<thead>';
         echo '<tr>';
         echo '<th class="note-action">Action</th>';
@@ -233,3 +232,23 @@ function display_order_history_content() {
     }
 }
 add_action( 'woocommerce_account_order-history_endpoint', 'display_order_history_content' );
+
+// Custom my account page title
+add_filter( 'the_title', 'custom_my_account_page_title', 10, 2 );
+function custom_my_account_page_title( $title, $id ) {
+    if ( is_account_page() && is_user_logged_in() ) {
+        global $wp_query;
+
+        if ( isset( $wp_query->query_vars['history'] ) ) {
+            if ( get_the_ID() === wc_get_page_id( 'myaccount' ) ) {
+                $title = 'History';
+            }
+        }
+        if ( isset( $wp_query->query_vars['order-history'] ) ) {
+            if ( get_the_ID() === wc_get_page_id( 'myaccount' ) ) {
+                $title = 'History Detail';
+            }
+        }
+    }
+    return $title;
+}

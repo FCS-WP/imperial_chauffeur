@@ -100,7 +100,7 @@ $order_date = $order->get_date_created();
 			<?php endif; ?>
 		</tfoot>
 	</table>
-	
+
 
 	<?php do_action('woocommerce_order_details_after_order_table', $order); ?>
 </section>
@@ -122,14 +122,29 @@ if (empty($is_monthly_payment_order)) :
 			'drop_off_location'  => __('Drop Off Location', 'woocommerce'),
 			'staff_name'  			=> __('Staff Name', 'woocommerce'),
 		);
-		
+
 		$order_id = $order->get_id();
-		$is_editing = isset($_GET['edit_order']) && $_GET['edit_order'] == $order_id && current_user_can('edit_shop_orders');
+		$is_editing = isset($_GET['edit_order']) && $_GET['edit_order'] == $order_id;
 
 		if ($is_editing && $_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('save_custom_fields_' . $order_id)) {
+			$changes = [];
+
 			foreach ($custom_fields as $key => $label) {
 				if (isset($_POST[$key])) {
-					update_post_meta($order_id, $key, sanitize_text_field($_POST[$key]));
+					$old_value = get_post_meta($order_id, $key, true);
+					$new_value = sanitize_text_field($_POST[$key]);
+
+					if ($old_value !== $new_value) {
+						update_post_meta($order_id, $key, $new_value);
+						$changes[] = "{$label}: \"{$old_value}\" → \"{$new_value}\"";
+					}
+				}
+			}
+			if (!empty($changes)) {
+				$order = wc_get_order($order_id);
+				if ($order) {
+					$note_content = "Custom fields changed:\n" . implode("\n", $changes);
+					$order->add_order_note($note_content, true); // true = cusstomer
 				}
 			}
 
@@ -137,6 +152,7 @@ if (empty($is_monthly_payment_order)) :
 			echo '<script>window.location.href = "' . esc_url($redirect_url) . '";</script>';
 			exit;
 		}
+
 
 		if ($is_editing) {
 			echo '<form method="post">';
@@ -171,13 +187,12 @@ if (empty($is_monthly_payment_order)) :
 					echo '<p><strong>' . esc_html($label) . ':</strong> ' . esc_html($value) . '</p>';
 				}
 			}
-			if($service_type == "Hourly/Disposal"){
+			if ($service_type == "Hourly/Disposal") {
 				echo "<p><strong>Duration: </strong> $order_quantity Hours</p>";
 			}
 			echo '</div>';
-			if (current_user_can('edit_shop_orders')) {
-				echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
-			}
+
+			echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
 		}
 		?>
 	</div>
