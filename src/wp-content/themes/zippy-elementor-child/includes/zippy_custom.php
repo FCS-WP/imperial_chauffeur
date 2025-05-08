@@ -124,7 +124,13 @@ function build_sort_link($label, $orderby_field, $current_orderby, $current_orde
 }
 
 function add_history_menu_item( $items ) {
-    $items['history'] = 'Edit History';
+    $items = array();
+
+    $items['dashboard'] = 'Dashboard';
+    $items['orders'] = 'Orders';
+    $items['edit-history'] = 'Edit History';
+    $items['customer-logout'] = 'Log out';
+
     return $items;
 }
 add_filter( 'woocommerce_account_menu_items', 'add_history_menu_item' );
