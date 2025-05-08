@@ -44,9 +44,9 @@ $tax_rate = intval($tax_percent->tax_rate);
 	<table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
 		<thead>
 			<tr>
-				<th class="td" scope="col" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Product', 'woocommerce'); ?></th>
-				<th class="td" scope="col" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Quantity', 'woocommerce'); ?></th>
-				<th class="td" scope="col" style="text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Price', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Product', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Quantity', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Price', 'woocommerce'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -61,13 +61,13 @@ $tax_rate = intval($tax_percent->tax_rate);
 
 			?>
 				<tr>
-					<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+					<td class="td" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
 						<?php echo esc_html($product_name); ?>
 					</td>
-					<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+					<td class="td" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
 						<?php echo esc_html($product_quantity); ?>
 					</td>
-					<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+					<td class="td" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
 						<?php echo wp_kses_post($product_price_excl_tax); ?>
 					</td>
 				</tr>
@@ -86,28 +86,28 @@ $tax_rate = intval($tax_percent->tax_rate);
 			?>
 
 			<tr>
-				<th class="td" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
+				<th class="td" colspan="2" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
 					<?php esc_html_e('Subtotal', 'woocommerce'); ?>
 				</th>
-				<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
+				<td class="td" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
 					<?php echo wc_price($custom_subtotal); ?>
 				</td>
 			</tr>
 
 			<tr>
-				<th class="td" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>;">
+				<th class="td" colspan="2" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
 					<?php echo esc_html($tax_rate_label); ?>
 				</th>
-				<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+				<td class="td" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
 					<?php echo esc_html($tax_rate) . '%'; ?>
 				</td>
 			</tr>
 
 			<tr>
-				<th class="td" colspan="2" style="text-align:<?php echo esc_attr($text_align); ?>;">
+				<th class="td" colspan="2" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
 					<?php esc_html_e('Total', 'woocommerce'); ?>
 				</th>
-				<td class="td" style="text-align:<?php echo esc_attr($text_align); ?>;">
+				<td class="td" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
 					<?php echo wc_price($order_total); ?>
 				</td>
 			</tr>
