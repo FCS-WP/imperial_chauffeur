@@ -151,8 +151,8 @@ function completed_email_woocommerce_order_action_execute($order_id)
 
   $user = $order->get_user();
 
-  $user_email = !empty($user->user_email) ? $user->user_email : $order->get_billing_email();
-  
+  $user_email = $order->get_billing_email();
+
   $headers = [
     'Content-Type: text/html; charset=UTF-8',
     'From: Imperial <impls@singnet.com.sg>'

@@ -29,7 +29,7 @@ function disable_completed_email_for_non_monthly_orders($enabled, $order)
     if (is_a($order, 'WC_Order')) {
         $is_monthly = $order->get_meta('is_monthly_payment_order');
 
-        if (! $is_monthly) {
+        if (!$is_monthly) {
             return false;
         }
     }
@@ -155,42 +155,50 @@ add_action('init', 'add_history_endpoint');
 // history content
 function display_history_content()
 {
-    $customer_orders = wc_get_orders(array(
+    $orders = wc_get_orders(array(
         'customer' => get_current_user_id(),
     ));
 
+    $filtered_orders = array();
+    foreach ($orders as $order) {
+        $order_notes = wc_get_order_notes(array(
+            'order_id' => $order->get_id(),
+            'type'     => 'customer',
+            'orderby'  => 'date_created',
+            'order'    => 'DESC',
+            'limit'    => 1
+        ));
+        if (!empty($order_notes)) {
+            $last_note = $order_notes[0];
+            $filtered_orders[] = array(
+                'order' => $order,
+                'note_time' => $last_note->date_created,
+            );
+        }
+    }
 
-    if (! empty($customer_orders)) {
+    if (!empty($filtered_orders)) {
         echo '<table class="shop_table shop_table_responsive my_account_orders woocommerce-orders-table">';
         echo '<thead>';
         echo '<tr>';
-        echo '<th class="order-number">Booking Number</th>';
-        echo '<th class="order-actions">Last Updated</th>';
+        echo '<th class="order-number">Order Number</th>';
+        echo '<th class="order-date">Last updated</th>';
         echo '<th class="order-actions"></th>';
         echo '</tr>';
         echo '</thead>';
         echo '<tbody>';
 
-        foreach ($customer_orders as $order) {
-            $notes = wc_get_order_notes([
-                'order_id' => $order->get_id(),
-                'type'     => 'customer',
-                'orderby'  => 'date_created',
-                'order'    => 'DESC',
-                'limit'    => 1
-            ]);
-            $last_note = !empty($notes) ? $notes[0] : null;
+        foreach ($filtered_orders as $entry) {
+            $order = $entry['order'];
+            $note_time = $entry['note_time'];
+            $time_format = $note_time->date('Y-m-d H:i:s');
             echo '<tr class="order">';
             echo '<td class="order-number" data-title="Order Number">';
             echo '<a href="' . esc_url(wc_get_endpoint_url('view-order', $order->get_id())) . '">#' . $order->get_order_number() . '</a>';
             echo '</td>';
-            if ($last_note) {
-                echo '<td class="history-last-updated" data-title="Last Updated">';
-                echo '<time datetime="' . esc_attr($last_note->date_created->date('Y-m-d H:i:s')) . '">' . esc_html(wc_format_datetime($last_note->date_created)) . '</time>';
-                echo '</td>';
-            } else {
-                echo '<td class="history-last-updated" data-title="Last Updated"></td>';
-            }
+            echo '<td class="order-note-time" data-title="Last Note">';
+            echo '<time datetime="' . esc_attr($time_format) . '">' . esc_html($time_format) . '</time>';
+            echo '</td>';
             echo '<td class="order-actions" data-title="Action">';
             echo '<a href="' . esc_url(wc_get_endpoint_url('order-history', $order->get_id())) . '" class="woocommerce-button button view">View</a>';
             echo '</td>';
@@ -212,7 +220,7 @@ function display_order_history_content()
 {
     global $wp_query;
 
-    if (! isset($wp_query->query_vars['order-history'])) {
+    if (!isset($wp_query->query_vars['order-history'])) {
         echo '<p>No order found!</p>';
         return;
     }
@@ -220,7 +228,7 @@ function display_order_history_content()
     $order_id = $wp_query->query_vars['order-history'];
     $order = wc_get_order($order_id);
 
-    if (! $order || $order->get_customer_id() != get_current_user_id()) {
+    if (!$order || $order->get_customer_id() != get_current_user_id()) {
         echo '<p>No order found!</p>';
         return;
     }
@@ -234,12 +242,12 @@ function display_order_history_content()
 
     echo '<h2>Order #' . $order->get_order_number() . '</h2>';
 
-    if (! empty($order_notes)) {
+    if (!empty($order_notes)) {
         echo '<table class="shop_table shop_table_responsive order_notes_table woocommerce-orders-table">';
         echo '<thead>';
         echo '<tr>';
         echo '<th class="note-action">Action</th>';
-        echo '<th class="note-time">Last Updated</th>';
+        echo '<th class="note-time">Last updated</th>';
         echo '</tr>';
         echo '</thead>';
         echo '<tbody>';
