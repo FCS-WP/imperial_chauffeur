@@ -14,20 +14,20 @@ function shin_scripts()
 	// wp_enqueue_script('vanilla-scripts-js', THEME_URL . '-child' . '/assets/lib/vanilla-calendar.min.js', array('jquery'), $version, true);
 }
 
-add_filter( 'woocommerce_my_account_my_orders_actions', 'remove_pay_action', 10, 2 );
+add_filter('woocommerce_my_account_my_orders_actions', 'remove_pay_action', 10, 2);
 
-function remove_pay_action( $actions, $order ) {
-    unset( $actions['pay'] );
+function remove_pay_action($actions, $order) {
+    unset($actions['pay']);
     return $actions;
 }
 
-add_filter( 'woocommerce_email_enabled_customer_completed_order', 'disable_completed_email_for_non_monthly_orders', 10, 2 );
+add_filter('woocommerce_email_enabled_customer_completed_order', 'disable_completed_email_for_non_monthly_orders', 10, 2);
 
-function disable_completed_email_for_non_monthly_orders( $enabled, $order ) {
-    if ( is_a( $order, 'WC_Order' ) ) {
+function disable_completed_email_for_non_monthly_orders($enabled, $order) {
+    if (is_a($order, 'WC_Order')) {
         $is_monthly = $order->get_meta('is_monthly_payment_order');
 
-        if ( ! $is_monthly ) {
+        if (!$is_monthly) {
             return false;
         }
     }
@@ -35,8 +35,8 @@ function disable_completed_email_for_non_monthly_orders( $enabled, $order ) {
     return $enabled;
 }
 
-add_filter( 'woocommerce_account_menu_items', 'remove_my_account_downloads_tab', 99 );
-function remove_my_account_downloads_tab( $items ) {
+add_filter('woocommerce_account_menu_items', 'remove_my_account_downloads_tab', 99);
+function remove_my_account_downloads_tab($items) {
     $links = [
         "downloads",
         "edit-address",
@@ -44,7 +44,7 @@ function remove_my_account_downloads_tab( $items ) {
     ];
 
     foreach ($links as $link) {
-        unset( $items[$link] );        
+        unset($items[$link]);        
     }
 
     return $items;
@@ -123,7 +123,7 @@ function build_sort_link($label, $orderby_field, $current_orderby, $current_orde
     return "<a href='{$url}'>{$label}<span>{$arrow}</span></a>";
 }
 
-function add_history_menu_item( $items ) {
+function add_history_menu_item($items) {
     $items = array();
 
     $items['dashboard'] = 'Dashboard';
@@ -133,36 +133,36 @@ function add_history_menu_item( $items ) {
 
     return $items;
 }
-add_filter( 'woocommerce_account_menu_items', 'add_history_menu_item' );
+add_filter('woocommerce_account_menu_items', 'add_history_menu_item');
 
 
 
 // history endpoints
 function add_history_endpoint() {
-    add_rewrite_endpoint( 'history', EP_ROOT | EP_PAGES );
-    add_rewrite_endpoint( 'order-history', EP_ROOT | EP_PAGES );
+    add_rewrite_endpoint('history', EP_ROOT | EP_PAGES);
+    add_rewrite_endpoint('order-history', EP_ROOT | EP_PAGES);
 }
-add_action( 'init', 'add_history_endpoint' );
+add_action('init', 'add_history_endpoint');
 
 
 // history content
 function display_history_content() {
-    $orders = wc_get_orders( array(
+    $orders = wc_get_orders(array(
         'customer' => get_current_user_id(),
-    ) );
+));
 
     $filtered_orders = array();
     foreach ($orders as $order) {
-        $order_notes = wc_get_order_notes( array(
+        $order_notes = wc_get_order_notes(array(
             'order_id' => $order->get_id(),
             'type'     => 'customer',
-        ));
-        if (!empty( $order_notes)) {
+    ));
+        if (!empty($order_notes)) {
             $filtered_orders[] = $order;
         }
     }
 
-    if ( ! empty( $filtered_orders ) ) {
+    if (!empty($filtered_orders)) {
         echo '<table class="shop_table shop_table_responsive my_account_orders woocommerce-orders-table">';
         echo '<thead>';
         echo '<tr>';
@@ -172,13 +172,13 @@ function display_history_content() {
         echo '</thead>';
         echo '<tbody>';
 
-        foreach ( $filtered_orders as $order ) {
+        foreach ($filtered_orders as $order){
             echo '<tr class="order">';
             echo '<td class="order-number" data-title="Order Number">';
-            echo '<a href="' . esc_url( wc_get_endpoint_url( 'view-order', $order->get_id() ) ) . '">#' . $order->get_order_number() . '</a>';
+            echo '<a href="' . esc_url(wc_get_endpoint_url('view-order', $order->get_id())) . '">#' . $order->get_order_number() . '</a>';
             echo '</td>';
             echo '<td class="order-actions" data-title="Action">';
-            echo '<a href="' . esc_url( wc_get_endpoint_url( 'order-history', $order->get_id() ) ) . '" class="woocommerce-button button view">View</a>';
+            echo '<a href="' . esc_url(wc_get_endpoint_url('order-history', $order->get_id())) . '" class="woocommerce-button button view">View</a>';
             echo '</td>';
             echo '</tr>';
         }
@@ -189,7 +189,7 @@ function display_history_content() {
         echo '<p>No order found!</p>';
     }
 }
-add_action( 'woocommerce_account_history_endpoint', 'display_history_content' );
+add_action('woocommerce_account_history_endpoint', 'display_history_content');
 
 
 
@@ -197,15 +197,15 @@ add_action( 'woocommerce_account_history_endpoint', 'display_history_content' );
 function display_order_history_content() {
     global $wp_query;
 
-    if ( ! isset( $wp_query->query_vars['order-history'] ) ) {
+    if (!isset($wp_query->query_vars['order-history'])) {
         echo '<p>No order found!</p>';
         return;
     }
 
     $order_id = $wp_query->query_vars['order-history'];
-    $order = wc_get_order( $order_id );
+    $order = wc_get_order($order_id);
 
-    if ( ! $order || $order->get_customer_id() != get_current_user_id() ) {
+    if (!$order || $order->get_customer_id() != get_current_user_id()) {
         echo '<p>No order found!</p>';
         return;
     }
@@ -219,7 +219,7 @@ function display_order_history_content() {
 
     echo '<h2>Order #' . $order->get_order_number() . '</h2>';
 
-    if ( ! empty( $order_notes ) ) {
+    if (!empty($order_notes)) {
         echo '<table class="shop_table shop_table_responsive order_notes_table woocommerce-orders-table">';
         echo '<thead>';
         echo '<tr>';
@@ -229,10 +229,10 @@ function display_order_history_content() {
         echo '</thead>';
         echo '<tbody>';
 
-        foreach ( $order_notes as $note ) {
+        foreach ($order_notes as $note) {
             echo '<tr>';
-            echo '<td class="note-action">' . esc_html( $note->content ) . '</td>';
-            echo '<td class="note-time">' . esc_html( $note->date_created->date( 'Y-m-d H:i:s' ) ) . '</td>';
+            echo '<td class="note-action">' . esc_html($note->content) . '</td>';
+            echo '<td class="note-time">' . esc_html($note->date_created->date('Y-m-d H:i:s')) . '</td>';
             echo '</tr>';
         }
 
@@ -242,21 +242,21 @@ function display_order_history_content() {
         echo '<p>This order have no history yet.</p>';
     }
 }
-add_action( 'woocommerce_account_order-history_endpoint', 'display_order_history_content' );
+add_action('woocommerce_account_order-history_endpoint', 'display_order_history_content');
 
 // Custom my account page title
-add_filter( 'the_title', 'custom_my_account_page_title', 10, 2 );
-function custom_my_account_page_title( $title, $id ) {
-    if ( is_account_page() && is_user_logged_in() ) {
+add_filter('the_title', 'custom_my_account_page_title', 10, 2);
+function custom_my_account_page_title($title, $id) {
+    if (is_account_page() && is_user_logged_in()) {
         global $wp_query;
 
-        if ( isset( $wp_query->query_vars['history'] ) ) {
-            if ( get_the_ID() === wc_get_page_id( 'myaccount' ) ) {
+        if (isset($wp_query->query_vars['history'])) {
+            if (get_the_ID() === wc_get_page_id('myaccount')) {
                 $title = 'History';
             }
         }
-        if ( isset( $wp_query->query_vars['order-history'] ) ) {
-            if ( get_the_ID() === wc_get_page_id( 'myaccount' ) ) {
+        if (isset($wp_query->query_vars['order-history'])) {
+            if (get_the_ID() === wc_get_page_id('myaccount')) {
                 $title = 'History Detail';
             }
         }
