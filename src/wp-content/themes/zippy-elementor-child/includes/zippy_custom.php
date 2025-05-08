@@ -176,7 +176,7 @@ function display_history_content()
             );
         }
     }
-
+    echo '<h2>Order History</h2>';
     if (!empty($filtered_orders)) {
         echo '<table class="shop_table shop_table_responsive my_account_orders woocommerce-orders-table">';
         echo '<thead>';
@@ -196,9 +196,7 @@ function display_history_content()
             echo '<td class="order-number" data-title="Order Number">';
             echo '<a href="' . esc_url(wc_get_endpoint_url('view-order', $order->get_id())) . '">#' . $order->get_order_number() . '</a>';
             echo '</td>';
-            echo '<td class="order-note-time" data-title="Last Note">';
-            echo '<time datetime="' . esc_attr($time_format) . '">' . esc_html($time_format) . '</time>';
-            echo '</td>';
+            echo '<td class="order-note-time" data-title="Last Note">' .  esc_html($time_format) . '</td>';
             echo '<td class="order-actions" data-title="Action">';
             echo '<a href="' . esc_url(wc_get_endpoint_url('order-history', $order->get_id())) . '" class="woocommerce-button button view">View</a>';
             echo '</td>';
@@ -240,10 +238,10 @@ function display_order_history_content()
         'order'    => 'DESC',
     ));
 
-    echo '<h2>Order #' . $order->get_order_number() . '</h2>';
+    echo '<h2>History for Order #' . $order->get_order_number() . '</h2>';
 
     if (!empty($order_notes)) {
-        echo '<table class="shop_table shop_table_responsive order_notes_table woocommerce-orders-table">';
+        echo '<table class="shop_table shop_table_responsive my_account_orders order_notes_table woocommerce-orders-table">';
         echo '<thead>';
         echo '<tr>';
         echo '<th class="note-action">Action</th>';
@@ -266,24 +264,3 @@ function display_order_history_content()
     }
 }
 add_action('woocommerce_account_order-history_endpoint', 'display_order_history_content');
-
-// Custom my account page title
-add_filter('the_title', 'custom_my_account_page_title', 10, 2);
-function custom_my_account_page_title($title, $id)
-{
-    if (is_account_page() && is_user_logged_in()) {
-        global $wp_query;
-
-        if (isset($wp_query->query_vars['history'])) {
-            if (get_the_ID() === wc_get_page_id('myaccount')) {
-                $title = 'History';
-            }
-        }
-        if (isset($wp_query->query_vars['order-history'])) {
-            if (get_the_ID() === wc_get_page_id('myaccount')) {
-                $title = 'History Detail';
-            }
-        }
-    }
-    return $title;
-}
