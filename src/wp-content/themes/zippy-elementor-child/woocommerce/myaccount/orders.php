@@ -20,13 +20,27 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 				</th>
 				<th><?php esc_html_e('Type of service', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Status', 'woocommerce'); ?></th>
-				<th></th>
+				<<<<<<< HEAD
+					<th><?php esc_html_e('Vehicle', 'woocommerce'); ?></th>
+					<th><?php esc_html_e('Total', 'woocommerce'); ?></th>
+					=======
+					>>>>>>> master
+					<th></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php foreach ($customer_orders->orders as $customer_order) :
 				$order = wc_get_order($customer_order);
 				$item_count = $order->get_item_count() - $order->get_item_count_refunded();
+				foreach ($order->get_items() as $item) {
+
+					$product = $item->get_product();
+
+					if ($product) {
+						$product_ids = $product->get_id();
+						$product_name = $product->get_name();
+					}
+				}
 			?>
 				<tr class="woocommerce-orders-table__row order">
 					<td data-title="<?php esc_attr_e('Order Number', 'woocommerce'); ?>">
@@ -45,6 +59,16 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 					<td><?php echo get_post_meta($order->get_order_number(), "service_type", true) ?></td>
 					<td class="order-status <?php echo sanitize_html_class($order->get_status()); ?>" data-title="<?php esc_attr_e('Status', 'woocommerce'); ?>">
 						<span><?php echo esc_html(wc_get_order_status_name($order->get_status())); ?></span>
+					</td>
+					<td data-title="<?php esc_attr_e('Vehicle', 'woocommerce'); ?>">
+						<?php echo esc_html($product_name); ?>
+					</td>
+					<td data-title="<?php esc_attr_e('Total', 'woocommerce'); ?>">
+						<?php if ($order->get_meta('is_monthly_payment_order')) :
+							echo wp_kses_post(sprintf(_n('%1$s for %2$s item', '%1$s for %2$s items', $item_count, 'woocommerce'), $order->get_formatted_order_total(), $item_count));
+						else :
+							echo '';
+						endif; ?>
 					</td>
 					<td class="order-actions">
 						<?php
