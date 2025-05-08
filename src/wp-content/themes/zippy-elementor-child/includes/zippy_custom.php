@@ -128,7 +128,7 @@ function add_history_menu_item( $items ) {
 
     $items['dashboard'] = 'Dashboard';
     $items['orders'] = 'Orders';
-    $items['edit-history'] = 'Edit History';
+    $items['history'] = 'Edit History';
     $items['customer-logout'] = 'Log out';
 
     return $items;
