@@ -122,3 +122,108 @@ function build_sort_link($label, $orderby_field, $current_orderby, $current_orde
 
     return "<a href='{$url}'>{$label}<span>{$arrow}</span></a>";
 }
+
+function add_history_menu_item( $items ) {
+    $items['history'] = 'Edit History';
+    return $items;
+}
+add_filter( 'woocommerce_account_menu_items', 'add_history_menu_item' );
+
+
+
+// history endpoints
+function add_history_endpoint() {
+    add_rewrite_endpoint( 'history', EP_ROOT | EP_PAGES );
+    add_rewrite_endpoint( 'order-history', EP_ROOT | EP_PAGES );
+}
+add_action( 'init', 'add_history_endpoint' );
+
+
+// history content
+function display_history_content() {
+    $customer_orders = wc_get_orders( array(
+        'customer' => get_current_user_id(),
+    ) );
+
+    echo '<h2>Edit History</h2>';
+
+    if ( ! empty( $customer_orders ) ) {
+        echo '<table class="shop_table shop_table_responsive my_account_orders">';
+        echo '<thead>';
+        echo '<tr>';
+        echo '<th class="order-number">Order Number</th>';
+        echo '<th class="order-actions">Action</th>';
+        echo '</tr>';
+        echo '</thead>';
+        echo '<tbody>';
+
+        foreach ( $customer_orders as $order ) {
+            echo '<tr class="order">';
+            echo '<td class="order-number" data-title="Order Number">';
+            echo '<a href="' . esc_url( wc_get_endpoint_url( 'view-order', $order->get_id() ) ) . '">#' . $order->get_order_number() . '</a>';
+            echo '</td>';
+            echo '<td class="order-actions" data-title="Action">';
+            echo '<a href="' . esc_url( wc_get_endpoint_url( 'order-history', $order->get_id() ) ) . '" class="woocommerce-button button view">View</a>';
+            echo '</td>';
+            echo '</tr>';
+        }
+
+        echo '</tbody>';
+        echo '</table>';
+    } else {
+        echo '<p>No order found!</p>';
+    }
+}
+add_action( 'woocommerce_account_history_endpoint', 'display_history_content' );
+
+
+
+// detail history
+function display_order_history_content() {
+    global $wp_query;
+
+    if ( ! isset( $wp_query->query_vars['order-history'] ) ) {
+        echo '<p>No order found!</p>';
+        return;
+    }
+
+    $order_id = $wp_query->query_vars['order-history'];
+    $order = wc_get_order( $order_id );
+
+    if ( ! $order || $order->get_customer_id() != get_current_user_id() ) {
+        echo '<p>No order found!</p>';
+        return;
+    }
+
+    $order_notes = wc_get_order_notes( array(
+        'order_id' => $order->get_id(),
+        'order_by' => 'date_created',
+        'order'    => 'DESC',
+    ) );
+
+    echo '<h2>Order #' . $order->get_order_number() . '</h2>';
+
+    if ( ! empty( $order_notes ) ) {
+        echo '<table class="shop_table shop_table_responsive order_notes_table">';
+        echo '<thead>';
+        echo '<tr>';
+        echo '<th class="note-action">Action</th>';
+        echo '<th class="note-time">Time</th>';
+        echo '</tr>';
+        echo '</thead>';
+        echo '<tbody>';
+
+        foreach ( $order_notes as $note ) {
+            echo '<tr>';
+            echo '<td class="note-action">' . esc_html( $note->content ) . '</td>';
+            echo '<td class="note-time">' . esc_html( $note->date_created->date( 'Y-m-d H:i:s' ) ) . '</td>';
+            echo '</tr>';
+        }
+
+        echo '</tbody>';
+        echo '</table>';
+    } else {
+        echo '<p>This order have no history yet.</p>';
+    }
+}
+add_action( 'woocommerce_account_order-history_endpoint', 'display_order_history_content' );
