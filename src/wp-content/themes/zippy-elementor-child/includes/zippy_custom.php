@@ -147,11 +147,22 @@ add_action( 'init', 'add_history_endpoint' );
 
 // history content
 function display_history_content() {
-    $customer_orders = wc_get_orders( array(
+    $orders = wc_get_orders( array(
         'customer' => get_current_user_id(),
     ) );
 
-    if ( ! empty( $customer_orders ) ) {
+    $filtered_orders = array();
+    foreach ($orders as $order) {
+        $order_notes = wc_get_order_notes( array(
+            'order_id' => $order->get_id(),
+            'type'     => 'customer',
+        ));
+        if (!empty( $order_notes)) {
+            $filtered_orders[] = $order;
+        }
+    }
+
+    if ( ! empty( $filtered_orders ) ) {
         echo '<table class="shop_table shop_table_responsive my_account_orders woocommerce-orders-table">';
         echo '<thead>';
         echo '<tr>';
@@ -161,7 +172,7 @@ function display_history_content() {
         echo '</thead>';
         echo '<tbody>';
 
-        foreach ( $customer_orders as $order ) {
+        foreach ( $filtered_orders as $order ) {
             echo '<tr class="order">';
             echo '<td class="order-number" data-title="Order Number">';
             echo '<a href="' . esc_url( wc_get_endpoint_url( 'view-order', $order->get_id() ) ) . '">#' . $order->get_order_number() . '</a>';
@@ -199,12 +210,12 @@ function display_order_history_content() {
         return;
     }
 
-    $order_notes = wc_get_order_notes( array(
+    $order_notes = wc_get_order_notes(array(
         'order_id' => $order->get_id(),
         'type'     => 'customer',
         'order_by' => 'date_created',
         'order'    => 'DESC',
-    ) );
+    ));
 
     echo '<h2>Order #' . $order->get_order_number() . '</h2>';
 
@@ -213,7 +224,7 @@ function display_order_history_content() {
         echo '<thead>';
         echo '<tr>';
         echo '<th class="note-action">Action</th>';
-        echo '<th class="note-time">Time</th>';
+        echo '<th class="note-time">Last updated</th>';
         echo '</tr>';
         echo '</thead>';
         echo '<tbody>';
