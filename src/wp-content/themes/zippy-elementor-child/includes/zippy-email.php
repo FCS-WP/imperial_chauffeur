@@ -166,7 +166,7 @@ function completed_email_woocommerce_order_action_execute($order_id)
   ];
 
   $body = render_email_template('complete-email', $data);
-  $user_email = "tai.phan@floatingcube.com";
+  
   $mail = wp_mail($user_email, $subject, $body, $headers);
 
   if($mail){
