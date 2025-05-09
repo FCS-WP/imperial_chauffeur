@@ -55,9 +55,7 @@ $tax_rate = intval($tax_percent->tax_rate);
 				$product_name = $item->get_name();
 				$product_quantity = $item->get_quantity();
 				$product_price_with_tax = $order->get_formatted_line_subtotal($item);
-
-				$price_excl_tax = wc_format_decimal($item->get_total() / (1 + ($tax_rate / 100)));
-				$product_price_excl_tax = wc_price($price_excl_tax);
+				$product_price_excl_tax = wc_price($item->get_total());
 
 			?>
 				<tr>
@@ -78,8 +76,7 @@ $tax_rate = intval($tax_percent->tax_rate);
 			$custom_subtotal = 0;
 			foreach ($order->get_items() as $item_id => $item) {
 				$line_total = $item->get_total();
-				$line_total_excl_tax = $line_total / (1 + ($tax_rate / 100));
-				$custom_subtotal += $line_total_excl_tax;
+				$custom_subtotal += $line_total;
 			}
 
 			$order_total = $order->get_total();

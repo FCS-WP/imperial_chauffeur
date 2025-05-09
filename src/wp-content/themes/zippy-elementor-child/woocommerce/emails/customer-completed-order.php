@@ -16,7 +16,7 @@ $total = $subtotal + $gst + $cc_fee;
             <strong>Thank you for booking with us</strong>
         </div>
 
-        <div style="background:#fff;padding:48px 48px 32px;font-family: Arial, sans-serif; font-size:14px; color:#000;margin:0 auto;text-align:left;border-radius: 0 0 3px 3px;">
+        <div style="background:#fff;padding:48px 48px 32px;font-family: Arial, sans-serif; font-size:13px; color:#000;margin:0 auto;text-align:left;border-radius: 0 0 3px 3px;">
             <p style="font-size:13px;">Hi <?php echo esc_html( $order->get_billing_first_name() ); ?>,</p>
             <p style="font-size:13px;">We have finished processing your order.</p>
 
