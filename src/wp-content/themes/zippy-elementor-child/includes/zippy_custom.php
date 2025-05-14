@@ -1,21 +1,4 @@
 <?php
-if (!defined('EMAIL_SENDER_NAME')) {
-    define('EMAIL_SENDER_NAME', "Imperial Chauffeur Services");
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 add_action('wp_enqueue_scripts', 'shin_scripts');
 
 function shin_scripts()
