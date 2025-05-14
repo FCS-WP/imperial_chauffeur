@@ -2,8 +2,8 @@
     $order_id = $order->get_id();
     $items = $order->get_items();
     $subtotal = $order->get_subtotal();
-    $user_name = !empty($user->display_name) ? $user->display_name : $order->get_formatted_bilpng_full_name();
-    $user_email = !empty($user->user_email) ? $user->user_email : $order->get_bilpng_email();
+    $user_name = !empty($user->display_name) ? $user->display_name : $order->get_formatted_billing_full_name();
+    $user_email = !empty($user->user_email) ? $user->user_email : $order->get_billing_email();
     $service_type = get_post_meta($order_id, "service_type", true);
     $member_type = $order->get_meta("member_type");
     $time_use = reset($items)->get_quantity();
@@ -21,7 +21,7 @@
 <h3 style="color:#e91e21;">
     [Order #<?php echo $order->get_order_number(); ?>] (<?php echo $order->get_date_created()->setTimezone( new DateTimeZone('Asia/Singapore') )->format('d/m/Y'); ?>)
 </h3>
-<table cellspacing="0" cellpadding="6" style="width:600px;border:2px sopd #e5e5e5;border-collapse:collapse;text-align:left" border="2">
+<table cellspacing="0" cellpadding="6" style="width:600px;border:2px solid #e5e5e5;border-collapse:collapse;text-align:left" border="2">
     <thead>
         <tr>
             <th style="padding:12px;font-size:13px;text-align:left">Product</th>
