@@ -145,9 +145,52 @@ if (empty($is_monthly_payment_order)) :
 				$order = wc_get_order($order_id);
 				if ($order) {
 					$note_content = "Custom fields changed:\n" . implode("\n", $changes);
-					$order->add_order_note($note_content, true); // true = cusstomer
+					$order->add_order_note($note_content, true);
+
+					$current_user = wp_get_current_user();
+					$member_name = $current_user->display_name ?: $current_user->user_login;
+					$edit_date = current_time('d/m/Y');
+
+					// Email info
+					$user_email = "toan444666@gmail.com";
+					$subject = "Member {$member_name} Edited Order #{$order_id} – Action Required";
+
+					$headers = [
+						'Content-Type: text/html; charset=UTF-8',
+						'From: Imperial <impls@singnet.com.sg>'
+					];
+
+					// Build message body
+					$message = "<p>Hi Team,</p>";
+					$message .= "<p>Please be informed that <strong>Member {$member_name}</strong> has made changes to <strong>Order #{$order_id}</strong>.</p>";
+
+					$message .= "<h4>Details of Change:</h4>";
+
+					foreach ($changes as $change) {
+						if (preg_match('/^(.*?): "(.*?)" → "(.*?)"$/', $change, $matches)) {
+							$label = $matches[1];
+							$old = $matches[2];
+							$new = $matches[3];
+
+							$message .= "<p><strong>Custom Field Edited:</strong> {$label}<br>";
+							$message .= "<strong>Previous Value:</strong> {$old}<br>";
+							$message .= "<strong>New Value:</strong> {$new}<br><hr>";
+						}
+					}
+					$message .= "<strong>Edit Date:</strong> {$edit_date}</p>";
+					$message .= "<p>Please review the changes in the backend.</p>";
+
+					$message .= "<br><p>Best regards,</p>";
+					$message .= "<p><strong>Imperial Chauffeur Services Pte. Ltd</strong></p>";
+					$message .= "<p>Email: impls@singnet.com.sg<br>";
+					$message .= "Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
+
+					wp_mail($user_email, $subject, $message, $headers);
 				}
 			}
+
+
+
 
 			$redirect_url = remove_query_arg('edit_order', wp_unslash($_SERVER['REQUEST_URI']));
 			echo '<script>window.location.href = "' . esc_url($redirect_url) . '";</script>';
