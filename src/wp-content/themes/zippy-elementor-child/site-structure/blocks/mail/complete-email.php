@@ -21,12 +21,12 @@
 <h3 style="color:#e91e21;">
     [Order #<?php echo $order->get_order_number(); ?>] (<?php echo $order->get_date_created()->setTimezone( new DateTimeZone('Asia/Singapore') )->format('d/m/Y'); ?>)
 </h3>
-<table cellspacing="0" cellpadding="6" style="width:600px;border:2px sopd #e5e5e5;border-collapse:collapse;text-apgn:left" border="2">
+<table cellspacing="0" cellpadding="6" style="width:600px;border:2px sopd #e5e5e5;border-collapse:collapse;text-align:left" border="2">
     <thead>
         <tr>
-            <th style="padding:12px;font-size:13px;text-apgn:left">Product</th>
-            <th style="padding:12px;font-size:13px;text-apgn:center">Quantity</th>
-            <th style="padding:12px;font-size:13px;text-apgn:right">Price</th>
+            <th style="padding:12px;font-size:13px;text-align:left">Product</th>
+            <th style="padding:12px;font-size:13px;text-align:center">Quantity</th>
+            <th style="padding:12px;font-size:13px;text-align:right">Price</th>
         </tr>
     </thead>
     <tbody>
@@ -39,8 +39,8 @@
         ?>
             <tr>
                 <td style="padding:12px;font-size:13px;"><?php echo esc_html( $item_name ); ?></td>
-                <td style="text-apgn:center;padding:12px;font-size:13px;"><?php echo esc_html( $qty ); ?></td>
-                <td style="text-apgn:right;padding:12px;font-size:13px;">$<?php echo number_format( $price, 2 ); ?></td>
+                <td style="text-align:center;padding:12px;font-size:13px;"><?php echo esc_html( $qty ); ?></td>
+                <td style="text-align:right;padding:12px;font-size:13px;">$<?php echo number_format( $price, 2 ); ?></td>
             </tr>
         <?php endforeach; ?>
     </tbody>
@@ -58,7 +58,7 @@
             <th class="td" colspan="2" style="border-top-width:4px;font-size:13px;">
                 <?php esc_html_e('Subtotal', 'woocommerce'); ?>
             </th>
-            <td class="td" style="text-apgn:right; border-top-width:4px;font-size:13px;">
+            <td class="td" style="text-align:right; border-top-width:4px;font-size:13px;">
                 <?php echo wc_price($custom_subtotal); ?>
             </td>
         </tr>
@@ -67,7 +67,7 @@
             <th class="td" colspan="2" style="font-size:13px;">
                 <?php echo esc_html($tax_rate_label); ?>
             </th>
-            <td class="td" style="text-apgn:right;font-size:13px;">
+            <td class="td" style="text-align:right;font-size:13px;">
                 <?php echo esc_html($tax_rate) . '%'; ?>
             </td>
         </tr>
@@ -76,7 +76,7 @@
             <th class="td" colspan="2" style="font-size:13px;">
                 <?php esc_html_e('Total', 'woocommerce'); ?>
             </th>
-            <td class="td" style="text-apgn:right;font-size:13px;">
+            <td class="td" style="text-align:right;font-size:13px;">
                 <?php echo wc_price($order_total); ?>
             </td>
         </tr>
