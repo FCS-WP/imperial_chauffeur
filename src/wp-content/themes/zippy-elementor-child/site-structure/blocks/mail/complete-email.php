@@ -48,9 +48,9 @@
         <?php
             $custom_subtotal = 0;
             foreach ($items as $item_id => $item) {
-                $line_total = $item->get_total();
-                $line_total_excl_tax = $line_total / (1 + ($tax_rate / 100));
-                $custom_subtotal += $line_total_excl_tax;
+                $pne_total = $item->get_total();
+                $pne_total_excl_tax = $pne_total / (1 + ($tax_rate / 100));
+                $custom_subtotal += $pne_total_excl_tax;
             }
             $order_total = $order->get_total();
         ?>
@@ -84,33 +84,28 @@
 </table>
 
 <h3>Order Information:</h3>
-<ul style="font-size:13px">
-    <li>Service type: <?php echo $service_type ?></li>
-    <?php  if ($service_type == "Hourly/Disposal") { ?>
-        <li>Usage time: <?php echo $time_use; ?> Hours</li>
-    <?php } ?>
-    <li>Pick up date: <?php echo get_post_meta($order_id, "pick_up_date", true) ?></li>
-    <li>Pick up time: <?php echo get_post_meta($order_id, "pick_up_time", true) ?></li>
-    <?php if ($service_type == "Airport Arrival Transfer" || $service_type = "Airport Departure Transfer") { ?>
-        <li>Flight details: <?php echo get_post_meta($order_id, "flight_details", true) ?></li>
-        <li><?php echo $eta_label ?>: <?php echo get_post_meta($order_id, "eta_time", true) ?></li>
-    <?php } ?>
-    <li>Pick up location: <?php echo get_post_meta($order_id, "pick_up_location", true) ?></li>
-    <li>Drop off location: <?php echo get_post_meta($order_id, "drop_off_location", true) ?></li>
-    <li>No of pax: <?php echo get_post_meta($order_id, "no_of_passengers", true) ?></li>
-    <li>No of luggages: <?php echo get_post_meta($order_id, "no_of_baggage", true) ?></li>
-    <li>Special requests: <?php echo get_post_meta($order_id, "special_requests", true) ?></li>
-    <?php if($member_type == 1){ ?>
-        <li>Staff name: <?php echo get_post_meta($order_id, "staff_name", true) ?></li>
-    <?php } ?>
-</ul>
+<p style="font-size:13px">Service type: <?php echo $service_type ?></p>
+<?php  if ($service_type == "Hourly/Disposal") { ?>
+    <p style="font-size:13px">Usage time: <?php echo $time_use; ?> Hours</p>
+<?php } ?>
+<p style="font-size:13px">Pick up date: <?php echo get_post_meta($order_id, "pick_up_date", true) ?></p>
+<p style="font-size:13px">Pick up time: <?php echo get_post_meta($order_id, "pick_up_time", true) ?></p>
+<?php if ($service_type == "Airport Arrival Transfer" || $service_type = "Airport Departure Transfer") { ?>
+    <p style="font-size:13px">Fpght details: <?php echo get_post_meta($order_id, "fpght_details", true) ?></p>
+    <p style="font-size:13px"><?php echo $eta_label ?>: <?php echo get_post_meta($order_id, "eta_time", true) ?></p>
+<?php } ?>
+<p style="font-size:13px">Pick up location: <?php echo get_post_meta($order_id, "pick_up_location", true) ?></p>
+<p style="font-size:13px">Drop off location: <?php echo get_post_meta($order_id, "drop_off_location", true) ?></p>
+<p style="font-size:13px">No of pax: <?php echo get_post_meta($order_id, "no_of_passengers", true) ?></p>
+<p style="font-size:13px">No of luggages: <?php echo get_post_meta($order_id, "no_of_baggage", true) ?></p>
+<p style="font-size:13px">Special requests: <?php echo get_post_meta($order_id, "special_requests", true) ?></p>
+<?php if($member_type == 1){ ?>
+    <p style="font-size:13px">Staff name: <?php echo get_post_meta($order_id, "staff_name", true) ?></p>
+<?php } ?>
 
 <h3>Preferred Contact Method:</h3>
-<ul style="font-size:13px">
-    <li>OFFICE TELEPHONE +65 6734 0428 (24Hours)</li>
-    <li>EMAIL: impls@singnet.com.sg</li>
-    <li>Best regards,</li>
-    <li>Imperial Chauffeur Services Pte. Ltd</li>
-    <li>Email: impls@singnet.com.sg</li>
-    <li>Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></li>
-</ul>
+<p style="font-size:13px">Imperial Chauffeur Services Pte. Ltd</p>
+<p style="font-size:13px">OFFICE TELEPHONE +65 6734 0428 (24Hours)</p>
+<p style="font-size:13px">EMAIL: impls@singnet.com.sg</p>
+<p style="font-size:13px">Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>
+<p style="font-size:13px">Best regards,</p>
