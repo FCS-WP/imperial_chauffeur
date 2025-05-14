@@ -117,17 +117,17 @@ function confirm_email_woocommerce_order_action_execute($post_id)
 
   $subject = 'Thank you for your order. Your booking has been confirmed – Imperial Chauffeur Services Pte. Ltd';
 
-  $message = "<p>Thank you for your order! We're excited to let you know that we have successfully received and confirmed your order.</p>";
+  $message = "<p style='font-size:13px;color:#000'>Thank you for your order! We're excited to let you know that we have successfully received and confirmed your order.</p>";
 
-  $message .= "<br><h3>Preferred Contact Method:</h3>";
-  $message .= "<p>OFFICE TELEPHONE +65 6734 0428 (24Hours)</p>";
-  $message .= "<p>EMAIL: impls@singnet.com.sg</p>";
-  $message .= "<br><p>Our team will review your request and respond within 24 hours. If you have any urgent concerns, feel free to contact us.</p>";
-  $message .= "<p>We appreciate your patience and look forward to assisting you.</p><br>";
-  $message .= "<p>Best regards,</p>";
-  $message .= "<p>Imperial Chauffeur Services Pte. Ltd</p>";
-  $message .= "<p>Email: impls@singnet.com.sg</p>";
-  $message .= "<p>Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
+  $message .= "<br><h3 style='font-size:15px;color:#000'>Preferred Contact Method:</h3>";
+  $message .= "<p style='font-size:13px;color:#000'>OFFICE TELEPHONE +65 6734 0428 (24Hours)</p>";
+  $message .= "<p style='font-size:13px;color:#000'>EMAIL: impls@singnet.com.sg</p>";
+  $message .= "<br><p style='font-size:13px;color:#000'>Our team will review your request and respond within 24 hours. If you have any urgent concerns, feel free to contact us.</p>";
+  $message .= "<p style='font-size:13px;color:#000'>We appreciate your patience and look forward to assisting you.</p><br>";
+  $message .= "<p style='font-size:13px;color:#000'>Best regards,</p>";
+  $message .= "<p style='font-size:13px;color:#000'>Imperial Chauffeur Services Pte. Ltd</p>";
+  $message .= "<p style='font-size:13px;color:#000'>Email: impls@singnet.com.sg</p>";
+  $message .= "<p style='font-size:13px;color:#000'>Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
 
   wp_mail($user_email, $subject, $message, $headers);
 

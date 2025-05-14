@@ -53,8 +53,6 @@ class Zippy_User_Account_Expiry
 
         add_action('admin_footer', [$this, 'initialize_datepicker']);
         add_action('admin_footer', [$this, 'show_toast_expiry_message']);
-
-        date_default_timezone_set('Asia/Singapore');
     }
 
     public function add_expiry_date_field($user)

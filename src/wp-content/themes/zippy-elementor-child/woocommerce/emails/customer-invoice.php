@@ -27,10 +27,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <?php /* translators: %s: Customer first name */ ?>
-<p><?php printf( esc_html__( 'Hi %s,', 'woocommerce' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
+
+<style>
+	h2{
+		font-size: 15px;
+	}
+	address, a, p{
+		font-size: 13px;
+	}
+</style>
+
+<p style="font-size:13px;color:#000"><?php printf( esc_html__( 'Hi %s,', 'woocommerce' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
 
 <?php if ( $order->needs_payment() ) { ?>
-	<p>
+	<p style="font-size:13px;color:#000">
 	<?php
 	printf(
 		wp_kses(
@@ -43,13 +53,13 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 			)
 		),
 		esc_html( get_bloginfo( 'name', 'display' ) ),
-		'<div><a href="' . esc_url( $order->get_checkout_payment_url() ) . '">' . esc_html__( 'Pay for this order', 'woocommerce' ) . '</a></div>'
+		'<div><a href="' . esc_url( $order->get_checkout_payment_url() ) . '" style="font-size:14px;">' . esc_html__( 'Pay for this order', 'woocommerce' ) . '</a></div>'
 	);
 	?>
 	</p>
 
 <?php } else { ?>
-	<p>
+	<p style="font-size:13px;color:#000">
 	<?php
 	/* translators: %s Order date */
 	printf( esc_html__( 'Here are the details of your order placed on %s:', 'woocommerce' ), esc_html( wc_format_datetime( $order->get_date_created() ) ) );
