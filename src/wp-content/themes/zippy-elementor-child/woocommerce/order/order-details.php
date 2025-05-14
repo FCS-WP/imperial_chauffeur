@@ -134,7 +134,8 @@ if (empty($is_monthly_payment_order)) :
 					$old_value = get_post_meta($order_id, $key, true);
 					$new_value = sanitize_text_field($_POST[$key]);
 
-					if ($old_value !== $new_value) {
+					if ($old_value !== $new_value && $new_value !== '') {
+
 						update_post_meta($order_id, $key, $new_value);
 						$changes[] = "{$label}: \"{$old_value}\" → \"{$new_value}\"";
 					}
@@ -165,8 +166,10 @@ if (empty($is_monthly_payment_order)) :
 				$type = 'text';
 				if ($key === 'pick_up_date') {
 					$type = 'date';
-				} elseif ($key === 'pick_up_time') {
+				} elseif ($key === 'pick_up_time' || $key === 'eta_time') {
 					$type = 'time';
+				}elseif ($key === 'no_of_passengers' || $key === 'no_of_baggage') {
+					$type = 'number';
 				}
 
 				echo '<input type="' . esc_attr($type) . '" name="' . esc_attr($key) . '" value="' . esc_attr($value) . '" style="width:100%;" />';
