@@ -56,7 +56,6 @@ $tax_rate = intval($tax_percent->tax_rate);
 				$product_quantity = $item->get_quantity();
 				$product_price_with_tax = $order->get_formatted_line_subtotal($item);
 				$product_price_excl_tax = wc_price($item->get_total());
-
 			?>
 				<tr>
 					<td class="td" style="font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
