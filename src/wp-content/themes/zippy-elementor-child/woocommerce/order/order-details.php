@@ -168,7 +168,7 @@ if (empty($is_monthly_payment_order)) :
 					$type = 'date';
 				} elseif ($key === 'pick_up_time' || $key === 'eta_time') {
 					$type = 'time';
-				}elseif ($key === 'no_of_passengers' || $key === 'no_of_baggage') {
+				} elseif ($key === 'no_of_passengers' || $key === 'no_of_baggage') {
 					$type = 'number';
 				}
 
@@ -194,8 +194,9 @@ if (empty($is_monthly_payment_order)) :
 				echo "<p><strong>Duration: </strong> $order_quantity Hours</p>";
 			}
 			echo '</div>';
-
-			echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
+			if (!in_array($order->get_status(), ['completed', 'cancelled'])) {
+				echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
+			}
 		}
 		?>
 	</div>
