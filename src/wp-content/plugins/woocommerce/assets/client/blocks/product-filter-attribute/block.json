@@ -60,7 +60,7 @@
 	},
 	"usesContext": [
 		"query",
-		"filterParams"
+		"queryId"
 	],
 	"attributes": {
 		"attributeId": {
@@ -94,6 +94,10 @@
 		"hideEmpty": {
 			"type": "boolean",
 			"default": true
+		},
+		"clearButton": {
+			"type": "boolean",
+			"default":true
 		}
 	},
 	"example": {

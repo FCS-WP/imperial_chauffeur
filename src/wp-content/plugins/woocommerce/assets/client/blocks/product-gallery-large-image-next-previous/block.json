@@ -6,8 +6,14 @@
 	"title": "Next/Previous Buttons",
 	"description": "Display next and previous buttons.",
 	"category": "woocommerce",
-	"keywords": [ "WooCommerce" ],
-	"usesContext": [ "postId" ],
+	"keywords": [
+		"WooCommerce"
+	],
+	"usesContext": [
+		"nextPreviousButtonsPosition",
+		"productGalleryClientId",
+		"postId"
+	],
 	"textdomain": "woocommerce",
 	"supports": {
 		"layout": {
@@ -21,5 +27,7 @@
 			"allowInheriting": false
 		}
 	},
-	"ancestor": [ "woocommerce/product-gallery-large-image" ]
+	"ancestor": [
+		"woocommerce/product-gallery-large-image"
+	]
 }

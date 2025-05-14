@@ -26,22 +26,15 @@ class Validator
 {
     protected SchemaLoader $loader;
     protected int $maxErrors = 1;
-    protected bool $stopAtFirstError = true;
 
     /**
      * @param SchemaLoader|null $loader
      * @param int $max_errors
-     * @param bool $stop_at_first_error
      */
-    public function __construct(
-        ?SchemaLoader $loader = null,
-        int $max_errors = 1,
-        bool $stop_at_first_error = true
-    )
+    public function __construct(?SchemaLoader $loader = null, int $max_errors = 1)
     {
         $this->loader = $loader ?? new SchemaLoader(new SchemaParser(), new SchemaResolver(), true);
         $this->maxErrors = $max_errors;
-        $this->stopAtFirstError = $stop_at_first_error;
     }
 
     /**
@@ -177,16 +170,7 @@ class Validator
             $slots = $this->parseSlots($slots);
         }
 
-        return new ValidationContext(
-            $data,
-            $this->loader,
-            null,
-            null,
-                $globals ?? [],
-            $slots,
-            $this->maxErrors,
-            $this->stopAtFirstError,
-        );
+        return new ValidationContext($data, $this->loader, null, null, $globals ?? [], $slots, $this->maxErrors);
     }
 
     /**
@@ -262,24 +246,6 @@ class Validator
     {
         $this->maxErrors = $max_errors;
 
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getStopAtFirstError(): bool
-    {
-        return $this->stopAtFirstError;
-    }
-
-    /**
-     * @param bool $stop
-     * @return $this
-     */
-    public function setStopAtFirstError(bool $stop): self
-    {
-        $this->stopAtFirstError = $stop;
         return $this;
     }
 

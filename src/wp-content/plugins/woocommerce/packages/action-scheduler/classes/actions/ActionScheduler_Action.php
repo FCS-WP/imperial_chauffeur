@@ -4,32 +4,13 @@
  * Class ActionScheduler_Action
  */
 class ActionScheduler_Action {
-	/**
-	 * Action's hook.
-	 *
-	 * @var string
-	 */
+	/** @var string */
 	protected $hook = '';
-
-	/**
-	 * Action's args.
-	 *
-	 * @var array<string, mixed>
-	 */
+	/** @var array<string, mixed> */
 	protected $args = array();
-
-	/**
-	 * Action's schedule.
-	 *
-	 * @var ActionScheduler_Schedule
-	 */
-	protected $schedule = null;
-
-	/**
-	 * Action's group.
-	 *
-	 * @var string
-	 */
+	/** @var ActionScheduler_Schedule */
+	protected $schedule = NULL;
+	/** @var string */
 	protected $group = '';
 
 	/**
@@ -53,12 +34,12 @@ class ActionScheduler_Action {
 	 * @param null|ActionScheduler_Schedule $schedule Action's schedule.
 	 * @param string                        $group Action's group.
 	 */
-	public function __construct( $hook, array $args = array(), ?ActionScheduler_Schedule $schedule = null, $group = '' ) {
+	public function __construct( $hook, array $args = array(), ActionScheduler_Schedule $schedule = NULL, $group = '' ) {
 		$schedule = empty( $schedule ) ? new ActionScheduler_NullSchedule() : $schedule;
-		$this->set_hook( $hook );
-		$this->set_schedule( $schedule );
-		$this->set_args( $args );
-		$this->set_group( $group );
+		$this->set_hook($hook);
+		$this->set_schedule($schedule);
+		$this->set_args($args);
+		$this->set_group($group);
 	}
 
 	/**
@@ -112,8 +93,6 @@ class ActionScheduler_Action {
 	}
 
 	/**
-	 * Action's schedule.
-	 *
 	 * @return ActionScheduler_Schedule
 	 */
 	public function get_schedule() {
@@ -146,8 +125,6 @@ class ActionScheduler_Action {
 	}
 
 	/**
-	 * Action's group.
-	 *
 	 * @return string
 	 */
 	public function get_group() {
@@ -155,12 +132,10 @@ class ActionScheduler_Action {
 	}
 
 	/**
-	 * Action has not finished.
-	 *
-	 * @return bool
+	 * @return bool If the action has been finished
 	 */
 	public function is_finished() {
-		return false;
+		return FALSE;
 	}
 
 	/**

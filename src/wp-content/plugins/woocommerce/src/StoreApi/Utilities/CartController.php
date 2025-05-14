@@ -2,8 +2,6 @@
 namespace Automattic\WooCommerce\StoreApi\Utilities;
 
 use Automattic\WooCommerce\Checkout\Helpers\ReserveStock;
-use Automattic\WooCommerce\Enums\ProductStatus;
-use Automattic\WooCommerce\Enums\ProductType;
 use Automattic\WooCommerce\StoreApi\Exceptions\InvalidCartException;
 use Automattic\WooCommerce\StoreApi\Exceptions\NotPurchasableException;
 use Automattic\WooCommerce\StoreApi\Exceptions\OutOfStockException;
@@ -36,25 +34,8 @@ class CartController {
 		wc_load_cart();
 
 		// Load cart from session.
-		$cart               = $this->get_cart_instance();
-		$cart->cart_context = 'store-api';
+		$cart = $this->get_cart_instance();
 		$cart->get_cart();
-	}
-
-	/**
-	 * Normalizes the cart by fixing any quantity violations.
-	 */
-	public function normalize_cart() {
-		$quantity_limits = new QuantityLimits();
-		$cart_items      = $this->get_cart_items();
-
-		foreach ( $cart_items as $cart_item ) {
-			$normalized_qty = $quantity_limits->normalize_cart_item_quantity( $cart_item['quantity'], $cart_item );
-
-			if ( $normalized_qty !== $cart_item['quantity'] ) {
-				$this->set_cart_item_quantity( $cart_item['key'], $normalized_qty );
-			}
-		}
 	}
 
 	/**
@@ -229,7 +210,7 @@ class CartController {
 			throw new RouteException( 'woocommerce_rest_cart_invalid_key', esc_html__( 'Cart item does not exist.', 'woocommerce' ), 409 );
 		}
 
-		$product = $cart_item['data'] ?? false;
+		$product = $cart_item['data'];
 
 		if ( ! $product instanceof \WC_Product ) {
 			throw new RouteException( 'woocommerce_rest_cart_invalid_product', esc_html__( 'Cart item is invalid.', 'woocommerce' ), 404 );
@@ -311,8 +292,7 @@ class CartController {
 			$this->get_product_id( $product ),
 			$request['quantity'],
 			$this->get_variation_id( $product ),
-			$request['variation'],
-			$request['cart_item_data']
+			$request['variation']
 		);
 
 		if ( ! $passed_validation ) {
@@ -481,9 +461,6 @@ class CartController {
 		remove_action( 'woocommerce_check_cart_items', array( $cart, 'check_cart_items' ), 1 );
 		remove_action( 'woocommerce_check_cart_items', array( $cart, 'check_cart_coupons' ), 1 );
 
-		// Before running actions, store notices.
-		$previous_notices = WC()->session->get( 'wc_notices', array() );
-
 		/**
 		 * Fires when cart items are being validated.
 		 *
@@ -500,9 +477,6 @@ class CartController {
 
 		$cart_errors = NoticeHandler::convert_notices_to_wp_errors( 'woocommerce_rest_cart_item_error' );
 
-		// Restore notices.
-		WC()->session->set( 'wc_notices', $previous_notices );
-
 		if ( $cart_errors->has_errors() ) {
 			throw new InvalidCartException(
 				'woocommerce_cart_error',
@@ -513,29 +487,12 @@ class CartController {
 	}
 
 	/**
-	 * When placing an order, validate that the cart is not empty.
-	 *
-	 * @throws InvalidCartException Exception if the cart is empty.
-	 */
-	public function validate_cart_not_empty() {
-		$cart_items = $this->get_cart_items();
-
-		if ( empty( $cart_items ) ) {
-			throw new InvalidCartException(
-				'woocommerce_cart_error',
-				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Errors are converted to response objects later.
-				new WP_Error( 'woocommerce_rest_cart_empty', __( 'Cannot place an order, your cart is empty.', 'woocommerce' ), 400 ),
-				400
-			);
-		}
-	}
-
-	/**
 	 * Validate all items in the cart and check for errors.
 	 *
 	 * @throws InvalidCartException Exception if invalid data is detected due to insufficient stock levels.
 	 */
 	public function validate_cart_items() {
+		$cart       = $this->get_cart_instance();
 		$cart_items = $this->get_cart_items();
 
 		$errors                        = [];
@@ -544,7 +501,7 @@ class CartController {
 		$partial_out_of_stock_products = [];
 		$not_purchasable_products      = [];
 
-		foreach ( $cart_items as $cart_item ) {
+		foreach ( $cart_items as $cart_item_key => $cart_item ) {
 			try {
 				$this->validate_cart_item( $cart_item );
 			} catch ( RouteException $error ) {
@@ -653,7 +610,7 @@ class CartController {
 	 * @param array $cart_item Cart item array.
 	 */
 	public function validate_cart_item( $cart_item ) {
-		$product = $cart_item['data'] ?? false;
+		$product = $cart_item['data'];
 
 		if ( ! $product instanceof \WC_Product ) {
 			return;
@@ -1139,7 +1096,7 @@ class CartController {
 	protected function get_product_for_cart( $request ) {
 		$product = wc_get_product( $request['id'] );
 
-		if ( ! $product || ProductStatus::TRASH === $product->get_status() ) {
+		if ( ! $product || 'trash' === $product->get_status() ) {
 			throw new RouteException(
 				'woocommerce_rest_cart_invalid_product',
 				__( 'This product cannot be added to the cart.', 'woocommerce' ),
@@ -1157,7 +1114,7 @@ class CartController {
 	 * @return int
 	 */
 	protected function get_product_id( \WC_Product $product ) {
-		return $product->is_type( ProductType::VARIATION ) ? $product->get_parent_id() : $product->get_id();
+		return $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
 	}
 
 	/**
@@ -1167,7 +1124,7 @@ class CartController {
 	 * @return int
 	 */
 	protected function get_variation_id( \WC_Product $product ) {
-		return $product->is_type( ProductType::VARIATION ) ? $product->get_id() : 0;
+		return $product->is_type( 'variation' ) ? $product->get_id() : 0;
 	}
 
 	/**
@@ -1200,7 +1157,7 @@ class CartController {
 		$variation_id = 0;
 		$product      = wc_get_product( $product_id );
 
-		if ( $product->is_type( ProductType::VARIATION ) ) {
+		if ( $product->is_type( 'variation' ) ) {
 			$product_id   = $product->get_parent_id();
 			$variation_id = $product->get_id();
 		}
@@ -1259,7 +1216,7 @@ class CartController {
 		$product = $this->get_product_for_cart( $request );
 
 		// Remove variation request if not needed.
-		if ( ! $product->is_type( array( ProductType::VARIATION, ProductType::VARIABLE ) ) ) {
+		if ( ! $product->is_type( array( 'variation', 'variable' ) ) ) {
 			$request['variation'] = [];
 			return $request;
 		}
@@ -1269,7 +1226,7 @@ class CartController {
 		$request['variation']        = $this->sanitize_variation_data( wp_list_pluck( $request['variation'], 'value', 'attribute' ), $variable_product_attributes );
 
 		// If we have a parent product, find the variation ID.
-		if ( $product->is_type( ProductType::VARIABLE ) ) {
+		if ( $product->is_type( 'variable' ) ) {
 			$request['id'] = $this->get_variation_id_from_variation_data( $request, $product );
 		}
 
@@ -1374,31 +1331,11 @@ class CartController {
 			if ( ! $attribute['is_variation'] ) {
 				continue;
 			}
-
-			// Sanitized attribute (same as the product page) e.g. attribute_size.
+			$attribute_label          = wc_attribute_label( $attribute['name'] );
 			$variation_attribute_name = wc_variation_attribute_name( $attribute['name'] );
-			if ( isset( $variation_data[ $variation_attribute_name ] ) ) {
-				$return[ $variation_attribute_name ] =
-					$attribute['is_taxonomy']
-						?
-						sanitize_title( $variation_data[ $variation_attribute_name ] )
-						:
-						html_entity_decode(
-							wc_clean( $variation_data[ $variation_attribute_name ] ),
-							ENT_QUOTES,
-							get_bloginfo( 'charset' )
-						);
-				continue;
-			}
 
 			// Attribute labels e.g. Size.
-			$attribute_label           = wc_attribute_label( $attribute['name'] );
-			$lowercase_attribute_label = strtolower( $attribute_label );
-			if ( isset( $variation_data[ $attribute_label ] ) || isset( $variation_data[ $lowercase_attribute_label ] ) ) {
-
-				// Check both the original and lowercase attribute label.
-				$attribute_label = isset( $variation_data[ $attribute_label ] ) ? $attribute_label : $lowercase_attribute_label;
-
+			if ( isset( $variation_data[ $attribute_label ] ) ) {
 				$return[ $variation_attribute_name ] =
 					$attribute['is_taxonomy']
 						?
@@ -1438,11 +1375,11 @@ class CartController {
 	 * @return array
 	 */
 	protected function get_variable_product_attributes( $product ) {
-		if ( $product->is_type( ProductType::VARIATION ) ) {
+		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
 		}
 
-		if ( ! $product || ProductStatus::TRASH === $product->get_status() ) {
+		if ( ! $product || 'trash' === $product->get_status() ) {
 			throw new RouteException(
 				'woocommerce_rest_cart_invalid_parent_product',
 				__( 'This product cannot be added to the cart.', 'woocommerce' ),

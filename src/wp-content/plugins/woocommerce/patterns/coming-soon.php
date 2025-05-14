@@ -10,8 +10,6 @@
  */
 
 $store_pages_only = 'yes' === get_option( 'woocommerce_store_pages_only', 'no' );
-$default_pattern  = $store_pages_only ? 'coming-soon-store-only' : 'page-coming-soon-default';
-
 ?>
 
-<!-- wp:pattern {"slug":"woocommerce/<?php echo $default_pattern; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"} /-->
+<!-- wp:pattern {"slug":"woocommerce/<?php echo $store_pages_only ? 'coming-soon-store-only' : 'coming-soon-entire-site'; ?>"} /-->

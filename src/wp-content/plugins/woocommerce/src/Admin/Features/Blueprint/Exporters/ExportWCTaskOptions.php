@@ -26,12 +26,21 @@ class ExportWCTaskOptions implements StepExporter, HasAlias {
 	 * @return SetSiteOptions
 	 */
 	public function export() {
-		return new SetSiteOptions(
+		$step = new SetSiteOptions(
 			array(
 				'woocommerce_admin_customize_store_completed' => $this->wp_get_option( 'woocommerce_admin_customize_store_completed', 'no' ),
 				'woocommerce_task_list_tracked_completed_actions' => $this->wp_get_option( 'woocommerce_task_list_tracked_completed_actions', array() ),
 			)
 		);
+
+		$step->set_meta_values(
+			array(
+				'plugin' => 'woocommerce',
+				'alias'  => $this->get_alias(),
+			)
+		);
+
+		return $step;
 	}
 
 	/**
@@ -50,23 +59,5 @@ class ExportWCTaskOptions implements StepExporter, HasAlias {
 	 */
 	public function get_alias() {
 		return 'setWCTaskOptions';
-	}
-
-	/**
-	 * Return label used in the frontend.
-	 *
-	 * @return string
-	 */
-	public function get_label() {
-		return __( 'Task Configurations', 'woocommerce' );
-	}
-
-	/**
-	 * Return description used in the frontend.
-	 *
-	 * @return string
-	 */
-	public function get_description() {
-		return __( 'It includes the task configurations for WooCommerce.', 'woocommerce' );
 	}
 }

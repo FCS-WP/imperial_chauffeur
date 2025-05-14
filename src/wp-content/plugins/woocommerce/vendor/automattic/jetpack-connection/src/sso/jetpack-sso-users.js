@@ -28,7 +28,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			 */
 			function removeTooltip() {
 				// Only remove tooltip if the element isn't currently active.
-				if ( tooltip.ownerDocument.activeElement === tooltip ) {
+				if ( document.activeElement === tooltip ) {
 					return;
 				}
 				tooltip.removeChild( tooltipTextbox );
@@ -56,7 +56,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	 * @param {Event} event - Triggering event.
 	 */
 	function removeSSOInvitationTooltip( event ) {
-		if ( event.target.ownerDocument.activeElement === event.target ) {
+		if ( document.activeElement === event.target ) {
 			return;
 		}
 		this.querySelector( '.jetpack-sso-invitation-tooltip' ).style.display = 'none';

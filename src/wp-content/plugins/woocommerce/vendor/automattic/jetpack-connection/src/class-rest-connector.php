@@ -221,6 +221,7 @@ class REST_Connector {
 					'registration_nonce' => array(
 						'description' => __( 'The registration nonce', 'jetpack-connection' ),
 						'type'        => 'string',
+						'required'    => true,
 					),
 					'redirect_uri'       => array(
 						'description' => __( 'URI of the admin page where the user should be redirected after connection flow', 'jetpack-connection' ),
@@ -339,15 +340,9 @@ class REST_Connector {
 	 *
 	 * @return WP_Error|array
 	 */
-	public function remote_provision( WP_REST_Request $request ) {
-		$request_data = $request->get_params();
-
-		if ( did_action( 'application_password_did_authenticate' ) && current_user_can( 'jetpack_connect_user' ) ) {
-			$request_data['local_user'] = get_current_user_id();
-		}
-
+	public static function remote_provision( WP_REST_Request $request ) {
 		$xmlrpc_server = new Jetpack_XMLRPC_Server();
-		$result        = $xmlrpc_server->remote_provision( $request_data );
+		$result        = $xmlrpc_server->remote_provision( $request );
 
 		if ( is_a( $result, 'IXR_Error' ) ) {
 			$result = new WP_Error( $result->code, $result->message );
@@ -399,20 +394,9 @@ class REST_Connector {
 	/**
 	 * Remote provision endpoint permission check.
 	 *
-	 * @param WP_REST_Request $request The request object.
-	 *
 	 * @return true|WP_Error
 	 */
-	public function remote_provision_permission_check( WP_REST_Request $request ) {
-		// We allow the app password authentication only if 'local_user' is empty for security reasons.
-		if ( empty( $request['local_user'] ) && did_action( 'application_password_did_authenticate' ) ) {
-			if ( current_user_can( 'jetpack_connect_user' ) ) {
-				return true;
-			}
-
-			return new WP_Error( 'invalid_user_permission_remote_provision', self::get_user_permissions_error_msg(), array( 'status' => rest_authorization_required_code() ) );
-		}
-
+	public function remote_provision_permission_check() {
 		return Rest_Authentication::is_signed_with_blog_token()
 			? true
 			: new WP_Error( 'invalid_permission_remote_provision', self::get_user_permissions_error_msg(), array( 'status' => rest_authorization_required_code() ) );
@@ -561,18 +545,18 @@ class REST_Connector {
 	 *
 	 * @since 1.30.1
 	 *
-	 * @since 5.1.0 Modified the permission check to accept requests signed with blog tokens.
-	 *
-	 * @return bool|WP_Error True if user is able to disconnect the site or the request is signed with a blog token (aka a direct request from WPCOM).
+	 * @return bool|WP_Error True if user is able to disconnect the site.
 	 */
 	public static function disconnect_site_permission_check() {
 		if ( current_user_can( 'jetpack_disconnect' ) ) {
 			return true;
 		}
 
-		return Rest_Authentication::is_signed_with_blog_token()
-			? true
-			: new WP_Error( 'invalid_user_permission_jetpack_disconnect', self::get_user_permissions_error_msg(), array( 'status' => rest_authorization_required_code() ) );
+		return new WP_Error(
+			'invalid_user_permission_jetpack_disconnect',
+			self::get_user_permissions_error_msg(),
+			array( 'status' => rest_authorization_required_code() )
+		);
 	}
 
 	/**
@@ -807,8 +791,7 @@ class REST_Connector {
 	 * @return \WP_REST_Response|WP_Error
 	 */
 	public function connection_register( $request ) {
-		// Only require nonce if cookie authentication is used.
-		if ( did_action( 'auth_cookie_valid' ) && ! wp_verify_nonce( $request->get_param( 'registration_nonce' ), 'jetpack-registration-nonce' ) ) {
+		if ( ! wp_verify_nonce( $request->get_param( 'registration_nonce' ), 'jetpack-registration-nonce' ) ) {
 			return new WP_Error( 'invalid_nonce', __( 'Unable to verify your request.', 'jetpack-connection' ), array( 'status' => 403 ) );
 		}
 

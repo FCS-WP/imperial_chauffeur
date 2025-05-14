@@ -116,7 +116,7 @@ final class JsonPointer
     /**
      * @param $data
      * @param array|null $path
-     * @param mixed $default
+     * @param null $default
      * @return mixed
      */
     public function data($data, ?array $path = null, $default = null)
@@ -252,7 +252,7 @@ final class JsonPointer
      * @param $data
      * @param array|null $path
      * @param bool $fragment
-     * @param mixed $default
+     * @param null $default
      * @return mixed
      */
     public static function getData($data, ?array $path = null, bool $fragment = false, $default = null)

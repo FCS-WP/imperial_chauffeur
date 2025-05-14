@@ -38,8 +38,8 @@ class PaymentsRemindMeLater {
 	 * @return bool
 	 */
 	public static function should_display_note() {
-		// A WooPayments incentive must be visible.
-		if ( ! WcPayWelcomePage::instance()->has_incentive() ) {
+		// WooPayments incentive must be visible.
+		if ( ! WcPayWelcomePage::instance()->is_incentive_visible() ) {
 			return false;
 		}
 

@@ -417,7 +417,7 @@ class Modules {
 			$state  = new CookieState();
 
 			if ( ! \Jetpack::is_connection_ready() ) {
-				if ( ! $status->is_offline_mode() ) {
+				if ( ! $status->is_offline_mode() && ! $status->is_onboarding() ) {
 					return false;
 				}
 

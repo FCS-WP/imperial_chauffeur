@@ -12,7 +12,6 @@ use Automattic\WooCommerce\Admin\API\Reports\DataStoreInterface;
 use Automattic\WooCommerce\Admin\API\Reports\TimeInterval;
 use Automattic\WooCommerce\Admin\API\Reports\SqlQuery;
 use Automattic\WooCommerce\Admin\API\Reports\Cache as ReportsCache;
-use Automattic\WooCommerce\Enums\ProductType;
 
 /**
  * API\Reports\Products\DataStore.
@@ -244,7 +243,7 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 				$extended_attributes = apply_filters( 'woocommerce_rest_reports_products_extended_attributes', $this->extended_attributes, $product_data );
 				foreach ( $extended_attributes as $extended_attribute ) {
 					if ( 'variations' === $extended_attribute ) {
-						if ( ! $product->is_type( ProductType::VARIABLE ) ) {
+						if ( ! $product->is_type( 'variable' ) ) {
 							continue;
 						}
 						$function = 'get_children';

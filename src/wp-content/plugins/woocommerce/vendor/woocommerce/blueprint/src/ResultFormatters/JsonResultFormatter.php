@@ -1,8 +1,6 @@
 <?php
 
-namespace Automattic\WooCommerce\Blueprint\ResultFormatters;
-
-use Automattic\WooCommerce\Blueprint\StepProcessorResult;
+namespace Automattic\WooCommerce\Blueprint;
 
 /**
  * Class JsonResultFormatter

@@ -224,6 +224,7 @@ class CustomizeStore extends Task {
 		wp_enqueue_script( 'wp-format-library' ); // Not sure if this is needed.
 		wp_enqueue_script( 'wp-router' );
 		wp_enqueue_style( 'wp-editor' );
+		wp_enqueue_style( 'wp-edit-site' );
 		wp_enqueue_style( 'wp-format-library' );
 		wp_enqueue_media();
 

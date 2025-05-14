@@ -16,7 +16,7 @@
         },
         "label": {
             "type": "string",
-            "role": "content"
+            "__experimentalRole": "content"
         },
         "placeholder": {
             "type": "string"

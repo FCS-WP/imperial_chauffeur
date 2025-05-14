@@ -8,7 +8,7 @@
     "textdomain": "default",
     "attributes": {
         "mustMatch": {
-            "role": "content",
+            "__experimentalRole": "content",
             "type": "array",
             "items": {
                 "type": "object"

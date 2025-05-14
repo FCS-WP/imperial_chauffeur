@@ -41,12 +41,17 @@ class Brands {
 	}
 
 	/**
-	 * As of WooCommerce 9.6, Brands is enabled for all users.
+	 * Ensures that the Brands feature is released initially only to 5% of users.
 	 *
 	 * @return bool
 	 */
 	public static function is_enabled() {
-		return true;
+		$assignment = get_option( 'woocommerce_remote_variant_assignment', false );
+
+		if ( false === $assignment ) {
+			return false;
+		}
+		return ( $assignment <= 6 ); // Considering 5% of the 0-120 range.
 	}
 
 	/**

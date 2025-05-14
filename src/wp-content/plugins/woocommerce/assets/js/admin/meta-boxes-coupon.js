@@ -38,19 +38,14 @@ jQuery(function( $ ) {
 			}
         },
 
-		/**
-		 * Insert generate coupon code button HTML.
-		 */
-		insert_generate_coupon_code_button: function () {
-			const $title = $('.post-type-shop_coupon').find('#title');
-			const button = document.createElement('a');
-			button.href = '#';
-			button.className = 'button generate-coupon-code';
-			button.textContent =
-				woocommerce_admin_meta_boxes_coupon.generate_button_text;
-
-			$title.after(button);
-		},
+        /**
+         * Insert generate coupon code button HTML.
+         */
+        insert_generate_coupon_code_button: function() {
+			$( '.post-type-shop_coupon' ).find( '#title' ).after(
+				'<a href="#" class="button generate-coupon-code">' + woocommerce_admin_meta_boxes_coupon.generate_button_text + '</a>'
+			);
+        },
 
 		/**
 		 * Generate a random coupon code

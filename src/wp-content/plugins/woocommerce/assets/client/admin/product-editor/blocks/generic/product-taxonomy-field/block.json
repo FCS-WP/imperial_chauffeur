@@ -5,36 +5,42 @@
 	"title": "Taxonomy",
 	"category": "widgets",
 	"description": "A block that displays a taxonomy field, allowing searching, selection, and creation of new items",
-	"keywords": [ "taxonomy" ],
+	"keywords": [
+		"taxonomy"
+	],
 	"textdomain": "default",
 	"attributes": {
 		"slug": {
 			"type": "string",
-			"role": "content"
+			"__experimentalRole": "content"
 		},
 		"property": {
 			"type": "string",
-			"role": "content"
+			"__experimentalRole": "content"
 		},
 		"label": {
 			"type": "string",
-			"role": "content"
+			"__experimentalRole": "content"
 		},
 		"createTitle": {
 			"type": "string",
-			"role": "content"
+			"__experimentalRole": "content"
 		},
 		"dialogNameHelpText": {
 			"type": "string",
-			"role": "content"
+			"__experimentalRole": "content"
 		},
 		"parentTaxonomyText": {
 			"type": "string",
-			"role": "content"
+			"__experimentalRole": "content"
+		},
+		"placeholder": {
+			"type": "string",
+			"__experimentalRole": "content"
 		},
 		"help": {
 			"type": "string",
-			"role": "content"
+			"__experimentalRole": "content"
 		}
 	},
 	"supports": {
@@ -47,5 +53,8 @@
 		"__experimentalToolbar": false
 	},
 	"editorStyle": "file:./editor.css",
-	"usesContext": [ "postType", "isInSelectedTab" ]
+	"usesContext": [
+		"postType",
+		"isInSelectedTab"
+	]
 }

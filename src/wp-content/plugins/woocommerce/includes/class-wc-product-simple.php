@@ -7,8 +7,6 @@
  * @package WooCommerce\Classes\Products
  */
 
-use Automattic\WooCommerce\Enums\ProductType;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -32,7 +30,7 @@ class WC_Product_Simple extends WC_Product {
 	 * @return string
 	 */
 	public function get_type() {
-		return ProductType::SIMPLE;
+		return 'simple';
 	}
 
 	/**

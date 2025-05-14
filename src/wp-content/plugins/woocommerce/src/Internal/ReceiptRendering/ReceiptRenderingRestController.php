@@ -6,6 +6,7 @@ use Automattic\WooCommerce\Internal\TransientFiles\TransientFilesEngine;
 use \WP_REST_Server;
 use \WP_REST_Request;
 use \WP_Error;
+use Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
 use Automattic\WooCommerce\Internal\RestApiControllerBase;
 
 /**
@@ -13,6 +14,7 @@ use Automattic\WooCommerce\Internal\RestApiControllerBase;
  * The endpoints require the read_shop_order capability for the order at hand.
  */
 class ReceiptRenderingRestController extends RestApiControllerBase {
+	use AccessiblePrivateMethods;
 
 	/**
 	 * Get the WooCommerce REST API namespace for the class.

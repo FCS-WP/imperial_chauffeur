@@ -14,7 +14,7 @@
 	"attributes": {
 		"name": {
 			"type": "string",
-			"role": "content"
+			"__experimentalRole": "content"
 		},
 		"autoFocus": {
 			"type": "boolean",

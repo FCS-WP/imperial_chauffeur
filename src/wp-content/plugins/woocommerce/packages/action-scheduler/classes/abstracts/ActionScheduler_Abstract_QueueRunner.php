@@ -5,25 +5,13 @@
  */
 abstract class ActionScheduler_Abstract_QueueRunner extends ActionScheduler_Abstract_QueueRunner_Deprecated {
 
-	/**
-	 * ActionScheduler_QueueCleaner instance.
-	 *
-	 * @var ActionScheduler_QueueCleaner
-	 */
+	/** @var ActionScheduler_QueueCleaner */
 	protected $cleaner;
 
-	/**
-	 * ActionScheduler_FatalErrorMonitor instance.
-	 *
-	 * @var ActionScheduler_FatalErrorMonitor
-	 */
+	/** @var ActionScheduler_FatalErrorMonitor */
 	protected $monitor;
 
-	/**
-	 * ActionScheduler_Store instance.
-	 *
-	 * @var ActionScheduler_Store
-	 */
+	/** @var ActionScheduler_Store */
 	protected $store;
 
 	/**
@@ -39,11 +27,11 @@ abstract class ActionScheduler_Abstract_QueueRunner extends ActionScheduler_Abst
 	/**
 	 * ActionScheduler_Abstract_QueueRunner constructor.
 	 *
-	 * @param ActionScheduler_Store|null             $store Store object.
-	 * @param ActionScheduler_FatalErrorMonitor|null $monitor Monitor object.
-	 * @param ActionScheduler_QueueCleaner|null      $cleaner Cleaner object.
+	 * @param ActionScheduler_Store             $store Store object.
+	 * @param ActionScheduler_FatalErrorMonitor $monitor Monitor object.
+	 * @param ActionScheduler_QueueCleaner      $cleaner Cleaner object.
 	 */
-	public function __construct( ?ActionScheduler_Store $store = null, ?ActionScheduler_FatalErrorMonitor $monitor = null, ?ActionScheduler_QueueCleaner $cleaner = null ) {
+	public function __construct( ActionScheduler_Store $store = null, ActionScheduler_FatalErrorMonitor $monitor = null, ActionScheduler_QueueCleaner $cleaner = null ) {
 
 		$this->created_time = microtime( true );
 
@@ -62,7 +50,6 @@ abstract class ActionScheduler_Abstract_QueueRunner extends ActionScheduler_Abst
 	 */
 	public function process_action( $action_id, $context = '' ) {
 		// Temporarily override the error handler while we process the current action.
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
 		set_error_handler(
 			/**
 			 * Temporary error handler which can catch errors and convert them into exceptions. This facilitates more
@@ -206,7 +193,7 @@ abstract class ActionScheduler_Abstract_QueueRunner extends ActionScheduler_Abst
 			'date'         => date_create( 'now', timezone_open( 'UTC' ) )->format( 'Y-m-d H:i:s' ),
 			'date_compare' => '<',
 			'per_page'     => 1,
-			'offset'       => $consistent_failure_threshold - 1,
+			'offset'       => $consistent_failure_threshold - 1
 		);
 
 		$first_failing_action_id = $this->store->query_actions( $query_args );
@@ -236,6 +223,8 @@ abstract class ActionScheduler_Abstract_QueueRunner extends ActionScheduler_Abst
 
 	/**
 	 * Run the queue cleaner.
+	 *
+	 * @author Jeremy Pry
 	 */
 	protected function run_cleanup() {
 		$this->cleaner->clean( 10 * $this->get_time_limit() );
@@ -375,6 +364,7 @@ abstract class ActionScheduler_Abstract_QueueRunner extends ActionScheduler_Abst
 	/**
 	 * Process actions in the queue.
 	 *
+	 * @author Jeremy Pry
 	 * @param string $context Optional identifier for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
 	 *        Generally, this should be capitalised and not localised as it's a proper noun.
 	 * @return int The number of actions processed.

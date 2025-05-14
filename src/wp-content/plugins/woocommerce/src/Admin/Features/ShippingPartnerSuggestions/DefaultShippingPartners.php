@@ -257,10 +257,11 @@ class DefaultShippingPartners {
 				'available_layouts' => array( 'row', 'column' ),
 			),
 			array(
-				'id'                => 'woocommerce-shipping',
+				'id'                => 'woocommerce-services',
 				'name'              => 'WooCommerce Shipping',
-				'slug'              => 'woocommerce-shipping',
+				'slug'              => 'woocommerce-services',
 				'description'       => __( 'Save time and money by printing your shipping labels right from your computer with WooCommerce Shipping. Try WooCommerce Shipping for free.', 'woocommerce' ),
+				'dependencies'      => array( 'jetpack' ),
 				'layout_column'     => array(
 					'image'    => $asset_base_url . 'wcs-column.svg',
 					'features' => array(
@@ -277,7 +278,7 @@ class DefaultShippingPartners {
 						array(
 							'icon'        => $asset_base_url . 'discount.svg',
 							'title'       => __( 'Discounted rates', 'woocommerce' ),
-							'description' => __( 'Access discounted shipping rates with USPS, UPS, and DHL.', 'woocommerce' ),
+							'description' => __( 'Access discounted shipping rates with DHL and USPS.', 'woocommerce' ),
 						),
 					),
 				),
@@ -290,6 +291,15 @@ class DefaultShippingPartners {
 							(object) array(
 								'type'    => 'plugins_activated',
 								'plugins' => array( 'woocommerce-shipping' ),
+							),
+						),
+					),
+					(object) array(
+						'type'    => 'not',
+						'operand' => array(
+							(object) array(
+								'type'    => 'plugins_activated',
+								'plugins' => array( 'woocommerce-tax' ),
 							),
 						),
 					),

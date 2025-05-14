@@ -5,12 +5,8 @@
  */
 abstract class ActionScheduler_TimezoneHelper {
 
-	/**
-	 * DateTimeZone object.
-	 *
-	 * @var null|DateTimeZone
-	 */
-	private static $local_timezone = null;
+	/** @var null|DateTimeZone */
+	private static $local_timezone = NULL;
 
 	/**
 	 * Set a DateTime's timezone to the WordPress site's timezone, or a UTC offset
@@ -109,21 +105,21 @@ abstract class ActionScheduler_TimezoneHelper {
 	 * @param bool $reset Toggle to discard stored value.
 	 * @deprecated 2.1.0
 	 */
-	public static function get_local_timezone( $reset = false ) {
+	public static function get_local_timezone( $reset = FALSE ) {
 		_deprecated_function( __FUNCTION__, '2.1.0', 'ActionScheduler_TimezoneHelper::set_local_timezone()' );
 		if ( $reset ) {
-			self::$local_timezone = null;
+			self::$local_timezone = NULL;
 		}
-		if ( ! isset( self::$local_timezone ) ) {
-			$tzstring = get_option( 'timezone_string' );
+		if ( !isset(self::$local_timezone) ) {
+			$tzstring = get_option('timezone_string');
 
-			if ( empty( $tzstring ) ) {
-				$gmt_offset = absint( get_option( 'gmt_offset' ) );
-				if ( 0 === $gmt_offset ) {
+			if ( empty($tzstring) ) {
+				$gmt_offset = get_option('gmt_offset');
+				if ( $gmt_offset == 0 ) {
 					$tzstring = 'UTC';
 				} else {
 					$gmt_offset *= HOUR_IN_SECONDS;
-					$tzstring    = timezone_name_from_abbr( '', $gmt_offset, 1 );
+					$tzstring   = timezone_name_from_abbr( '', $gmt_offset, 1 );
 
 					// If there's no timezone string, try again with no DST.
 					if ( false === $tzstring ) {
@@ -135,9 +131,9 @@ abstract class ActionScheduler_TimezoneHelper {
 						$is_dst = date( 'I' ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date	 -- we are actually interested in the runtime timezone.
 						foreach ( timezone_abbreviations_list() as $abbr ) {
 							foreach ( $abbr as $city ) {
-								if ( $city['dst'] === $is_dst && $city['offset'] === $gmt_offset ) {
+								if ( $city['dst'] == $is_dst && $city['offset'] == $gmt_offset ) {
 									// If there's no valid timezone ID, keep looking.
-									if ( is_null( $city['timezone_id'] ) ) {
+									if ( null === $city['timezone_id'] ) {
 										continue;
 									}
 
@@ -155,7 +151,7 @@ abstract class ActionScheduler_TimezoneHelper {
 				}
 			}
 
-			self::$local_timezone = new DateTimeZone( $tzstring );
+			self::$local_timezone = new DateTimeZone($tzstring);
 		}
 		return self::$local_timezone;
 	}

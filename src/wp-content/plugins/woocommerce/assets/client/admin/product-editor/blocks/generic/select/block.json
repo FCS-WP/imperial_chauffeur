@@ -5,14 +5,20 @@
     "title": "Product select field",
     "category": "woocommerce",
     "description": "A select field for use in the product editor.",
-    "keywords": ["products", "select"],
+    "keywords": [
+        "products",
+        "select"
+    ],
     "textdomain": "default",
     "attributes": {
         "label": {
             "type": "string",
-            "role": "content"
+            "__experimentalRole": "content"
         },
         "property": {
+            "type": "string"
+        },
+        "placeholder": {
             "type": "string"
         },
         "help": {
@@ -57,5 +63,7 @@
         "lock": false,
         "__experimentalToolbar": false
     },
-    "usesContext": ["postType"]
+    "usesContext": [
+        "postType"
+    ]
 }

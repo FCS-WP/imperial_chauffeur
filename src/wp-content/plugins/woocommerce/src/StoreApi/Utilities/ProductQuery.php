@@ -1,11 +1,6 @@
 <?php
-declare(strict_types=1);
-
 namespace Automattic\WooCommerce\StoreApi\Utilities;
 
-use Automattic\WooCommerce\Enums\ProductStatus;
-use Automattic\WooCommerce\Enums\ProductType;
-use Automattic\WooCommerce\Enums\CatalogVisibility;
 use WC_Tax;
 
 /**
@@ -35,7 +30,7 @@ class ProductQuery {
 			'slug'                => $request['slug'],
 			'fields'              => 'ids',
 			'ignore_sticky_posts' => true,
-			'post_status'         => ProductStatus::PUBLISH,
+			'post_status'         => 'publish',
 			'date_query'          => array(),
 			'post_type'           => 'product',
 		);
@@ -50,7 +45,7 @@ class ProductQuery {
 
 		// Filter product type by slug.
 		if ( ! empty( $request['type'] ) ) {
-			if ( ProductType::VARIATION === $request['type'] ) {
+			if ( 'variation' === $request['type'] ) {
 				$args['post_type'] = 'product_variation';
 			} else {
 				$args['post_type'] = 'product';
@@ -113,9 +108,8 @@ class ProductQuery {
 
 		// Map between taxonomy name and arg key.
 		$default_taxonomies = array(
-			'product_cat'   => 'category',
-			'product_tag'   => 'tag',
-			'product_brand' => 'brand',
+			'product_cat' => 'category',
+			'product_tag' => 'tag',
 		);
 
 		$taxonomies = array_merge( $all_product_taxonomies, $default_taxonomies );
@@ -123,11 +117,10 @@ class ProductQuery {
 		// Set tax_query for each passed arg.
 		foreach ( $taxonomies as $taxonomy => $key ) {
 			if ( ! empty( $request[ $key ] ) ) {
-				$type        = is_numeric( $request[ $key ][0] ) ? 'term_id' : 'slug';
 				$operator    = $request->get_param( $key . '_operator' ) && isset( $operator_mapping[ $request->get_param( $key . '_operator' ) ] ) ? $operator_mapping[ $request->get_param( $key . '_operator' ) ] : 'IN';
 				$tax_query[] = array(
 					'taxonomy' => $taxonomy,
-					'field'    => $type,
+					'field'    => 'term_id',
 					'terms'    => $request[ $key ],
 					'operator' => $operator,
 				);
@@ -207,14 +200,14 @@ class ProductQuery {
 		$visibility_options = wc_get_product_visibility_options();
 
 		if ( in_array( $catalog_visibility, array_keys( $visibility_options ), true ) ) {
-			$exclude_from_catalog = CatalogVisibility::SEARCH === $catalog_visibility ? '' : 'exclude-from-catalog';
-			$exclude_from_search  = CatalogVisibility::CATALOG === $catalog_visibility ? '' : 'exclude-from-search';
+			$exclude_from_catalog = 'search' === $catalog_visibility ? '' : 'exclude-from-catalog';
+			$exclude_from_search  = 'catalog' === $catalog_visibility ? '' : 'exclude-from-search';
 
 			$args['tax_query'][] = array(
 				'taxonomy'      => 'product_visibility',
 				'field'         => 'name',
 				'terms'         => array( $exclude_from_catalog, $exclude_from_search ),
-				'operator'      => CatalogVisibility::HIDDEN === $catalog_visibility ? 'AND' : 'NOT IN',
+				'operator'      => 'hidden' === $catalog_visibility ? 'AND' : 'NOT IN',
 				'rating_filter' => true,
 			);
 		}
@@ -366,7 +359,7 @@ class ProductQuery {
 				$skus[] = $wp_query->get( 'sku' );
 			}
 			$args['join']   = $this->append_product_sorting_table_join( $args['join'] );
-			$args['where'] .= ' AND wc_product_meta_lookup.sku IN (\'' . implode( '\',\'', array_map( 'esc_sql', $skus ) ) . '\')';
+			$args['where'] .= ' AND wc_product_meta_lookup.sku IN ("' . implode( '","', array_map( 'esc_sql', $skus ) ) . '")';
 		}
 
 		if ( $wp_query->get( 'slug' ) ) {
@@ -382,10 +375,10 @@ class ProductQuery {
 
 		if ( $wp_query->get( 'stock_status' ) ) {
 			$args['join']   = $this->append_product_sorting_table_join( $args['join'] );
-			$args['where'] .= ' AND wc_product_meta_lookup.stock_status IN (\'' . implode( '\',\'', array_map( 'esc_sql', $wp_query->get( 'stock_status' ) ) ) . '\')';
+			$args['where'] .= ' AND wc_product_meta_lookup.stock_status IN ("' . implode( '","', array_map( 'esc_sql', $wp_query->get( 'stock_status' ) ) ) . '")';
 		} elseif ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
 			$args['join']   = $this->append_product_sorting_table_join( $args['join'] );
-			$args['where'] .= ' AND wc_product_meta_lookup.stock_status NOT IN (\'outofstock\')';
+			$args['where'] .= ' AND wc_product_meta_lookup.stock_status NOT IN ("outofstock")';
 		}
 
 		if ( $wp_query->get( 'min_price' ) || $wp_query->get( 'max_price' ) ) {

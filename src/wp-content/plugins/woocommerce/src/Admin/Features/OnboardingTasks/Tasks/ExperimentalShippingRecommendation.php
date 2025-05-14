@@ -62,7 +62,9 @@ class ExperimentalShippingRecommendation extends Task {
 	 * @return bool
 	 */
 	public function can_view() {
-		return Features::is_enabled( 'shipping-smart-defaults' );
+		return Features::is_enabled( 'shipping-smart-defaults' ) &&
+			! PluginsHelper::is_plugin_active( 'woocommerce-shipping' ) &&
+			! PluginsHelper::is_plugin_active( 'woocommerce-tax' );
 	}
 
 	/**
@@ -80,7 +82,7 @@ class ExperimentalShippingRecommendation extends Task {
 	 * @return bool
 	 */
 	public static function has_plugins_active() {
-		return PluginsHelper::is_plugin_active( 'woocommerce-shipping' );
+		return PluginsHelper::is_plugin_active( 'woocommerce-services' );
 	}
 
 	/**

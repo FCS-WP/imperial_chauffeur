@@ -7,9 +7,6 @@ namespace Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions;
 
 defined( 'ABSPATH' ) || exit;
 
-use WC_Gateway_BACS;
-use WC_Gateway_COD;
-
 /**
  * Default Payment Gateways
  */
@@ -179,7 +176,7 @@ class DefaultPaymentGateways {
 				),
 			),
 			array(
-				'id'          => WC_Gateway_BACS::ID,
+				'id'          => 'bacs',
 				'title'       => __( 'Direct bank transfer', 'woocommerce' ),
 				'content'     => __( 'Take payments via bank transfer.', 'woocommerce' ),
 				'image'       => WC_ADMIN_IMAGES_FOLDER_URL . '/onboarding/bacs.svg',
@@ -190,7 +187,7 @@ class DefaultPaymentGateways {
 				'is_offline'  => true,
 			),
 			array(
-				'id'          => WC_Gateway_COD::ID,
+				'id'          => 'cod',
 				'title'       => __( 'Cash on delivery', 'woocommerce' ),
 				'content'     => __( 'Take payments in cash upon delivery.', 'woocommerce' ),
 				'image'       => WC_ADMIN_IMAGES_FOLDER_URL . '/onboarding/cod.svg',

@@ -463,15 +463,6 @@ abstract class Task {
 	}
 
 	/**
-	 * If a task is always accessible, relevant for when a task list is hidden but a task can still be viewed.
-	 *
-	 * @return bool
-	 */
-	public function is_always_accessible() {
-		return false;
-	}
-
-	/**
 	 * Check if the task has been visited.
 	 *
 	 * @return bool
@@ -613,4 +604,5 @@ abstract class Task {
 		}
 		return $result;
 	}
+
 }

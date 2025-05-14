@@ -9,7 +9,7 @@
 	"attributes": {
 		"toggleText": {
 			"type": "string",
-			"role": "content"
+			"__experimentalRole": "content"
 		},
 		"initialCollapsed": {
 			"type": "boolean"

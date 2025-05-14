@@ -11,12 +11,9 @@
 	"textdomain": "woocommerce",
 	"apiVersion": 3,
 	"ancestor": [
-		"woocommerce/product-filter-attribute",
-		"woocommerce/product-filter-status"
+		"woocommerce/product-filter-attribute"
 	],
-	"supports": {
-		"interactivity": true
-	},
+	"supports": {},
 	"usesContext": [
 		"filterData"
 	],

@@ -45,7 +45,8 @@ class Status {
 		/**
 		 * Filters Jetpack's offline mode.
 		 *
-		 * @see https://jetpack.com/support/offline-mode/
+		 * @see https://jetpack.com/support/development-mode/
+		 * @todo Update documentation ^^.
 		 *
 		 * @since 1.3.0
 		 *
@@ -324,8 +325,6 @@ class Status {
 	 * A site is considered as being onboarded if it currently has an onboarding token.
 	 *
 	 * @since-jetpack 5.8
-	 *
-	 * @deprecated since 4.0.0
 	 *
 	 * @access public
 	 * @static

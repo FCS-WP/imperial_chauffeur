@@ -9,10 +9,7 @@
 	"keywords": [
 		"WooCommerce",
 		"Products (Beta)",
-		"all products",
-		"by category",
-		"by tag",
-		"by attribute"
+		"products"
 	],
 	"textdomain": "woocommerce",
 	"attributes": {
@@ -26,9 +23,6 @@
 			"type": "string"
 		},
 		"displayLayout": {
-			"type": "object"
-		},
-		"dimensions": {
 			"type": "object"
 		},
 		"convertedFromProducts": {
@@ -57,14 +51,16 @@
 		"queryId": "queryId",
 		"query": "query",
 		"displayLayout": "displayLayout",
-		"dimensions": "dimensions",
 		"queryContextIncludes": "queryContextIncludes",
 		"collection": "collection",
 		"__privateProductCollectionPreviewState": "__privatePreviewState"
 	},
 	"usesContext": [ "templateSlug", "postId" ],
 	"supports": {
-		"align": [ "wide", "full" ],
+		"align": [
+			"wide",
+			"full"
+		],
 		"anchor": true,
 		"html": false,
 		"__experimentalLayout": true,

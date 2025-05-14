@@ -1715,8 +1715,7 @@ class ListTable extends WP_List_Table {
 		<select name="search-filter" id="order-search-filter">
 			<?php foreach ( $options as $value => $label ) { ?>
 				<option value="<?php echo esc_attr( wp_unslash( sanitize_text_field( $value ) ) ); ?>" <?php selected( $value, sanitize_text_field( wp_unslash( $selected ) ) ); ?>><?php echo esc_html( $label ); ?></option>
-			<?php } ?>
-		</select>
-		<?php
+				<?php
+			}
 	}
 }

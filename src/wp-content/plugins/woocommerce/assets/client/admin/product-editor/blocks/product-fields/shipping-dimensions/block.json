@@ -14,7 +14,7 @@
     "attributes": {
         "__contentEditable": {
             "type": "string",
-            "role": "content"
+            "__experimentalRole": "content"
         },
         "disabled": {
             "type": "boolean",

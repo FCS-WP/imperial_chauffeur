@@ -14,7 +14,7 @@
     "attributes": {
         "label": {
             "type": "string",
-            "role": "content"
+            "__experimentalRole": "content"
         },
         "help": {
             "type": "string"
@@ -34,7 +34,7 @@
         },
         "disabledCopy": {
             "type": "string",
-            "role": "content"
+            "__experimentalRole": "content"
         },
         "checkedValue": {
             "type": "object"

@@ -21,7 +21,7 @@ class ActionScheduler_InvalidActionException extends \InvalidArgumentException i
 			/* translators: 1: action ID 2: schedule */
 			__( 'Action [%1$s] has an invalid schedule: %2$s', 'woocommerce' ),
 			$action_id,
-			var_export( $schedule, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+			var_export( $schedule, true )
 		);
 
 		return new static( $message );
@@ -29,6 +29,8 @@ class ActionScheduler_InvalidActionException extends \InvalidArgumentException i
 
 	/**
 	 * Create a new exception when the action's args cannot be decoded to an array.
+	 *
+	 * @author Jeremy Pry
 	 *
 	 * @param string $action_id The action ID with bad args.
 	 * @param mixed  $args      Passed arguments.
@@ -39,7 +41,7 @@ class ActionScheduler_InvalidActionException extends \InvalidArgumentException i
 			/* translators: 1: action ID 2: arguments */
 			__( 'Action [%1$s] has invalid arguments. It cannot be JSON decoded to an array. $args = %2$s', 'woocommerce' ),
 			$action_id,
-			var_export( $args, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+			var_export( $args, true )
 		);
 
 		return new static( $message );

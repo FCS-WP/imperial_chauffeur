@@ -8,51 +8,36 @@ class ActionScheduler_QueueRunner extends ActionScheduler_Abstract_QueueRunner {
 
 	const WP_CRON_SCHEDULE = 'every_minute';
 
-	/**
-	 * ActionScheduler_AsyncRequest_QueueRunner instance.
-	 *
-	 * @var ActionScheduler_AsyncRequest_QueueRunner
-	 */
+	/** @var ActionScheduler_AsyncRequest_QueueRunner */
 	protected $async_request;
 
-	/**
-	 * ActionScheduler_QueueRunner instance.
-	 *
-	 * @var ActionScheduler_QueueRunner
-	 */
+	/** @var ActionScheduler_QueueRunner  */
 	private static $runner = null;
 
-	/**
-	 * Number of processed actions.
-	 *
-	 * @var int
-	 */
+	/** @var int  */
 	private $processed_actions_count = 0;
 
 	/**
-	 * Get instance.
-	 *
 	 * @return ActionScheduler_QueueRunner
 	 * @codeCoverageIgnore
 	 */
 	public static function instance() {
-		if ( empty( self::$runner ) ) {
-			$class        = apply_filters( 'action_scheduler_queue_runner_class', 'ActionScheduler_QueueRunner' );
+		if ( empty(self::$runner) ) {
+			$class = apply_filters('action_scheduler_queue_runner_class', 'ActionScheduler_QueueRunner');
 			self::$runner = new $class();
 		}
-
 		return self::$runner;
 	}
 
 	/**
 	 * ActionScheduler_QueueRunner constructor.
 	 *
-	 * @param ActionScheduler_Store|null                    $store Store object.
-	 * @param ActionScheduler_FatalErrorMonitor|null        $monitor Monitor object.
-	 * @param ActionScheduler_QueueCleaner|null             $cleaner Cleaner object.
-	 * @param ActionScheduler_AsyncRequest_QueueRunner|null $async_request Async request runner object.
+	 * @param ActionScheduler_Store                    $store Store object.
+	 * @param ActionScheduler_FatalErrorMonitor        $monitor Monitor object.
+	 * @param ActionScheduler_QueueCleaner             $cleaner Cleaner object.
+	 * @param ActionScheduler_AsyncRequest_QueueRunner $async_request Async request runner object.
 	 */
-	public function __construct( ?ActionScheduler_Store $store = null, ?ActionScheduler_FatalErrorMonitor $monitor = null, ?ActionScheduler_QueueCleaner $cleaner = null, ?ActionScheduler_AsyncRequest_QueueRunner $async_request = null ) {
+	public function __construct( ActionScheduler_Store $store = null, ActionScheduler_FatalErrorMonitor $monitor = null, ActionScheduler_QueueCleaner $cleaner = null, ActionScheduler_AsyncRequest_QueueRunner $async_request = null ) {
 		parent::__construct( $store, $monitor, $cleaner );
 
 		if ( is_null( $async_request ) ) {
@@ -63,13 +48,11 @@ class ActionScheduler_QueueRunner extends ActionScheduler_Abstract_QueueRunner {
 	}
 
 	/**
-	 * Initialize.
-	 *
 	 * @codeCoverageIgnore
 	 */
 	public function init() {
 
-		add_filter( 'cron_schedules', array( self::instance(), 'add_wp_cron_schedule' ) ); // phpcs:ignore WordPress.WP.CronInterval.CronSchedulesInterval
+		add_filter( 'cron_schedules', array( self::instance(), 'add_wp_cron_schedule' ) );
 
 		// Check for and remove any WP Cron hook scheduled by Action Scheduler < 3.0.0, which didn't include the $context param.
 		$next_timestamp = wp_next_scheduled( self::WP_CRON_HOOK );
@@ -138,7 +121,6 @@ class ActionScheduler_QueueRunner extends ActionScheduler_Abstract_QueueRunner {
 	 * that was the only context in which this method was run, and the self::WP_CRON_HOOK hook had no context
 	 * passed along with it. New code calling this method directly, or by triggering the self::WP_CRON_HOOK,
 	 * should set a context as the first parameter. For an example of this, refer to the code seen in
-	 *
 	 * @see ActionScheduler_AsyncRequest_QueueRunner::handle()
 	 *
 	 * @param string $context Optional identifier for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
@@ -176,13 +158,13 @@ class ActionScheduler_QueueRunner extends ActionScheduler_Abstract_QueueRunner {
 	 * @return int The number of actions processed.
 	 */
 	protected function do_batch( $size = 100, $context = '' ) {
-		$claim = $this->store->stake_claim( $size );
-		$this->monitor->attach( $claim );
+		$claim = $this->store->stake_claim($size);
+		$this->monitor->attach($claim);
 		$processed_actions = 0;
 
 		foreach ( $claim->get_actions() as $action_id ) {
 			// bail if we lost the claim.
-			if ( ! in_array( $action_id, $this->store->find_actions_by_claim_id( $claim->get_id() ), true ) ) {
+			if ( ! in_array( $action_id, $this->store->find_actions_by_claim_id( $claim->get_id() ) ) ) {
 				break;
 			}
 			$this->process_action( $action_id, $context );
@@ -192,7 +174,7 @@ class ActionScheduler_QueueRunner extends ActionScheduler_Abstract_QueueRunner {
 				break;
 			}
 		}
-		$this->store->release_claim( $claim );
+		$this->store->release_claim($claim);
 		$this->monitor->detach();
 		$this->clear_caches();
 		return $processed_actions;

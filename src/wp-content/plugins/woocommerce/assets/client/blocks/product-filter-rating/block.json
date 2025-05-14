@@ -1,23 +1,26 @@
 {
 	"name": "woocommerce/product-filter-rating",
 	"version": "1.0.0",
-	"title": "Rating (Experimental)",
+	"title": "Filter Options",
 	"description": "Enable customers to filter the product collection by rating.",
 	"category": "woocommerce",
-	"keywords": [],
+	"keywords": [
+		"WooCommerce"
+	],
 	"supports": {
 		"interactivity": true,
+		"inserter": false,
 		"color": {
 			"background": false,
 			"text": true
 		}
 	},
 	"ancestor": [
-		"woocommerce/product-filters"
+		"woocommerce/product-filter"
 	],
 	"usesContext": [
 		"query",
-		"filterParams"
+		"queryId"
 	],
 	"attributes": {
 		"className": {
@@ -28,9 +31,13 @@
 			"type": "boolean",
 			"default": false
 		},
-		"minRating": {
+		"displayStyle": {
 			"type": "string",
-			"default": "0"
+			"default": "list"
+		},
+		"selectType": {
+			"type": "string",
+			"default": "multiple"
 		},
 		"isPreview": {
 			"type": "boolean",

@@ -13,9 +13,6 @@ use Automattic\WooCommerce\Blueprint\UseWPFunctions;
 class ExportInstallPluginSteps implements StepExporter {
 	use UseWPFunctions;
 
-
-	private $filter_callback;
-
 	/**
 	 * Whether to include private plugins in the export.
 	 *
@@ -33,27 +30,12 @@ class ExportInstallPluginSteps implements StepExporter {
 	}
 
 	/**
-	 * Register a filter callback to filter the plugins to export.
-	 *
-	 * @param callable $callback
-	 *
-	 * @return void
-	 */
-	public function filter( callable $callback ) {
-		$this->filter_callback = $callback;
-	}
-
-	/**
 	 * Export the steps required to install plugins.
 	 *
 	 * @return array The array of InstallPlugin steps.
 	 */
 	public function export() {
-		$plugins = $this->sort_plugins_by_dep( $this->wp_get_plugins() );
-
-		if ( is_callable( $this->filter_callback ) ) {
-			$plugins = call_user_func( $this->filter_callback, $plugins );
-		}
+		$plugins = $this->wp_get_plugins();
 
 		// @todo temporary fix for JN site -- it includes WooCommerce as a custom plugin
 		// since JN sites are using a different slug.
@@ -63,7 +45,10 @@ class ExportInstallPluginSteps implements StepExporter {
 			if ( in_array( $plugin['Name'], $exclude, true ) ) {
 				continue;
 			}
-
+			// skip inactive plugins for now.
+			if ( ! $this->wp_is_plugin_active( $path ) ) {
+				continue;
+			}
 			$slug = dirname( $path );
 			// single-file plugin.
 			if ( '.' === $slug ) {
@@ -95,54 +80,6 @@ class ExportInstallPluginSteps implements StepExporter {
 		}
 
 		return $steps;
-	}
-
-	/**
-	 * Sort plugins by dependencies -- put the dependencies at the top.
-	 *
-	 * @param array $plugins a list of plugins to sort (from wp_get_plugins function)
-	 * @return array
-	 */
-	function sort_plugins_by_dep( array $plugins ) {
-		$sorted  = array();
-		$visited = array();
-
-		// Create a mapping of lowercase titles to plugin keys for quick lookups
-		$titleMap = array_reduce(
-			array_keys( $plugins ),
-			function ( $carry, $key ) use ( $plugins ) {
-				$title = strtolower( $plugins[ $key ]['Title'] ?? '' );
-				if ( $title ) {
-					$carry[ $title ] = $key;
-				}
-				return $carry;
-			},
-			array()
-		);
-
-		// Recursive function for topological sort
-		$visit = function ( $pluginKey ) use ( &$visit, &$sorted, &$visited, $plugins, $titleMap ) {
-			if ( isset( $visited[ $pluginKey ] ) ) {
-				return;
-			}
-			$visited[ $pluginKey ] = true;
-
-			$requires = $plugins[ $pluginKey ]['RequiresPlugins'] ?? array();
-			foreach ( (array) $requires as $dependency ) {
-				$dependencyKey = $titleMap[ strtolower( $dependency ) ] ?? null;
-				if ( $dependencyKey ) {
-					$visit( $dependencyKey );
-				}
-			}
-			$sorted[ $pluginKey ] = $plugins[ $pluginKey ];
-		};
-
-		// Perform sort for each plugin
-		foreach ( array_keys( $plugins ) as $pluginKey ) {
-			$visit( $pluginKey );
-		}
-
-		return $sorted;
 	}
 
 	/**

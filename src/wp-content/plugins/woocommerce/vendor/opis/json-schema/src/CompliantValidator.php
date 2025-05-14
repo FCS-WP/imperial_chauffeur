@@ -38,13 +38,9 @@ class CompliantValidator extends Validator
         'keepAdditionalItemsKeyword' => false,
     ];
 
-    public function __construct(
-        ?SchemaLoader $loader = null,
-        int $max_errors = 1,
-        bool $stop_at_first_error = true
-    )
+    public function __construct(?SchemaLoader $loader = null, int $max_errors = 1)
     {
-        parent::__construct($loader, $max_errors, $stop_at_first_error);
+        parent::__construct($loader, $max_errors);
 
         // Set parser options
         $parser = $this->parser();

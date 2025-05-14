@@ -15,7 +15,7 @@
     "attributes": {
         "name": {
             "type": "string",
-            "role": "content"
+            "__experimentalRole": "content"
         }
     },
     "supports": {

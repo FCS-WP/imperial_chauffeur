@@ -15,8 +15,7 @@
 			"full"
 		],
 		"html": false,
-		"multiple": false,
-		"inserter": false
+		"multiple": false
 	},
 	"attributes": {
 		"columns": {

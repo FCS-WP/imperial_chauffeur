@@ -14,7 +14,6 @@
 	},
 	"attributes": {
 		"lock": {
-			"type": "object",
 			"default": {
 				"remove": true,
 				"move": true

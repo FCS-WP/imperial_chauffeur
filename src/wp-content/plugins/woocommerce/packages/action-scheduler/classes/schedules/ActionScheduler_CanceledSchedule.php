@@ -10,11 +10,9 @@ class ActionScheduler_CanceledSchedule extends ActionScheduler_SimpleSchedule {
 	 *
 	 * @var null
 	 */
-	private $timestamp = null;
+	private $timestamp = NULL;
 
 	/**
-	 * Calculate when the next instance of this schedule would run based on a given date & time.
-	 *
 	 * @param DateTime $after Timestamp.
 	 *
 	 * @return DateTime|null
@@ -35,8 +33,6 @@ class ActionScheduler_CanceledSchedule extends ActionScheduler_SimpleSchedule {
 	}
 
 	/**
-	 * Action is not recurring.
-	 *
 	 * @return bool
 	 */
 	public function is_recurring() {

@@ -16,10 +16,8 @@ class LocalPickupUtils {
 		$pickup_location_settings = get_option(
 			'woocommerce_pickup_location_settings',
 			[
-				'enabled'    => 'no',
-				'title'      => __( 'Pickup', 'woocommerce' ),
-				'cost'       => '',
-				'tax_status' => 'taxable',
+				'enabled' => 'no',
+				'title'   => __( 'Pickup', 'woocommerce' ),
 			]
 		);
 
@@ -29,10 +27,6 @@ class LocalPickupUtils {
 
 		if ( empty( $pickup_location_settings['enabled'] ) ) {
 			$pickup_location_settings['enabled'] = 'no';
-		}
-
-		if ( ! isset( $pickup_location_settings['cost'] ) ) {
-			$pickup_location_settings['cost'] = '';
 		}
 
 		// Return settings as is if we're editing them.

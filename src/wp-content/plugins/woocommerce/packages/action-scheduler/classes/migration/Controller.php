@@ -19,39 +19,19 @@ use Action_Scheduler\WP_CLI\ProgressBar;
  * @codeCoverageIgnore
  */
 class Controller {
-	/**
-	 * Instance.
-	 *
-	 * @var self
-	 */
+	/** @var self */
 	private static $instance;
 
-	/**
-	 * Scheduler instance.
-	 *
-	 * @var Action_Scheduler\Migration\Scheduler
-	 */
+	/** @var Action_Scheduler\Migration\Scheduler */
 	private $migration_scheduler;
 
-	/**
-	 * Class name of the store object.
-	 *
-	 * @var string
-	 */
+	/** @var string */
 	private $store_classname;
 
-	/**
-	 * Class name of the logger object.
-	 *
-	 * @var string
-	 */
+	/** @var string */
 	private $logger_classname;
 
-	/**
-	 * Flag to indicate migrating custom store.
-	 *
-	 * @var bool
-	 */
+	/** @var bool */
 	private $migrate_custom_store;
 
 	/**
@@ -163,7 +143,7 @@ class Controller {
 			}
 		}
 
-		return apply_filters( 'action_scheduler/migration_config', $config ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+		return apply_filters( 'action_scheduler/migration_config', $config );
 	}
 
 	/**
@@ -199,6 +179,8 @@ class Controller {
 
 	/**
 	 * Possibly hook the migration scheduler action.
+	 *
+	 * @author Jeremy Pry
 	 */
 	public function maybe_hook_migration() {
 		if ( ! $this->allow_migration() || \ActionScheduler_DataController::is_migration_complete() ) {

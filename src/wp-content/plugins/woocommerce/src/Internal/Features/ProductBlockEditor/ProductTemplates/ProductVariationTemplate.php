@@ -7,7 +7,6 @@ namespace Automattic\WooCommerce\Internal\Features\ProductBlockEditor\ProductTem
 
 use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Admin\Features\ProductBlockEditor\ProductTemplates\ProductFormTemplateInterface;
-use Automattic\WooCommerce\Enums\ProductStockStatus;
 
 /**
  * Product Variation Template.
@@ -220,9 +219,6 @@ class ProductVariationTemplate extends AbstractProductFormTemplate implements Pr
 					'property' => 'description',
 					'label'    => __( 'Note', 'woocommerce' ),
 					'help'     => 'Enter an optional note displayed on the product page when customers select this variation.',
-					'lock'     => array(
-						'move' => true,
-					),
 				),
 			)
 		);
@@ -394,15 +390,15 @@ class ProductVariationTemplate extends AbstractProductFormTemplate implements Pr
 					'options'  => array(
 						array(
 							'label' => __( 'In stock', 'woocommerce' ),
-							'value' => ProductStockStatus::IN_STOCK,
+							'value' => 'instock',
 						),
 						array(
 							'label' => __( 'Out of stock', 'woocommerce' ),
-							'value' => ProductStockStatus::OUT_OF_STOCK,
+							'value' => 'outofstock',
 						),
 						array(
 							'label' => __( 'On backorder', 'woocommerce' ),
-							'value' => ProductStockStatus::ON_BACKORDER,
+							'value' => 'onbackorder',
 						),
 					),
 				),

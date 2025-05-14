@@ -2,17 +2,12 @@
 
 /**
  * Class ActionScheduler_Logger
- *
  * @codeCoverageIgnore
  */
 abstract class ActionScheduler_Logger {
 
-	/**
-	 * Instance.
-	 *
-	 * @var null|self
-	 */
-	private static $logger = null;
+	/** @var null|self */
+	private static $logger = NULL;
 
 	/**
 	 * Get instance.
@@ -20,8 +15,8 @@ abstract class ActionScheduler_Logger {
 	 * @return ActionScheduler_Logger
 	 */
 	public static function instance() {
-		if ( empty( self::$logger ) ) {
-			$class        = apply_filters( 'action_scheduler_logger_class', 'ActionScheduler_wpCommentLogger' );
+		if ( empty(self::$logger) ) {
+			$class = apply_filters('action_scheduler_logger_class', 'ActionScheduler_wpCommentLogger');
 			self::$logger = new $class();
 		}
 		return self::$logger;
@@ -30,13 +25,13 @@ abstract class ActionScheduler_Logger {
 	/**
 	 * Create log entry.
 	 *
-	 * @param string        $action_id Action ID.
-	 * @param string        $message   Log message.
-	 * @param DateTime|null $date      Log date.
+	 * @param string   $action_id Action ID.
+	 * @param string   $message   Log message.
+	 * @param DateTime $date      Log date.
 	 *
 	 * @return string The log entry ID
 	 */
-	abstract public function log( $action_id, $message, ?DateTime $date = null );
+	abstract public function log( $action_id, $message, DateTime $date = NULL );
 
 	/**
 	 * Get action's log entry.
@@ -130,9 +125,9 @@ abstract class ActionScheduler_Logger {
 	 *
 	 * @param int                         $action_id Action ID.
 	 * @param null|ActionScheduler_Action $action Action.
-	 * @param string                      $context Action execution context.
+	 * @param string                      $context Action exeuction context.
 	 */
-	public function log_completed_action( $action_id, $action = null, $context = '' ) {
+	public function log_completed_action( $action_id, $action = NULL, $context = '' ) {
 		if ( ! empty( $context ) ) {
 			/* translators: %s: context */
 			$message = sprintf( __( 'action complete via %s', 'woocommerce' ), $context );
@@ -215,7 +210,7 @@ abstract class ActionScheduler_Logger {
 	 * @param string         $action_id Action ID.
 	 * @param null|Exception $exception The exception which occurred when fetching the action. NULL by default for backward compatibility.
 	 */
-	public function log_failed_fetch_action( $action_id, ?Exception $exception = null ) {
+	public function log_failed_fetch_action( $action_id, Exception $exception = NULL ) {
 
 		if ( ! is_null( $exception ) ) {
 			/* translators: %s: exception message */

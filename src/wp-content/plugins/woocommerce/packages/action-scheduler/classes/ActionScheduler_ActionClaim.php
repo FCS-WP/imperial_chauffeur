@@ -4,18 +4,9 @@
  * Class ActionScheduler_ActionClaim
  */
 class ActionScheduler_ActionClaim {
-	/**
-	 * Claim ID.
-	 *
-	 * @var string
-	 */
+	/** @var string */
 	private $id = '';
-
-	/**
-	 * Claimed action IDs.
-	 *
-	 * @var int[]
-	 */
+	/** @var int[] */
 	private $action_ids = array();
 
 	/**
@@ -25,7 +16,7 @@ class ActionScheduler_ActionClaim {
 	 * @param int[]  $action_ids Action IDs.
 	 */
 	public function __construct( $id, array $action_ids ) {
-		$this->id         = $id;
+		$this->id = $id;
 		$this->action_ids = $action_ids;
 	}
 

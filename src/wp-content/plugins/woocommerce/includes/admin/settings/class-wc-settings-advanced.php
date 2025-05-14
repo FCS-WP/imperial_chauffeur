@@ -5,7 +5,7 @@
  * @package  WooCommerce\Admin
  */
 
-use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use Automattic\WooCommerce\Admin\Features\Features;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -33,13 +33,6 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 	}
 
 	/**
-	 * Setting page icon.
-	 *
-	 * @var string
-	 */
-	public $icon = 'more';
-
-	/**
 	 * Get own sections.
 	 *
 	 * @return array
@@ -53,8 +46,8 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 			'woocommerce_com' => __( 'WooCommerce.com', 'woocommerce' ),
 		);
 
-		if ( FeaturesUtil::feature_is_enabled( 'blueprint' ) ) {
-			$sections['blueprint'] = __( 'Blueprint (beta)', 'woocommerce' );
+		if ( Features::is_enabled( 'blueprint' ) ) {
+			$sections['blueprint'] = __( 'Blueprint', 'woocommerce' );
 		}
 
 		return $sections;
@@ -361,7 +354,7 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 					'type'          => 'checkbox',
 					'checkboxgroup' => 'start',
 					'default'       => 'no',
-					'autoload'      => true,
+					'autoload'      => false,
 				),
 				array(
 					'type' => 'sectionend',
@@ -448,7 +441,7 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 		$settings =
 			array(
 				array(
-					'title' => '',
+					'title' => esc_html__( 'Blueprint', 'woocommerce' ),
 					'type'  => 'title',
 				),
 				array(
@@ -509,9 +502,6 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		global $current_section;
 
-		$prev_value = 'yes' === get_option( 'woocommerce_allow_tracking', 'no' ) ? 'yes' : 'no';
-		$new_value  = isset( $_POST['woocommerce_allow_tracking'] ) && ( 'yes' === $_POST['woocommerce_allow_tracking'] || '1' === $_POST['woocommerce_allow_tracking'] ) ? 'yes' : 'no';
-
 		if ( apply_filters( 'woocommerce_rest_api_valid_to_save', ! in_array( $current_section, array( 'keys', 'webhooks' ), true ) ) ) {
 			// Prevent the T&Cs and checkout page from being set to the same page.
 			if ( isset( $_POST['woocommerce_terms_page_id'], $_POST['woocommerce_checkout_page_id'] ) && $_POST['woocommerce_terms_page_id'] === $_POST['woocommerce_checkout_page_id'] ) {
@@ -531,16 +521,8 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 				}
 			}
 
-			if ( class_exists( 'WC_Tracks' ) && 'no' === $new_value && 'yes' === $prev_value ) {
-				WC_Tracks::track_woocommerce_allow_tracking_toggled( $prev_value, $new_value, 'settings' );
-			}
-
 			$this->save_settings_for_current_section();
 			$this->do_update_options_action();
-
-			if ( class_exists( 'WC_Tracks' ) && 'yes' === $new_value && 'no' === $prev_value ) {
-				WC_Tracks::track_woocommerce_allow_tracking_toggled( $prev_value, $new_value, 'settings' );
-			}
 		}
 		// phpcs:enable
 	}
