@@ -112,7 +112,7 @@ function confirm_email_woocommerce_order_action_execute($post_id)
 
   $headers = [
     'Content-Type: text/html; charset=UTF-8',
-    'From: Imperial <impls@singnet.com.sg>'
+    'From: Imperial Chauffeur Services <impls@singnet.com.sg>'
   ];
 
   $subject = 'Thank you for your order. Your booking has been confirmed – Imperial Chauffeur Services Pte. Ltd';
