@@ -266,3 +266,9 @@ function display_order_history_content()
     }
 }
 add_action('woocommerce_account_order-history_endpoint', 'display_order_history_content');
+
+
+add_filter( 'wp_mail_from_name', 'my_mail_from_name' );
+function my_mail_from_name( $name ) {
+    return "Imperial Chauffeur Services";
+}
