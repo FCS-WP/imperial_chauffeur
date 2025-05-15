@@ -120,7 +120,6 @@ if (empty($is_monthly_payment_order)) :
 			'pick_up_time'       => __('Pick Up Time', 'woocommerce'),
 			'pick_up_location'   => __('Pick Up Location', 'woocommerce'),
 			'drop_off_location'  => __('Drop Off Location', 'woocommerce'),
-			'staff_name'  			=> __('Staff Name', 'woocommerce'),
 		);
 
 		$order_id = $order->get_id();
@@ -146,13 +145,16 @@ if (empty($is_monthly_payment_order)) :
 				if ($order) {
 					$note_content = "Custom fields changed:\n" . implode("\n", $changes);
 					$order->add_order_note($note_content, true);
-
+					if ($order->get_status() !== 'on-hold') {
+						$order->update_status('on-hold');
+					}
 					$current_user = wp_get_current_user();
 					$member_name = $current_user->display_name ?: $current_user->user_login;
 					$edit_date = current_time('d/m/Y');
 
 					// Email info
-					$user_email = "toan444666@gmail.com";
+					$user_email = get_option('admin_email');
+					// $user_email = 'toan444666@gmail.com';
 					$subject = "Member {$member_name} Edited Order #{$order_id} – Action Required";
 
 					$headers = [
@@ -210,12 +212,13 @@ if (empty($is_monthly_payment_order)) :
 				if ($key === 'pick_up_date') {
 					$type = 'date';
 				} elseif ($key === 'pick_up_time' || $key === 'eta_time') {
-					$type = 'time';
+					$type = 'text';
+					$id = $key;
 				} elseif ($key === 'no_of_passengers' || $key === 'no_of_baggage') {
 					$type = 'number';
 				}
 
-				echo '<input type="' . esc_attr($type) . '" name="' . esc_attr($key) . '" value="' . esc_attr($value) . '" style="width:100%;" />';
+				echo '<input id="' . esc_attr($id) . '" type="' . esc_attr($type) . '" name="' . esc_attr($key) . '" value="' . esc_attr($value) . '" style="width:100%;" />';
 
 				echo '</label></p>';
 			}
