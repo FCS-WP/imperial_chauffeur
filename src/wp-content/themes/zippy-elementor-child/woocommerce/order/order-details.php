@@ -120,7 +120,6 @@ if (empty($is_monthly_payment_order)) :
 			'pick_up_time'       => __('Pick Up Time', 'woocommerce'),
 			'pick_up_location'   => __('Pick Up Location', 'woocommerce'),
 			'drop_off_location'  => __('Drop Off Location', 'woocommerce'),
-			'staff_name'  			=> __('Staff Name', 'woocommerce'),
 		);
 
 		$order_id = $order->get_id();
@@ -150,9 +149,59 @@ if (empty($is_monthly_payment_order)) :
 				if ($order) {
 					$note_content = "Custom fields changed:\n" . implode("\n", $changes);
 					$note = $order->add_order_note($note_content, true); // true = cusstomer
+					$order->add_order_note($note_content, true);
+					if ($order->get_status() !== 'on-hold') {
+						$order->update_status('on-hold');
+					}
+					$current_user = wp_get_current_user();
+					$member_name = $current_user->display_name ?: $current_user->user_login;
+					$edit_date = current_time('d/m/Y');
+
+					// Email info
+					$user_email = get_option('admin_email');
+					// $user_email = 'toan444666@gmail.com';
+					$subject = "Member {$member_name} Edited Order #{$order_id} – Action Required";
+
+					$headers = [
+						'Content-Type: text/html; charset=UTF-8',
+						'From: Imperial <impls@singnet.com.sg>'
+					];
+
+					// Build message body
+					$message = "<p>Hi Team,</p>";
+					$message .= "<p>Please be informed that <strong>Member {$member_name}</strong> has made changes to <strong>Order #{$order_id}</strong>.</p>";
+
+					$message .= "<h4>Details of Change:</h4>";
+
+					foreach ($changes as $change) {
+						if (preg_match('/^(.*?): "(.*?)" → "(.*?)"$/', $change, $matches)) {
+							$label = $matches[1];
+							$old = $matches[2];
+							$new = $matches[3];
+
+							$message .= "<p><strong>Custom Field Edited:</strong> {$label}<br>";
+							$message .= "<strong>Previous Value:</strong> {$old}<br>";
+							$message .= "<strong>New Value:</strong> {$new}<br><hr>";
+						}
+					}
+					$message .= "<strong>Edit Date:</strong> {$edit_date}</p>";
+					$message .= "<p>Please review the changes in the backend.</p>";
+
+					$message .= "<br><p>Best regards,</p>";
+					$message .= "<p><strong>Imperial Chauffeur Services Pte. Ltd</strong></p>";
+					$message .= "<p>Email: impls@singnet.com.sg<br>";
+					$message .= "Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
+
+					wp_mail($user_email, $subject, $message, $headers);
+
+					// send email to customer
 					send_notify_email($order, $old_value_arr, $new_value_arr);
+
 				}
 			}
+
+
+
 
 			$redirect_url = remove_query_arg('edit_order', wp_unslash($_SERVER['REQUEST_URI']));
 			echo '<script>window.location.href = "' . esc_url($redirect_url) . '";</script>';
@@ -172,12 +221,13 @@ if (empty($is_monthly_payment_order)) :
 				if ($key === 'pick_up_date') {
 					$type = 'date';
 				} elseif ($key === 'pick_up_time' || $key === 'eta_time') {
-					$type = 'time';
-				}elseif ($key === 'no_of_passengers' || $key === 'no_of_baggage') {
+					$type = 'text';
+					$id = $key;
+				} elseif ($key === 'no_of_passengers' || $key === 'no_of_baggage') {
 					$type = 'number';
 				}
 
-				echo '<input type="' . esc_attr($type) . '" name="' . esc_attr($key) . '" value="' . esc_attr($value) . '" style="width:100%;" />';
+				echo '<input id="' . esc_attr($id) . '" type="' . esc_attr($type) . '" name="' . esc_attr($key) . '" value="' . esc_attr($value) . '" style="width:100%;" />';
 
 				echo '</label></p>';
 			}
@@ -199,8 +249,9 @@ if (empty($is_monthly_payment_order)) :
 				echo "<p><strong>Duration: </strong> $order_quantity Hours</p>";
 			}
 			echo '</div>';
-
-			echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
+			if (!in_array($order->get_status(), ['completed', 'cancelled'])) {
+				echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
+			}
 		}
 		?>
 	</div>

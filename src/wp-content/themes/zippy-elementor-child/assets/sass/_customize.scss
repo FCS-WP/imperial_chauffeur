@@ -325,3 +325,7 @@ mark {
     margin-bottom: 100px;
   }
 }
+.flatpickr-calendar.noCalendar.hasTime .flatpickr-time {
+  height: 40px !important;
+  border-top:0 !important ;
+}
