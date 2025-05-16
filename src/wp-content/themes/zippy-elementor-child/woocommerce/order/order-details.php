@@ -150,7 +150,7 @@ if (empty($is_monthly_payment_order)) :
 				if ($order) {
 					$note_content = "Custom fields changed:\n" . implode("\n", $changes);
 					$note = $order->add_order_note($note_content, true); // true = cusstomer
-					send_notify_email($order_id, $old_value_arr, $new_value_arr);
+					send_notify_email($order, $old_value_arr, $new_value_arr);
 				}
 			}
 

@@ -177,8 +177,7 @@ function completed_email_woocommerce_order_action_execute($order_id)
 
 
 
-function send_notify_email($order_id, $old_data, $new_data){
-  $order = wc_get_order($order_id);
+function send_notify_email($order, $old_data, $new_data){
 
   $user_email = $order->get_billing_email();
 
