@@ -197,6 +197,6 @@ function send_notify_email($order_id, $old_data, $new_data){
 
   $body = render_email_template("order-edit-email", $data);
 
-  wp_mail($user_email, $subject, $body, $headers);
+  return wp_mail($user_email, $subject, $body, $headers);
 
 }
