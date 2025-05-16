@@ -57,8 +57,7 @@
             $custom_subtotal = 0;
             foreach ($items as $item_id => $item) {
                 $pne_total = $item->get_total();
-                $pne_total_excl_tax = $pne_total / (1 + ($tax_rate / 100));
-                $custom_subtotal += $pne_total_excl_tax;
+                $custom_subtotal += $pne_total;
             }
             $order_total = $order->get_total();
         ?>
@@ -70,6 +69,22 @@
                 <?php echo wc_price($custom_subtotal); ?>
             </td>
         </tr>
+        
+        <?php
+			if(!empty($order->get_items("fee"))) :
+				foreach ($order->get_items("fee") as $id => $itm) :
+					$fee_name = $itm->get_name();
+					$total_fee = wc_price($itm->get_total());
+			?>
+            <tr>
+                <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
+                    <?php echo esc_html($fee_name); ?>
+                </th>
+                <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
+                    <?php echo wp_kses_post($total_fee); ?>
+                </td>
+            </tr>
+        <?php endforeach; endif; ?>
 
         <tr>
             <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
