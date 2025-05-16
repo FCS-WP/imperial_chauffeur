@@ -28,8 +28,8 @@ $total = $subtotal + $gst + $cc_fee;
                 <thead>
                     <tr>
                         <th style="color:#000;font-size:13px;padding:12px;text-align:left">Product</th>
-                        <th style="color:#000;font-size:13px;padding:12px;text-align:center">Quantity</th>
-                        <th style="color:#000;font-size:13px;padding:12px;text-align:right">Price</th>
+                        <th style="color:#000;font-size:13px;padding:12px;text-align:left">Quantity</th>
+                        <th style="color:#000;font-size:13px;padding:12px;text-align:left">Price</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,15 +41,15 @@ $total = $subtotal + $gst + $cc_fee;
                     ?>
                         <tr>
                             <td style="color:#000;font-size:13px;padding:12px;"><?php echo esc_html($item_name); ?></td>
-                            <td style="color:#000;font-size:13px;text-align:center;padding:12px;"><?php echo esc_html($qty); ?></td>
-                            <td style="color:#000;font-size:13px;text-align:right;padding:12px;">$<?php echo number_format($price, 2); ?></td>
+                            <td style="color:#000;font-size:13px;text-align:left;padding:12px;"><?php echo esc_html($qty); ?></td>
+                            <td style="color:#000;font-size:13px;text-align:left;padding:12px;">$<?php echo number_format($price, 2); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="2" style="color:#000;font-size:13px;text-align:left;padding:12px;"><strong>Subtotal:</strong></td>
-                        <td style="color:#000;font-size:13px;text-align:right;padding:12px;">$<?php echo number_format($subtotal, 2); ?></td>
+                        <td style="color:#000;font-size:13px;text-align:left;padding:12px;">$<?php echo number_format($subtotal, 2); ?></td>
                     </tr>
                 </tfoot>
             </table>
