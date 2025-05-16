@@ -272,3 +272,11 @@ add_filter( 'wp_mail_from_name', 'my_mail_from_name' );
 function my_mail_from_name( $name ) {
     return "Imperial Chauffeur Services";
 }
+
+
+add_filter('woocommerce_my_account_my_orders_query', 'filter_my_account_orders_by_status');
+
+function filter_my_account_orders_by_status($args) {
+    $args['status'] = array('pending', 'processing', 'on-hold');
+    return $args;
+}

@@ -124,14 +124,18 @@ if (empty($is_monthly_payment_order)) :
 
 		$order_id = $order->get_id();
 		$is_editing = isset($_GET['edit_order']) && $_GET['edit_order'] == $order_id;
-
+		$old_value_arr = [];
+		$new_value_arr = [];
 		if ($is_editing && $_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('save_custom_fields_' . $order_id)) {
 			$changes = [];
 
 			foreach ($custom_fields as $key => $label) {
 				if (isset($_POST[$key])) {
 					$old_value = get_post_meta($order_id, $key, true);
+					$old_value_arr[$key] = $old_value;
+
 					$new_value = sanitize_text_field($_POST[$key]);
+					$new_value_arr[$key] = $new_value;
 
 					if ($old_value !== $new_value && $new_value !== '') {
 
@@ -144,6 +148,7 @@ if (empty($is_monthly_payment_order)) :
 				$order = wc_get_order($order_id);
 				if ($order) {
 					$note_content = "Custom fields changed:\n" . implode("\n", $changes);
+					$note = $order->add_order_note($note_content, true); // true = cusstomer
 					$order->add_order_note($note_content, true);
 					if ($order->get_status() !== 'on-hold') {
 						$order->update_status('on-hold');
@@ -188,6 +193,10 @@ if (empty($is_monthly_payment_order)) :
 					$message .= "Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
 
 					wp_mail($user_email, $subject, $message, $headers);
+
+					// send email to customer
+					send_notify_email($order, $old_value_arr, $new_value_arr);
+
 				}
 			}
 

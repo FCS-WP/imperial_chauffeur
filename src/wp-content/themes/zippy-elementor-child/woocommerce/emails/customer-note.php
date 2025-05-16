@@ -1,3 +1,12 @@
+<style>
+	h2{
+		font-size: 15px;
+	}
+	address, a, p{
+		font-size: 13px;
+		color: #000;
+	}
+</style>
 <?php
 /**
  * Customer note email
@@ -22,24 +31,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
+
+
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <?php /* translators: %s: Customer first name */ ?>
-<style>
-	h2{
-		font-size: 15px;
-	}
-	address, a, p{
-		font-size: 13px;
-		color: #000;
-	}
-</style>
 <p><?php printf( esc_html__( 'Hi %s,', 'woocommerce' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
 <p><?php esc_html_e( 'The following note has been added to your order:', 'woocommerce' ); ?></p>
 
 <blockquote><?php echo wpautop( wptexturize( make_clickable( $customer_note ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></blockquote>
-
-<p><?php esc_html_e( 'As a reminder, here are your order details:', 'woocommerce' ); ?></p>
 
 <?php
 
@@ -49,7 +49,6 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
  * @hooked WC_Structured_Data::output_structured_data() Outputs structured data.
  * @since 2.5.0
  */
-do_action( 'woocommerce_email_order_details', $order, $sent_to_admin, $plain_text, $email );
 
 /*
  * @hooked WC_Emails::order_meta() Shows order meta data.
