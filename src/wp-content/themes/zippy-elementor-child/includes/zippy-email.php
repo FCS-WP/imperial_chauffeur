@@ -173,3 +173,30 @@ function completed_email_woocommerce_order_action_execute($order_id)
     $order->add_order_note(__('Sent completed email to customer', 'send-confirmation-email'));
   }
 }
+
+
+
+
+function send_notify_email($order_id, $old_data, $new_data){
+  $order = wc_get_order($order_id);
+
+  $user_email = $order->get_billing_email();
+
+  $headers = [
+    'Content-Type: text/html; charset=UTF-8',
+    'From: Imperial <impls@singnet.com.sg>'
+  ];
+
+  $subject = "Your order information has been updated";
+
+  $data = [
+    "old_data" => $old_data,
+    "new_data" => $new_data,
+    "order" => $order,
+  ];
+
+  $body = render_email_template("order-edit-email", $data);
+
+  wp_mail($user_email, $subject, $body, $headers);
+
+}
