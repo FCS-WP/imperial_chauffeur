@@ -18,11 +18,6 @@
 
 defined('ABSPATH') || exit;
 
-$text_align = is_rtl() ? 'right' : 'left';
-$tax_percent = get_tax_percent();
-$tax_rate_label = $tax_percent->tax_rate_name;
-$tax_rate = intval($tax_percent->tax_rate);
-
 //do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plain_text, $email );
 ?>
 <br>
@@ -44,9 +39,9 @@ $tax_rate = intval($tax_percent->tax_rate);
 	<table class="td" cellspacing="0" cellpadding="6" style="color: #000;width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
 		<thead>
 			<tr>
-				<th class="td" scope="col" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Product', 'woocommerce'); ?></th>
-				<th class="td" scope="col" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Quantity', 'woocommerce'); ?></th>
-				<th class="td" scope="col" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;"><?php esc_html_e('Price', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="color: #000;font-size:13px; ?>;"><?php esc_html_e('Product', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="color: #000;font-size:13px; ?>;"><?php esc_html_e('Quantity', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="color: #000;font-size:13px; ?>;"><?php esc_html_e('Price', 'woocommerce'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -56,22 +51,22 @@ $tax_rate = intval($tax_percent->tax_rate);
 				$product_quantity = $item->get_quantity();
 				$product_price_with_tax = $order->get_formatted_line_subtotal($item);
 				$product_price_excl_tax = wc_price($item->get_total());
-
 			?>
 				<tr>
-					<td class="td" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
+					<td class="td" style="color: #000;font-size:13px; ?>;">
 						<?php echo esc_html($product_name); ?>
 					</td>
-					<td class="td" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
+					<td class="td" style="color: #000;font-size:13px; ?>;">
 						<?php echo esc_html($product_quantity); ?>
 					</td>
-					<td class="td" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
+					<td class="td" style="color: #000;font-size:13px; ?>;">
 						<?php echo wp_kses_post($product_price_excl_tax); ?>
 					</td>
 				</tr>
 			<?php endforeach; ?>
 		</tbody>
 		<tfoot>
+			<!-- Subtotal -->
 			<?php
 			$custom_subtotal = 0;
 			foreach ($order->get_items() as $item_id => $item) {
@@ -80,44 +75,38 @@ $tax_rate = intval($tax_percent->tax_rate);
 			}
 			$order_total = $order->get_total();
 			?>
-
 			<tr>
-				<th class="td" colspan="2" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
+				<th class="td" colspan="2" style="color: #000;font-size:13px; ?>; border-top-width: 4px;">
 					<?php esc_html_e('Subtotal', 'woocommerce'); ?>
 				</th>
-				<td class="td" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>; border-top-width: 4px;">
+				<td class="td" style="color: #000;font-size:13px; ?>; border-top-width: 4px;">
 					<?php echo wc_price($custom_subtotal); ?>
 				</td>
 			</tr>
+			
+			<!-- GST and CC Fee -->
 			<?php
-			if(!empty($order->get_items("fee"))) :
-				foreach ($order->get_items("fee") as $id => $itm) :
-					$fee_name = $itm->get_name();
-					$total_fee = wc_price($itm->get_total());
+				if(!empty($order->get_items("tax"))){
+					foreach ($order->get_items("tax") as $itm_id => $itm) {
 			?>
-				<tr>
-					<th class="td" colspan="2" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
-						<?php echo esc_html($fee_name); ?>
-					</th>
-					<td class="td" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
-						<?php echo wp_kses_post($total_fee); ?>
-					</td>
-				</tr>
-			<?php endforeach; endif; ?>
 			<tr>
-				<th class="td" colspan="2" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
-					<?php echo esc_html($tax_rate_label); ?>
+				<th class="td" colspan="2" style="color: #000;font-size:13px;">
+					<?php echo esc_html($itm->get_label()); ?>
 				</th>
-				<td class="td" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
-					<?php echo esc_html($tax_rate) . '%'; ?>
+				<td class="td" style="color: #000;font-size:13px;">
+					<?php 
+						echo wc_price($itm->get_tax_total()); 
+					?>
 				</td>
 			</tr>
-
+			<?php }}; ?>
+			
+			<!-- Total -->
 			<tr>
-				<th class="td" colspan="2" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
+				<th class="td" colspan="2" style="color: #000;font-size:13px; ?>;">
 					<?php esc_html_e('Total', 'woocommerce'); ?>
 				</th>
-				<td class="td" style="color: #000;font-size:13px;text-align:<?php echo esc_attr($text_align); ?>;">
+				<td class="td" style="color: #000;font-size:13px; ?>;">
 					<?php echo wc_price($order_total); ?>
 				</td>
 			</tr>
