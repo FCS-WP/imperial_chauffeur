@@ -104,7 +104,7 @@ defined('ABSPATH') || exit;
 			<!-- Total -->
 			<tr>
 				<th class="td" colspan="2" style="color: #000;font-size:13px; ?>;">
-					<?php esc_html_e('Total', 'woocommerce'); ?>
+					<?php esc_html_e('Grand Total', 'woocommerce'); ?>
 				</th>
 				<td class="td" style="color: #000;font-size:13px; ?>;">
 					<?php echo wc_price($order_total); ?>
