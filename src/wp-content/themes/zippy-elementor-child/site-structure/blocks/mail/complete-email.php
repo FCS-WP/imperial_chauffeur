@@ -7,12 +7,9 @@
     $service_type = get_post_meta($order_id, "service_type", true);
     $member_type = $order->get_meta("member_type");
     $time_use = reset($items)->get_quantity();
-    $tax_percent = get_tax_percent();
-    $tax_rate_label = $tax_percent->tax_rate_name;
-    $tax_rate = intval($tax_percent->tax_rate);
 
     $eta_label = $service_type == "Airport Departure Transfer" ? "ETD" : "ETA";
-
+    $total_fee = 0;
 ?>
 
 <style>
@@ -53,6 +50,8 @@
         <?php endforeach; ?>
     </tbody>
     <tfoot>
+
+        <!-- Subtotal -->
         <?php
             $custom_subtotal = 0;
             foreach ($items as $item_id => $item) {
@@ -70,31 +69,24 @@
             </td>
         </tr>
         
+        <!-- GST and CC Fee -->
         <?php
-			if(!empty($order->get_items("fee"))) :
-				foreach ($order->get_items("fee") as $id => $itm) :
-					$fee_name = $itm->get_name();
-					$total_fee = wc_price($itm->get_total());
-			?>
-            <tr>
-                <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
-                    <?php echo esc_html($fee_name); ?>
-                </th>
-                <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
-                    <?php echo wp_kses_post($total_fee); ?>
-                </td>
-            </tr>
-        <?php endforeach; endif; ?>
-
+            if(!empty($order->get_items("tax"))){
+                foreach ($order->get_items("tax") as $itm_id => $itm) {
+        ?>
         <tr>
             <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
-                <?php echo esc_html($tax_rate_label); ?>
+                <?php echo esc_html($itm->get_label()); ?>
             </th>
             <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
-                <?php echo esc_html($tax_rate) . '%'; ?>
+                <?php 
+                    echo wc_price($itm->get_tax_total()); 
+                ?>
             </td>
         </tr>
+        <?php }}; ?>
 
+        <!-- Total -->
         <tr>
             <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
                 <?php esc_html_e('Total', 'woocommerce'); ?>
