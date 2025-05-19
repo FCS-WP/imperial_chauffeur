@@ -89,7 +89,7 @@
         <!-- Total -->
         <tr>
             <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
-                <?php esc_html_e('Total', 'woocommerce'); ?>
+                <?php esc_html_e('Grand Total', 'woocommerce'); ?>
             </th>
             <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
                 <?php echo wc_price($order_total); ?>
