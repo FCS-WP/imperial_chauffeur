@@ -119,7 +119,7 @@ function confirm_email_woocommerce_order_action_execute($post_id)
 
   $message = "<p style='font-size:13px;color:#000'>Thank you for your order! We're excited to let you know that we have successfully received and confirmed your order.</p>";
   $message .= "<br><p style='font-size:13px;color:#000'>Our team will review your request and respond within 24 hours. If you have any urgent concerns, feel free to contact us.</p>";
-  $message .= "<p style='font-size:13px;color:#000'>We appreciate your patience and look forward to assisting you.</p><br>";
+  $message .= "<p style='font-size:13px;color:#000'>We appreciate your patience and look forward to assisting you.</p>";
 
   $message .= get_email_signature();
 

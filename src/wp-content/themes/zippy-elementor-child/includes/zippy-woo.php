@@ -75,4 +75,3 @@ function custom_order_number_display_type($order_number, $order)
   return $order_number . '-Visitor';
 }
 // Change the Order ID in Order Woocommerece
-
