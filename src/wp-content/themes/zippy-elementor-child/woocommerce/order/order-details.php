@@ -186,7 +186,7 @@ if (empty($is_monthly_payment_order)) :
 					}
 					$message .= "<strong>Edit Date:</strong> {$edit_date}</p>";
 					$message .= "<p>Please review the changes in the backend.</p>";
-					echo get_email_signature();
+					$message .= get_email_signature();
 
 					wp_mail($user_email, $subject, $message, $headers);
 

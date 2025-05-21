@@ -121,7 +121,7 @@ function confirm_email_woocommerce_order_action_execute($post_id)
   $message .= "<br><p style='font-size:13px;color:#000'>Our team will review your request and respond within 24 hours. If you have any urgent concerns, feel free to contact us.</p>";
   $message .= "<p style='font-size:13px;color:#000'>We appreciate your patience and look forward to assisting you.</p><br>";
 
-  echo get_email_signature();
+  $message .= get_email_signature();
 
   wp_mail($user_email, $subject, $message, $headers);
 
@@ -197,7 +197,7 @@ function send_notify_email($order, $old_data, $new_data){
 
 function get_email_signature(){
   return "
-    <p style='font-size:13px;color:#000;margin-top:50px;'>Kind regards,</p>
+    <p style='font-size:13px;color:#000;margin-top:45px;'>Kind regards,</p>
     <h3 style='font-size:15px;color:#000'>Imperial Chauffeur Services Pte Ltd</h3>
     <p style='font-size:13px;color:#000'>Office telephone: <a href='tel:+6567340428'>+65 67340428</a></p>
     <p style='font-size:13px;color:#000'>Email: impls@singnet.com.sg</p>
