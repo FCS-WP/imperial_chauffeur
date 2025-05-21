@@ -118,9 +118,7 @@
     <p style="font-size:13px;color:#000">Staff name: <?php echo get_post_meta($order_id, "staff_name", true) ?></p>
 <?php } ?>
 
-<h3 style="font-size:15px;color:#000">Preferred Contact Method:</h3>
-<p style="font-size:13px;color:#000">Imperial Chauffeur Services Pte. Ltd</p>
-<p style="font-size:13px;color:#000">OFFICE TELEPHONE +65 6734 0428 (24Hours)</p>
-<p style="font-size:13px;color:#000">Email: impls@singnet.com.sg</p>
-<p style="font-size:13px;color:#000">Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>
-<p style="font-size:13px;color:#000">Best regards,</p>
+
+<?php
+    echo get_email_signature();
+?>
