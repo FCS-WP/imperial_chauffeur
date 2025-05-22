@@ -199,7 +199,13 @@ function get_email_signature(){
   return "
     <p style='font-size:13px;color:#000;margin-top:45px;'>Kind regards,</p>
     <h3 style='font-size:15px;color:#000'>Imperial Chauffeur Services Pte Ltd</h3>
-    <p style='font-size:13px;color:#000'>Office telephone: <a href='tel:+6567340428'>+65 67340428</a></p>
+    <p style='font-size:13px;color:#000'>Office telephone: <a href='tel:+6567340428' style='color:#15c'>+65 67340428</a></p>
     <p style='font-size:13px;color:#000'>Email: impls@singnet.com.sg</p>
     <p style='font-size:13px;color:#000'>Website: imperialchauffeur.sg </p>";
+}
+
+
+add_action( 'woocommerce_email_footer', 'custom_email_footer' );
+function custom_email_footer() {
+  echo get_email_signature();
 }
