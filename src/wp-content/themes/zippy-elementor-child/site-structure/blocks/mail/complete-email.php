@@ -75,7 +75,24 @@
             </td>
         </tr>
         
-        <!-- GST and CC Fee -->
+        <!-- CC Fee -->
+        <?php
+            if(!empty($order->get_items("fee"))){
+                foreach ($order->get_items("fee") as $itm_id => $itm) {
+        ?>
+        <tr>
+            <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
+                <?php echo esc_html($itm->get_name()); ?>
+            </th>
+            <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
+                <?php
+                    echo wc_price($itm->get_total()); 
+                ?>
+            </td>
+        </tr>
+        <?php }}; ?>
+
+        <!-- GST -->
         <?php
             if(!empty($order->get_items("tax"))){
                 foreach ($order->get_items("tax") as $itm_id => $itm) {

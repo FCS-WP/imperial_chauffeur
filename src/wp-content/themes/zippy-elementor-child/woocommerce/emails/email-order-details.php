@@ -84,6 +84,23 @@ defined('ABSPATH') || exit;
 				</td>
 			</tr>
 			
+			<!-- CC Fee -->
+			<?php
+				if(!empty($order->get_items("fee"))){
+					foreach ($order->get_items("fee") as $itm_id => $itm) {
+			?>
+			<tr>
+				<th class="td" colspan="2" style="color: #000;font-size:13px;">
+					<?php echo esc_html($itm->get_name()); ?>
+				</th>
+				<td class="td" style="color: #000;font-size:13px;">
+					<?php 
+						echo wc_price($itm->get_total()); 
+					?>
+				</td>
+			</tr>
+			<?php }}; ?>
+
 			<!-- GST and CC Fee -->
 			<?php
 				if(!empty($order->get_items("tax"))){

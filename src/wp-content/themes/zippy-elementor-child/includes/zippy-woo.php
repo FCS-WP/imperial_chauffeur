@@ -75,3 +75,100 @@ function custom_order_number_display_type($order_number, $order)
   return $order_number . '-Visitor';
 }
 // Change the Order ID in Order Woocommerece
+
+
+add_action('wp_ajax_update_order_fee', 'handle_update_order_fee');
+add_action('wp_ajax_nopriv_update_order_fee', 'handle_update_order_fee');
+
+function handle_update_order_fee() {
+    check_ajax_referer('update_order_fee_nonce', 'nonce');
+
+    $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
+    $payment_method = isset($_POST['payment_method']) ? sanitize_text_field($_POST['payment_method']) : '';
+
+    $allowed_paymentmethod = "cod"; //zippy_antom_payment
+
+    if ($order_id && $payment_method) {
+        $order = wc_get_order($order_id);
+        if ($order) {
+            // Remove Fee
+            $order->remove_order_items('fee');
+
+            if ($payment_method == $allowed_paymentmethod && get_option("enable_cc_fee") == "yes") {
+                $fee_base = $order->get_subtotal();
+                $fee = $fee_base * (get_option("zippy_cc_fee_amount") / 100);
+
+                // Add Fee
+                $fee_item = new WC_Order_Item_Fee();
+                $fee_item->set_name(get_option("zippy_cc_fee_name"));
+                $fee_item->set_amount($fee);
+                $fee_item->set_total($fee);
+                $fee_item->set_tax_class(''); 
+                $order->add_item($fee_item);
+            }
+
+            $order->calculate_totals();
+
+            wp_send_json_success(array(
+                'total' => wc_price($order->get_total()),
+                'fee' => ($payment_method === $allowed_paymentmethod) ? wc_price($fee) : 0,
+            ));
+        }
+    }
+
+    wp_send_json_error('Can not update order.');
+}
+
+
+add_action('wp_footer', 'add_order_pay_js');
+
+function add_order_pay_js() {
+    
+    if (is_wc_endpoint_url('order-pay')) {
+
+        $order_id = absint(get_query_var('order-pay'));
+        if ($order_id) {
+            $nonce = wp_create_nonce('update_order_fee_nonce');
+            ?>
+            <script type="text/javascript">
+                jQuery(document).ready(function($) {
+                    
+                    let params = new URLSearchParams(window.location.search),
+                        current_method = params.get('current_method')
+
+                        $('form#order_review input[name="payment_method"]').each(function(index,item){
+                          if($(item).val() == current_method){
+                            $(item).prop("checked", true)
+                          }
+                        })
+
+
+                    $('form#order_review').on('change', 'input[name="payment_method"]', function() {
+                        var payment_method = $(this).val();
+                        var order_id = <?php echo $order_id; ?>;
+                        var nonce = '<?php echo $nonce; ?>';
+
+                        
+                        $.ajax({
+                            url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                            type: 'POST',
+                            data: {
+                                action: 'update_order_fee',
+                                order_id: order_id,
+                                payment_method: payment_method,
+                                nonce: nonce
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                  params.set('current_method', payment_method);
+                                  window.location.search = params;
+                                }
+                            }
+                        });
+                    });
+                });
+            </script>
+            <?php
+        }
+    }
+}
