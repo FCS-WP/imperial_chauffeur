@@ -186,11 +186,7 @@ if (empty($is_monthly_payment_order)) :
 					}
 					$message .= "<strong>Edit Date:</strong> {$edit_date}</p>";
 					$message .= "<p>Please review the changes in the backend.</p>";
-
-					$message .= "<br><p>Best regards,</p>";
-					$message .= "<p><strong>Imperial Chauffeur Services Pte. Ltd</strong></p>";
-					$message .= "<p>Email: impls@singnet.com.sg<br>";
-					$message .= "Website: <a href='https://imperialchauffeur.sg/'>imperialchauffeur.sg</a></p>";
+					$message .= get_email_signature();
 
 					wp_mail($user_email, $subject, $message, $headers);
 
