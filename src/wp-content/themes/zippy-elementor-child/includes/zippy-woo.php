@@ -134,20 +134,21 @@ function add_order_pay_js() {
                 jQuery(document).ready(function($) {
                     
                     let params = new URLSearchParams(window.location.search),
-                        current_method = params.get('current_method')
-
-                        $('form#order_review input[name="payment_method"]').each(function(index,item){
-                          if($(item).val() == current_method){
-                            $(item).prop("checked", true)
-                          }
-                        })
-
+                        current_method = params.get('current_method');
+                       
+                      $('form#order_review input[name="payment_method"]').each(function(index,item){
+                        if($(item).val() == current_method){
+                          $(item).attr("checked", "checked")
+                        } else {
+                          $(item).removeAttr("checked")
+                        }
+                      })
 
                     $('form#order_review').on('change', 'input[name="payment_method"]', function() {
                         var payment_method = $(this).val();
                         var order_id = <?php echo $order_id; ?>;
                         var nonce = '<?php echo $nonce; ?>';
-
+                        $("#payment").addClass("tp_loading");
                         
                         $.ajax({
                             url: '<?php echo admin_url('admin-ajax.php'); ?>',
