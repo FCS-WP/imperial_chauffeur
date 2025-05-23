@@ -88,22 +88,27 @@ function handle_update_order_fee() {
 
     $allowed_paymentmethod = "zippy_antom_payment"; //zippy_antom_payment
 
+    $cc_name = get_option("zippy_cc_fee_name");
+
     if ($order_id && $payment_method) {
         $order = wc_get_order($order_id);
         if ($order) {
-            // Remove Fee
-            $order->remove_order_items('fee');
-
+            // Remove 5% CC Fee
+            foreach ($order->get_items('fee') as $item_id => $item) {
+              if ($item->get_name() == $cc_name) {
+                  $order->remove_item($item_id);
+              }
+          }
             if ($payment_method == $allowed_paymentmethod && get_option("enable_cc_fee") == "yes") {
                 $fee_base = $order->get_subtotal();
                 $fee = $fee_base * (get_option("zippy_cc_fee_amount") / 100);
 
-                // Add Fee
+                // Add 5% CC Fee
                 $fee_item = new WC_Order_Item_Fee();
-                $fee_item->set_name(get_option("zippy_cc_fee_name"));
+                $fee_item->set_name($cc_name);
                 $fee_item->set_amount($fee);
                 $fee_item->set_total($fee);
-                $fee_item->set_tax_class(''); 
+                $fee_item->set_tax_class('');
                 $order->add_item($fee_item);
             }
 
