@@ -39,9 +39,9 @@ defined('ABSPATH') || exit;
 	<table class="td" cellspacing="0" cellpadding="6" style="color: #000;width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
 		<thead>
 			<tr>
-				<th class="td" scope="col" style="color: #000;font-size:13px; ?>;"><?php esc_html_e('Product', 'woocommerce'); ?></th>
-				<th class="td" scope="col" style="color: #000;font-size:13px; ?>;"><?php esc_html_e('Quantity', 'woocommerce'); ?></th>
-				<th class="td" scope="col" style="color: #000;font-size:13px; ?>;"><?php esc_html_e('Price', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="color: #000;font-size:13px;"><?php esc_html_e('Product', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="color: #000;font-size:13px;"><?php esc_html_e('Quantity', 'woocommerce'); ?></th>
+				<th class="td" scope="col" style="color: #000;font-size:13px;"><?php esc_html_e('Price', 'woocommerce'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -53,13 +53,13 @@ defined('ABSPATH') || exit;
 				$product_price_excl_tax = wc_price($item->get_total());
 			?>
 				<tr>
-					<td class="td" style="color: #000;font-size:13px; ?>;">
+					<td class="td" style="color: #000;font-size:13px;">
 						<?php echo esc_html($product_name); ?>
 					</td>
-					<td class="td" style="color: #000;font-size:13px; ?>;">
+					<td class="td" style="color: #000;font-size:13px;">
 						<?php echo esc_html($product_quantity); ?>
 					</td>
-					<td class="td" style="color: #000;font-size:13px; ?>;">
+					<td class="td" style="color: #000;font-size:13px;">
 						<?php echo wp_kses_post($product_price_excl_tax); ?>
 					</td>
 				</tr>
@@ -76,10 +76,10 @@ defined('ABSPATH') || exit;
 			$order_total = $order->get_total();
 			?>
 			<tr>
-				<th class="td" colspan="2" style="color: #000;font-size:13px; ?>; border-top-width: 4px;">
+				<th class="td" colspan="2" style="color: #000;font-size:13px; border-top-width: 4px;">
 					<?php esc_html_e('Subtotal', 'woocommerce'); ?>
 				</th>
-				<td class="td" style="color: #000;font-size:13px; ?>; border-top-width: 4px;">
+				<td class="td" style="color: #000;font-size:13px; border-top-width: 4px;">
 					<?php echo wc_price($custom_subtotal); ?>
 				</td>
 			</tr>
@@ -120,10 +120,10 @@ defined('ABSPATH') || exit;
 			
 			<!-- Total -->
 			<tr>
-				<th class="td" colspan="2" style="color: #000;font-size:13px; ?>;">
+				<th class="td" colspan="2" style="color: #000;font-size:13px;">
 					<?php esc_html_e('Grand Total', 'woocommerce'); ?>
 				</th>
-				<td class="td" style="color: #000;font-size:13px; ?>;">
+				<td class="td" style="color: #000;font-size:13px;">
 					<?php echo wc_price($order_total); ?>
 				</td>
 			</tr>
