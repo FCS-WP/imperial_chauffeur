@@ -277,6 +277,6 @@ function my_mail_from_name( $name ) {
 add_filter('woocommerce_my_account_my_orders_query', 'filter_my_account_orders_by_status');
 
 function filter_my_account_orders_by_status($args) {
-    $args['status'] = array('pending', 'processing', 'on-hold');
+    $args['status'] = array('pending', 'processing', 'on-hold', 'confirmed');
     return $args;
 }
