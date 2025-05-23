@@ -86,7 +86,7 @@ function handle_update_order_fee() {
     $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
     $payment_method = isset($_POST['payment_method']) ? sanitize_text_field($_POST['payment_method']) : '';
 
-    $allowed_paymentmethod = "zippy_antom_payment"; //zippy_antom_payment
+    $allowed_paymentmethod = "cod"; //zippy_antom_payment
 
     $cc_name = get_option("zippy_cc_fee_name");
 
@@ -149,7 +149,7 @@ function add_order_pay_js() {
                         }
                       })
 
-                    $('form#order_review').on('change', 'input[name="payment_method"]', function() {
+                    $('body').on('change', 'form#order_review input[name="payment_method"]', function() {
                         var payment_method = $(this).val();
                         var order_id = <?php echo $order_id; ?>;
                         var nonce = '<?php echo $nonce; ?>';

@@ -16,6 +16,9 @@
     $flight_details = get_post_meta($order_id, "flight_details", true);
     $drop_off_location = get_post_meta($order_id, "drop_off_location", true);
     $eta_time = get_post_meta($order_id, "eta_time", true);
+
+    $fees = $order->get_items("fee");
+    $total_custom_fee = 0;
 ?>
 
 <style>
@@ -57,28 +60,12 @@
     </tbody>
     <tfoot>
 
-        <!-- Subtotal -->
+        <!-- Another  Fee -->
         <?php
-            $custom_subtotal = 0;
-            foreach ($items as $item_id => $item) {
-                $pne_total = $item->get_total();
-                $custom_subtotal += $pne_total;
-            }
-            $order_total = $order->get_total();
-        ?>
-        <tr>
-            <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left;border-top-width:4px" align="left">
-                <?php esc_html_e('Subtotal', 'woocommerce'); ?>
-            </th>
-            <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left;border-top-width:4px" align="left">
-                <?php echo wc_price($custom_subtotal); ?>
-            </td>
-        </tr>
-        
-        <!-- CC Fee -->
-        <?php
-            if(!empty($order->get_items("fee"))){
-                foreach ($order->get_items("fee") as $itm_id => $itm) {
+            if(!empty($fees)){
+                foreach ($fees as $itm_id => $itm) {
+                    if($itm->get_name() !== get_option("zippy_cc_fee_name")){
+                        $total_custom_fee += $itm->get_total();
         ?>
         <tr>
             <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
@@ -90,7 +77,24 @@
                 ?>
             </td>
         </tr>
-        <?php }}; ?>
+        <?php }}}; ?>
+
+        <!-- Subtotal -->
+        <?php
+            $custom_subtotal = 0;
+            foreach ($items as $item_id => $item) {
+                $pne_total = $item->get_total();
+                $custom_subtotal += $pne_total;
+            }
+        ?>
+        <tr>
+            <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left;border-top-width:4px" align="left">
+                <?php esc_html_e('Subtotal', 'woocommerce'); ?>
+            </th>
+            <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left;border-top-width:4px" align="left">
+                <?php echo wc_price($custom_subtotal + $total_custom_fee); ?>
+            </td>
+        </tr>
 
         <!-- GST -->
         <?php
@@ -109,13 +113,39 @@
         </tr>
         <?php }}; ?>
 
+        <!-- CC Fee -->
+        <?php
+            if(!empty($fees)){
+                foreach ($fees as $itm_id => $itm) {
+                    if($itm->get_name() == get_option("zippy_cc_fee_name")){
+        ?>
+        <tr>
+            <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
+                <?php echo esc_html($itm->get_name()); ?>
+            </th>
+            <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
+                <?php
+                    echo wc_price($itm->get_total()); 
+                ?>
+            </td>
+        </tr>
+        <?php }}}; ?>
+
         <!-- Total -->
         <tr>
             <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
                 <?php esc_html_e('Grand Total', 'woocommerce'); ?>
             </th>
             <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
-                <?php echo wc_price($order_total); ?>
+                <?php echo wc_price($order->get_total()); ?>
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
+                <?php esc_html_e('Payment Method', 'woocommerce'); ?>
+            </th>
+            <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
+                <?php echo esc_html_e($order->get_payment_method_title()); ?>
             </td>
         </tr>
     </tfoot>
@@ -162,5 +192,7 @@
 
 
 <?php
+    var_dump(11111111);die;
     echo get_email_signature();
+    
 ?>
