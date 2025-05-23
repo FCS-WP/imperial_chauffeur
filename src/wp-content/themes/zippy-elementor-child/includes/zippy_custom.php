@@ -268,15 +268,26 @@ function display_order_history_content()
 add_action('woocommerce_account_order-history_endpoint', 'display_order_history_content');
 
 
-add_filter( 'wp_mail_from_name', 'my_mail_from_name' );
-function my_mail_from_name( $name ) {
+add_filter('wp_mail_from_name', 'my_mail_from_name');
+function my_mail_from_name($name)
+{
     return "Imperial Chauffeur Services";
 }
 
 
 add_filter('woocommerce_my_account_my_orders_query', 'filter_my_account_orders_by_status');
 
-function filter_my_account_orders_by_status($args) {
+function filter_my_account_orders_by_status($args)
+{
     $args['status'] = array('pending', 'processing', 'on-hold', 'confirmed');
     return $args;
+}
+
+add_action('wp_head', 'hide_product_des');
+
+function hide_product_des()
+{
+    if (is_product() && !is_admin() && is_user_logged_in()) {
+        echo "<style>#product-description-section{display:none;}</style>";
+    }
 }
