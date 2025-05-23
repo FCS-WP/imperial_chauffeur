@@ -197,7 +197,7 @@ function add_order_pay_js()
 
 
           function call_ajax(payment_method, order_id, nonce) {
-            $("#payment").addClass("tp_loading");
+            $("#order_review").addClass("tp_loading");
             $.ajax({
               url: '<?php echo admin_url('admin-ajax.php'); ?>',
               type: 'POST',
@@ -299,7 +299,7 @@ function add_order_pay_js()
                         </tr>
                         </tfoot>`;
                   $("#order_review .shop_table").html(table).show();
-                  $("#payment").removeClass("tp_loading");
+                  $("#order_review").removeClass("tp_loading");
                 }
               }
             });
