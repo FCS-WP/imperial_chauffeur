@@ -6,15 +6,15 @@ function disable_password_reset()
 }
 
 add_filter('allow_password_reset', 'disable_password_reset');
-  
+
 add_action('woocommerce_order_list_table_restrict_manage_orders', 'show_is_first_order_checkbox', 20);
 function show_is_first_order_checkbox()
 {
   $selected = isset($_GET['metadata']) ? esc_attr($_GET['metadata']) : '';
-  $options  = array(
-    ''              => __('By order type', 'woocommerce'),
-    '0'  => __('Visitor Orders', 'woocommerce'),
-    '1'  => __('Member Orders', 'woocommerce')
+  $options = array(
+    '' => __('By order type', 'woocommerce'),
+    '0' => __('Visitor Orders', 'woocommerce'),
+    '1' => __('Member Orders', 'woocommerce')
   );
 
   echo '<select name="metadata" id="dropdown_shop_order_metadata">';
@@ -40,8 +40,10 @@ function filter_woocommerce_orders_in_the_table($query_args)
 
 function is_on_wc_orders_page_without_email()
 {
-  if (!is_admin()) return false;
-  if (isset($_REQUEST['wc_order_action']) && !empty($_REQUEST['wc_order_action'])) return false;
+  if (!is_admin())
+    return false;
+  if (isset($_REQUEST['wc_order_action']) && !empty($_REQUEST['wc_order_action']))
+    return false;
 
   if (function_exists('get_current_screen')) {
     $screen = get_current_screen();
@@ -80,96 +82,251 @@ function custom_order_number_display_type($order_number, $order)
 add_action('wp_ajax_update_order_fee', 'handle_update_order_fee');
 add_action('wp_ajax_nopriv_update_order_fee', 'handle_update_order_fee');
 
-function handle_update_order_fee() {
-    check_ajax_referer('update_order_fee_nonce', 'nonce');
+function handle_update_order_fee()
+{
+  check_ajax_referer('update_order_fee_nonce', 'nonce');
 
-    $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
-    $payment_method = isset($_POST['payment_method']) ? sanitize_text_field($_POST['payment_method']) : '';
+  $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
+  $payment_method = isset($_POST['payment_method']) ? sanitize_text_field($_POST['payment_method']) : '';
 
-    $allowed_paymentmethod = "zippy_antom_payment"; //zippy_antom_payment
+  $allowed_paymentmethod = "zippy_antom_payment"; //zippy_antom_payment
 
-    if ($order_id && $payment_method) {
-        $order = wc_get_order($order_id);
-        if ($order) {
-            // Remove Fee
-            $order->remove_order_items('fee');
+  $cc_name = get_option("zippy_cc_fee_name");
 
-            if ($payment_method == $allowed_paymentmethod && get_option("enable_cc_fee") == "yes") {
-                $fee_base = $order->get_subtotal();
-                $fee = $fee_base * (get_option("zippy_cc_fee_amount") / 100);
-
-                // Add Fee
-                $fee_item = new WC_Order_Item_Fee();
-                $fee_item->set_name(get_option("zippy_cc_fee_name"));
-                $fee_item->set_amount($fee);
-                $fee_item->set_total($fee);
-                $fee_item->set_tax_class(''); 
-                $order->add_item($fee_item);
-            }
-
-            $order->calculate_totals();
-
-            wp_send_json_success(array(
-                'total' => wc_price($order->get_total()),
-                'fee' => ($payment_method === $allowed_paymentmethod) ? wc_price($fee) : 0,
-            ));
+  if ($order_id && $payment_method) {
+    $order = wc_get_order($order_id);
+    if ($order) {
+      // Remove 5% CC Fee
+      foreach ($order->get_items('fee') as $item_id => $item) {
+        if ($item->get_name() == $cc_name) {
+          $order->remove_item($item_id);
         }
-    }
+      }
+      if ($payment_method == $allowed_paymentmethod && get_option("enable_cc_fee") == "yes") {
+        $fee_base = $order->get_subtotal();
+        $fee = $fee_base * (get_option("zippy_cc_fee_amount") / 100);
 
-    wp_send_json_error('Can not update order.');
+        // Add 5% CC Fee
+        $fee_item = new WC_Order_Item_Fee();
+        $fee_item->set_name($cc_name);
+        $fee_item->set_amount($fee);
+        $fee_item->set_total($fee);
+        $fee_item->set_tax_class('');
+        $order->add_item($fee_item);
+      }
+      
+      $order->calculate_totals();
+
+      // Subtotal
+      $custom_subtotal = 0;
+      $order_items = [];
+      $i = 0;
+      foreach ($order->get_items() as $item_id => $item) {
+        $pne_total = $item->get_total();
+        $custom_subtotal += $pne_total;
+        $order_items[$i]["item_name"] = $item->get_name();
+        $order_items[$i]["qty"] = $item->get_quantity();
+        $order_items[$i]["price"] = $item->get_total();
+        $i++;
+      }
+
+      // Additional Fee
+      $additional_fee = get_fee($order, "fee");
+
+      // Tax
+      $tax = get_fee($order, "tax");
+
+      // CC Fee
+      $cc_fee = [];
+      $j = 0;
+      foreach ($order->get_items("fee") as $itm_id => $itm) {
+        if($itm->get_name() == get_option("zippy_cc_fee_name")){
+          $cc_fee[$j]["label"] = $itm->get_name();
+          $cc_fee[$j]["total"] = $itm->get_total();
+          $j++;
+        }
+        
+      }
+
+      wp_send_json_success(array(
+        'items' => $order_items,
+        'subtotal' => $custom_subtotal,
+        'additional_fee' => $additional_fee,
+        'tax' => $tax,
+        'cc_fee' => $cc_fee,
+        'total' => wc_price($order->get_total()),
+        'payment_method' => $order->get_payment_method_title(),
+      ));
+    }
+  }
+
+  wp_send_json_error('Can not update order.');
 }
 
 
 add_action('wp_footer', 'add_order_pay_js');
 
-function add_order_pay_js() {
-    
-    if (is_wc_endpoint_url('order-pay')) {
+function add_order_pay_js()
+{
 
-        $order_id = absint(get_query_var('order-pay'));
-        if ($order_id) {
-            $nonce = wp_create_nonce('update_order_fee_nonce');
-            ?>
-            <script type="text/javascript">
-                jQuery(document).ready(function($) {
-                    
-                    let params = new URLSearchParams(window.location.search),
-                        current_method = params.get('current_method');
-                       
-                      $('form#order_review input[name="payment_method"]').each(function(index,item){
-                        if($(item).val() == current_method){
-                          $(item).attr("checked", "checked")
-                        } else {
-                          $(item).removeAttr("checked")
-                        }
-                      })
+  if (is_wc_endpoint_url('order-pay')) {
 
-                    $('form#order_review').on('change', 'input[name="payment_method"]', function() {
-                        var payment_method = $(this).val();
-                        var order_id = <?php echo $order_id; ?>;
-                        var nonce = '<?php echo $nonce; ?>';
-                        $("#payment").addClass("tp_loading");
-                        
-                        $.ajax({
-                            url: '<?php echo admin_url('admin-ajax.php'); ?>',
-                            type: 'POST',
-                            data: {
-                                action: 'update_order_fee',
-                                order_id: order_id,
-                                payment_method: payment_method,
-                                nonce: nonce
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                  params.set('current_method', payment_method);
-                                  window.location.search = params;
-                                }
-                            }
-                        });
-                    });
-                });
-            </script>
-            <?php
-        }
+    $order_id = absint(get_query_var('order-pay'));
+    if ($order_id) {
+      $nonce = wp_create_nonce('update_order_fee_nonce');
+      ?>
+      <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+
+          $('body').on('change', 'form#order_review input[name="payment_method"]', function () {
+              var payment_method = $(this).val();
+              var order_id = <?php echo $order_id; ?>;
+              var nonce = '<?php echo $nonce; ?>';
+
+              call_ajax(payment_method, order_id, nonce)
+            })
+          $(window).load(function () {
+            if ($('form#order_review input[name="payment_method"][checked="checked"]').length == 1) {
+              var payment_method = $('form#order_review input[name="payment_method"][checked="checked"]').val();
+              var order_id = <?php echo $order_id; ?>;
+              var nonce = '<?php echo $nonce; ?>';
+              
+              call_ajax(payment_method, order_id, nonce)
+            }
+          });
+
+
+          function call_ajax(payment_method, order_id, nonce) {
+            $("#order_review").addClass("tp_loading");
+            $.ajax({
+              url: '<?php echo admin_url('admin-ajax.php'); ?>',
+              type: 'POST',
+              data: {
+                action: 'update_order_fee',
+                order_id: order_id,
+                payment_method: payment_method,
+                nonce: nonce
+              },
+              success: function (response) {
+                
+                if (response.success) {
+                  let data = response.data,
+                      items = data.items,
+                      subtotal = data.subtotal,
+                      additional_fee = data.additional_fee,
+                      tax = data.tax,
+                      total = data.total,
+                      cc_fee = data.cc_fee,
+                      payment_method = data.payment_method,
+                      item_html = ``,
+                      tax_html = ``,
+                      additional_fee_html = ``,
+                      cc_fee_html = ``,
+                      total_addition_fee = 0;
+                  
+                  if($(items).empty().length > 0){
+                    $(items).each(function(index, item){
+                      item_html += `
+                        <tr class="order_item">
+                            <td class="product-name">${item.item_name}</td>
+                            <td class="product-quantity"> <strong class="product-quantity">×&nbsp;${item.qty}</strong></td>
+                            <td class="product-subtotal"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${item.price}</bdi></span></td>
+                        </tr>
+                      `
+                    })
+                  }
+
+                  if($(additional_fee).empty().length > 0){
+                    $(additional_fee).each(function(index, item){
+                      additional_fee_html += `
+                        <tr>
+                          <td scope="row" colspan="2">${item.label}:</td>
+                          <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${item.total}</bdi></span></td>
+                        </tr>
+                      `;
+                      total_addition_fee += +item.total
+                    })
+                  }
+
+                  if($(cc_fee).empty().length > 0){
+                    $(cc_fee).each(function(index, item){
+                      cc_fee_html += `
+                        <tr>
+                          <th scope="row" colspan="2">${item.label}:</th>
+                          <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${item.total}</bdi></span></td>
+                        </tr>
+                      `
+                    })
+                  }
+
+                  if($(tax).empty().length > 0){
+                    $(tax).each(function(index, item){
+                      tax_html += `
+                        <tr>
+                          <th scope="row" colspan="2">${item.label}:</th>
+                          <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${item.total}</bdi></span></td>
+                        </tr>
+                      `
+                    })
+                  }
+
+                  let table = `
+                      <thead>
+                        <tr>
+                          <th class="product-name">Product</th>
+                          <th class="product-quantity">Qty</th>
+                          <th class="product-total">Totals</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          ${item_html}
+                          ${additional_fee_html}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <th scope="row" colspan="2">Subtotal:</th>
+                          <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${+subtotal + total_addition_fee}</bdi></span></td>
+                        </tr>
+                        ${tax_html}
+                        ${cc_fee_html}
+                        <tr>
+                        <th scope="row" colspan="2">Grand Total:</th>
+                        <td class="product-total">${total}</td>
+                        </tr>
+                        <tr>
+                          <th scope="row" colspan="2">Payment Method:</th>
+                          <td class="product-total">${payment_method}</td>
+                        </tr>
+                        </tfoot>`;
+                  $("#order_review .shop_table").html(table).show();
+                  $("#order_review").removeClass("tp_loading");
+                }
+              }
+            });
+          }
+        });
+      </script>
+      <?php
     }
+  }
+}
+
+
+function get_fee($order, $fee_type)
+{
+  $fee = [];
+  $z = 0;
+  if (!empty($order->get_items($fee_type))) {
+    foreach ($order->get_items($fee_type) as $itm_id => $itm) {
+      if ($fee_type == "fee" && $itm->get_name() !== get_option("zippy_cc_fee_name")) {
+        $fee[$z]["label"] = $itm->get_name();
+        $fee[$z]["total"] = $itm->get_total();
+      } elseif ($fee_type == "tax") {
+        $fee[$z]["label"] = $itm->get_label();
+        $fee[$z]["total"] = $itm->get_tax_total();
+      }
+      $z++;
+    }
+  }
+  return $fee;
 }
