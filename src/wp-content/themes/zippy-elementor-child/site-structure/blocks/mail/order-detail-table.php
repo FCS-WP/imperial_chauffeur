@@ -4,6 +4,10 @@
     $total_fee = 0;
     $items = $order->get_items();
     $cc_fee_amount = get_option("zippy_cc_fee_amount");
+    $total_custom_fee = 0;
+    $custom_subtotal = 0;
+    $cc_fee = 0;
+    $gst = 0;
 ?>
 <table cellspacing="0" cellpadding="6" style="border:1px solid #e5e5e5;vertical-align:middle;color:#000;width:502px" border="1">
     <thead>
@@ -32,7 +36,6 @@
 
         <!-- Another  Fee -->
         <?php
-            $total_custom_fee = 0;
             if(!empty($fees)){
                 foreach ($fees as $itm_id => $itm) {
                     if($itm->get_name() !== get_option("zippy_cc_fee_name")){
@@ -52,7 +55,6 @@
 
         <!-- Subtotal -->
         <?php
-            $custom_subtotal = 0;
             foreach ($items as $item_id => $item) {
                 $pne_total = $item->get_total();
                 $custom_subtotal += $pne_total;
@@ -70,7 +72,6 @@
 
         <!-- GST -->
         <?php
-            $gst = 0;
             if(!empty($order->get_items("tax"))){
                 foreach ($order->get_items("tax") as $itm_id => $itm) {
                     $gst_rate = $itm["rate_percent"];
@@ -90,7 +91,6 @@
 
         <!-- CC Fee -->
         <?php
-            $cc_fee = 0;
             if(!empty($fees)){
                 foreach ($fees as $itm_id => $itm) {
                     if($itm->get_name() == get_option("zippy_cc_fee_name")){
