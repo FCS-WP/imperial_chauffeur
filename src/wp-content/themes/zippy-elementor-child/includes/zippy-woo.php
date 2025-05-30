@@ -120,7 +120,7 @@ function handle_update_order_fee()
       $data = [
         "order" => $order,
       ];
-      
+
       $body = render_email_template("order-detail-table", $data);
 
       wp_send_json_success(array(
@@ -146,19 +146,16 @@ function add_order_pay_js()
       ?>
       <script type="text/javascript">
         jQuery(document).ready(function ($) {
-
+          var order_id = <?php echo $order_id; ?>;
+          var nonce = '<?php echo $nonce; ?>';
           $('body').on('change', 'form#order_review input[name="payment_method"]', function () {
               var payment_method = $(this).val();
-              var order_id = <?php echo $order_id; ?>;
-              var nonce = '<?php echo $nonce; ?>';
 
               call_ajax(payment_method, order_id, nonce)
             })
           $(window).load(function () {
             if ($('form#order_review input[name="payment_method"][checked="checked"]').length == 1) {
               var payment_method = $('form#order_review input[name="payment_method"][checked="checked"]').val();
-              var order_id = <?php echo $order_id; ?>;
-              var nonce = '<?php echo $nonce; ?>';
               
               call_ajax(payment_method, order_id, nonce)
             }
