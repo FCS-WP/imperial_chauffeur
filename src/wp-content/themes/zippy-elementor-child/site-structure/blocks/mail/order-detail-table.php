@@ -3,6 +3,7 @@
     $total_custom_fee = 0;
     $total_fee = 0;
     $items = $order->get_items();
+    $cc_fee_amount = get_option("zippy_cc_fee_amount");
 ?>
 <table cellspacing="0" cellpadding="6" style="border:1px solid #e5e5e5;vertical-align:middle;color:#000;width:502px" border="1">
     <thead>
@@ -31,6 +32,7 @@
 
         <!-- Another  Fee -->
         <?php
+            $total_custom_fee = 0;
             if(!empty($fees)){
                 foreach ($fees as $itm_id => $itm) {
                     if($itm->get_name() !== get_option("zippy_cc_fee_name")){
@@ -55,20 +57,24 @@
                 $pne_total = $item->get_total();
                 $custom_subtotal += $pne_total;
             }
+            $subtotal = $custom_subtotal + $total_custom_fee;
         ?>
         <tr>
             <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left;border-top-width:4px" align="left">
                 <?php esc_html_e('Subtotal', 'woocommerce'); ?>
             </th>
             <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left;border-top-width:4px" align="left">
-                <?php echo wc_price($custom_subtotal + $total_custom_fee); ?>
+                <?php echo wc_price($subtotal); ?>
             </td>
         </tr>
 
         <!-- GST -->
         <?php
+            $gst = 0;
             if(!empty($order->get_items("tax"))){
                 foreach ($order->get_items("tax") as $itm_id => $itm) {
+                    $gst_rate = $itm["rate_percent"];
+                    $gst = ($gst_rate * $subtotal) / 100;
         ?>
         <tr>
             <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
@@ -76,7 +82,7 @@
             </th>
             <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
                 <?php 
-                    echo wc_price($itm->get_tax_total()); 
+                    echo wc_price($gst); 
                 ?>
             </td>
         </tr>
@@ -84,9 +90,11 @@
 
         <!-- CC Fee -->
         <?php
+            $cc_fee = 0;
             if(!empty($fees)){
                 foreach ($fees as $itm_id => $itm) {
                     if($itm->get_name() == get_option("zippy_cc_fee_name")){
+                        $cc_fee = ($cc_fee_amount * ($gst + $subtotal)) / 100;
         ?>
         <tr>
             <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
@@ -94,7 +102,7 @@
             </th>
             <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
                 <?php
-                    echo wc_price($itm->get_total()); 
+                    echo wc_price($cc_fee); 
                 ?>
             </td>
         </tr>
@@ -106,7 +114,7 @@
                 <?php esc_html_e('Grand Total', 'woocommerce'); ?>
             </th>
             <td style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
-                <?php echo wc_price($order->get_total()); ?>
+                <?php echo wc_price($subtotal + $gst + $cc_fee); ?>
             </td>
         </tr>
 
