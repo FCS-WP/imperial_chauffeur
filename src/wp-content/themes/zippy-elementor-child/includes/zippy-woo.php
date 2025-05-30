@@ -120,6 +120,7 @@ function handle_update_order_fee()
       $data = [
         "order" => $order,
       ];
+      
       $body = render_email_template("order-detail-table", $data);
 
       wp_send_json_success(array(
