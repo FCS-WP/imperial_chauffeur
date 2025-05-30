@@ -129,30 +129,20 @@ function handle_update_order_fee()
         $order_items[$i]["price"] = $item->get_total();
         $i++;
       }
-
       // Additional Fee
       $additional_fee = get_fee($order, "fee");
 
       // Tax
-      $tax = get_fee($order, "tax");
+      $gst = get_fee($order, "tax");
 
       // CC Fee
-      $cc_fee = [];
-      $j = 0;
-      foreach ($order->get_items("fee") as $itm_id => $itm) {
-        if($itm->get_name() == get_option("zippy_cc_fee_name")){
-          $cc_fee[$j]["label"] = $itm->get_name();
-          $cc_fee[$j]["total"] = $itm->get_total();
-          $j++;
-        }
-        
-      }
+      $cc_fee = get_fee($order, "cc_fee");
 
       wp_send_json_success(array(
         'items' => $order_items,
         'subtotal' => $custom_subtotal,
         'additional_fee' => $additional_fee,
-        'tax' => $tax,
+        'gst' => $gst,
         'cc_fee' => $cc_fee,
         'total' => wc_price($order->get_total()),
         'payment_method' => $order->get_payment_method_title(),
@@ -212,17 +202,18 @@ function add_order_pay_js()
                 if (response.success) {
                   let data = response.data,
                       items = data.items,
-                      subtotal = data.subtotal,
+                      subtotal = +data.subtotal,
                       additional_fee = data.additional_fee,
-                      tax = data.tax,
+                      gst = data.gst,
                       total = data.total,
                       cc_fee = data.cc_fee,
                       payment_method = data.payment_method,
                       item_html = ``,
-                      tax_html = ``,
+                      gst_html = ``,
                       additional_fee_html = ``,
                       cc_fee_html = ``,
                       total_addition_fee = 0;
+                      total_gst = 0;
                   
                   if($(items).empty().length > 0){
                     $(items).each(function(index, item){
@@ -244,32 +235,31 @@ function add_order_pay_js()
                           <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${item.total}</bdi></span></td>
                         </tr>
                       `;
-                      total_addition_fee += +item.total
+                      total_addition_fee += +item.total;
+                      subtotal = subtotal + total_addition_fee;
+                    })
+                  }
+
+                  if($(gst).empty().length > 0){
+                    $(gst).each(function(index, item){
+                      gst_html += `
+                        <tr>
+                          <th scope="row" colspan="2">${item.label}:</th>
+                          <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${((+item.gst_percent * subtotal) / 100).toFixed(2)}</bdi></span></td>
+                        </tr>
+                      `;
+                      total_gst += ((+item.gst_percent * subtotal) / 100).toFixed(2);
                     })
                   }
 
                   if($(cc_fee).empty().length > 0){
-                    $(cc_fee).each(function(index, item){
-                      cc_fee_html += `
+                    cc_fee_html += `
                         <tr>
-                          <th scope="row" colspan="2">${item.label}:</th>
-                          <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${item.total}</bdi></span></td>
+                          <th scope="row" colspan="2">${cc_fee[0].label}:</th>
+                          <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${((cc_fee[0].fee_amount * (+total_gst + subtotal)) / 100).toFixed(2)}</bdi></span></td>
                         </tr>
                       `
-                    })
                   }
-
-                  if($(tax).empty().length > 0){
-                    $(tax).each(function(index, item){
-                      tax_html += `
-                        <tr>
-                          <th scope="row" colspan="2">${item.label}:</th>
-                          <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${item.total}</bdi></span></td>
-                        </tr>
-                      `
-                    })
-                  }
-
                   let table = `
                       <thead>
                         <tr>
@@ -284,20 +274,16 @@ function add_order_pay_js()
                       </tbody>
                       <tfoot>
                         <tr>
-                          <th scope="row" colspan="2">Subtotal:</th>
-                          <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${+subtotal + total_addition_fee}</bdi></span></td>
+                            <th scope="row" colspan="2">Subtotal:</th>
+                            <td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>${+subtotal}</bdi></span></td>
                         </tr>
-                        ${tax_html}
+                        ${gst_html}
                         ${cc_fee_html}
                         <tr>
-                        <th scope="row" colspan="2">Grand Total:</th>
-                        <td class="product-total">${total}</td>
+                          <th scope="row" colspan="2">Grand Total:</th>
+                          <td class="product-total">${total}</td>
                         </tr>
-                        <tr>
-                          <th scope="row" colspan="2">Payment Method:</th>
-                          <td class="product-total">${payment_method}</td>
-                        </tr>
-                        </tfoot>`;
+                      </tfoot>`;
                   $("#order_review .shop_table").html(table).show();
                   $("#order_review").removeClass("tp_loading");
                 }
@@ -315,17 +301,30 @@ function add_order_pay_js()
 function get_fee($order, $fee_type)
 {
   $fee = [];
-  $z = 0;
-  if (!empty($order->get_items($fee_type))) {
+  if($fee_type == "tax"){
     foreach ($order->get_items($fee_type) as $itm_id => $itm) {
-      if ($fee_type == "fee" && $itm->get_name() !== get_option("zippy_cc_fee_name")) {
-        $fee[$z]["label"] = $itm->get_name();
-        $fee[$z]["total"] = $itm->get_total();
-      } elseif ($fee_type == "tax") {
-        $fee[$z]["label"] = $itm->get_label();
-        $fee[$z]["total"] = $itm->get_tax_total();
+      $fee[] = [
+        "label" => $itm->get_label(),
+        "gst_percent" => $itm["rate_percent"],
+      ];
+    }
+  } elseif($fee_type == "fee"){
+    foreach ($order->get_items($fee_type) as $itm_id => $itm) {
+      if($order->get_items($fee_type) && $itm->get_name() != get_option("zippy_cc_fee_name")){
+        $fee[] = [
+          "label" =>  $itm->get_name(),
+          "fee" => $itm->get_total(),
+        ];
       }
-      $z++;
+    }
+  } elseif($fee_type == "cc_fee"){
+    foreach ($order->get_items("fee") as $itm_id => $itm) {
+      if($order->get_items("fee") && $itm->get_name() == get_option("zippy_cc_fee_name")){
+        $fee[] = [
+          "label" =>  $itm->get_name(),
+          "fee_amount" => get_option("zippy_cc_fee_amount"),
+        ];
+      }
     }
   }
   return $fee;
