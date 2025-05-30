@@ -221,3 +221,18 @@ function get_fee($order, $fee_type)
   }
   return $fee;
 }
+
+
+
+add_filter( 'gettext', 'change_pay_order_notice_text', 20, 3 );
+function change_pay_order_notice_text( $new_text, $text, $domain ) {
+    if ( is_admin() || $domain !== 'woocommerce' ) {
+        return $new_text;
+    }
+    
+    if ( $text === 'You are paying for a guest order. Please continue with payment only if you recognize this order.' ) {
+        $new_text = 'You are paying for a Visitor order. If you have made this booking, please continue with payment.';
+    }
+
+    return $new_text;
+}
