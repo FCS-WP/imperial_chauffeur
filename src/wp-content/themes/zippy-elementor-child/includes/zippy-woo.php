@@ -7,6 +7,8 @@ function disable_password_reset()
 
 add_filter('allow_password_reset', 'disable_password_reset');
 
+add_filter('send_password_change_email', '__return_false');
+
 add_action('woocommerce_order_list_table_restrict_manage_orders', 'show_is_first_order_checkbox', 20);
 function show_is_first_order_checkbox()
 {
@@ -114,7 +116,7 @@ function handle_update_order_fee()
         $fee_item->set_tax_class('');
         $order->add_item($fee_item);
       }
-      
+
       $order->calculate_totals();
 
       $data = [
@@ -143,20 +145,20 @@ function add_order_pay_js()
     $order_id = absint(get_query_var('order-pay'));
     if ($order_id) {
       $nonce = wp_create_nonce('update_order_fee_nonce');
-      ?>
+?>
       <script type="text/javascript">
-        jQuery(document).ready(function ($) {
+        jQuery(document).ready(function($) {
           var order_id = <?php echo $order_id; ?>;
           var nonce = '<?php echo $nonce; ?>';
-          $('body').on('change', 'form#order_review input[name="payment_method"]', function () {
-              var payment_method = $(this).val();
+          $('body').on('change', 'form#order_review input[name="payment_method"]', function() {
+            var payment_method = $(this).val();
 
-              call_ajax(payment_method, order_id, nonce)
-            })
-          $(window).load(function () {
+            call_ajax(payment_method, order_id, nonce)
+          })
+          $(window).load(function() {
             if ($('form#order_review input[name="payment_method"][checked="checked"]').length == 1) {
               var payment_method = $('form#order_review input[name="payment_method"][checked="checked"]').val();
-              
+
               call_ajax(payment_method, order_id, nonce)
             }
           });
@@ -173,7 +175,7 @@ function add_order_pay_js()
                 payment_method: payment_method,
                 nonce: nonce
               },
-              success: function (response) {
+              success: function(response) {
                 if (response.success) {
                   let table = response.data.body;
                   $("#order_review .shop_table").html(table).show();
@@ -184,7 +186,7 @@ function add_order_pay_js()
           }
         });
       </script>
-      <?php
+<?php
     }
   }
 }
@@ -193,25 +195,25 @@ function add_order_pay_js()
 function get_fee($order, $fee_type)
 {
   $fee = [];
-  if($fee_type == "tax"){
+  if ($fee_type == "tax") {
     foreach ($order->get_items($fee_type) as $itm_id => $itm) {
       $fee[] = [
         "label" => $itm->get_label(),
         "gst_percent" => $itm["rate_percent"],
       ];
     }
-  } elseif($fee_type == "fee"){
+  } elseif ($fee_type == "fee") {
     foreach ($order->get_items($fee_type) as $itm_id => $itm) {
-      if($order->get_items($fee_type) && $itm->get_name() != get_option("zippy_cc_fee_name")){
+      if ($order->get_items($fee_type) && $itm->get_name() != get_option("zippy_cc_fee_name")) {
         $fee[] = [
           "label" =>  $itm->get_name(),
           "fee" => $itm->get_total(),
         ];
       }
     }
-  } elseif($fee_type == "cc_fee"){
+  } elseif ($fee_type == "cc_fee") {
     foreach ($order->get_items("fee") as $itm_id => $itm) {
-      if($order->get_items("fee") && $itm->get_name() == get_option("zippy_cc_fee_name")){
+      if ($order->get_items("fee") && $itm->get_name() == get_option("zippy_cc_fee_name")) {
         $fee[] = [
           "label" =>  $itm->get_name(),
           "fee_amount" => get_option("zippy_cc_fee_amount"),
@@ -224,15 +226,16 @@ function get_fee($order, $fee_type)
 
 
 
-add_filter( 'gettext', 'change_pay_order_notice_text', 20, 3 );
-function change_pay_order_notice_text( $new_text, $text, $domain ) {
-    if ( is_admin() || $domain !== 'woocommerce' ) {
-        return $new_text;
-    }
-    
-    if ( $text === 'You are paying for a guest order. Please continue with payment only if you recognize this order.' ) {
-        $new_text = 'You are paying for a Visitor order. If you have made this booking, please continue with payment.';
-    }
-
+add_filter('gettext', 'change_pay_order_notice_text', 20, 3);
+function change_pay_order_notice_text($new_text, $text, $domain)
+{
+  if (is_admin() || $domain !== 'woocommerce') {
     return $new_text;
+  }
+
+  if ($text === 'You are paying for a guest order. Please continue with payment only if you recognize this order.') {
+    $new_text = 'You are paying for a Visitor order. If you have made this booking, please continue with payment.';
+  }
+
+  return $new_text;
 }
