@@ -43,16 +43,16 @@ class Zippy_Core
 
   public function setup_phpmailer_init($phpmailer)
   {
-    $phpmailer->Host = 'smtp.gmail.com'; // for example, smtp.mailtrap.io
-    $phpmailer->Port = 587; // set the appropriate port: 465, 2525, etc.
-    $phpmailer->Username = 'dev@zippy.sg'; // your SMTP username
-    $phpmailer->Password = 'itmloqkardiuifmk'; // your SMTP password
+    $phpmailer->Host = 'smtp.gmail.com';
+    $phpmailer->Port = 587;
+    $phpmailer->Username = 'care@epos.com.sg';
+    $phpmailer->Password = 'cmgnobfqtkxhcrpm';
     $phpmailer->SMTPAuth = true;
-    $phpmailer->SMTPSecure = 'tls'; // preferable but optional
+    $phpmailer->SMTPSecure = 'tls';
     $phpmailer->IsSMTP();
   }
 
-  public function disable_plugin_deactivation($actions, $plugin_file, $plugin_data, $context)
+  function disable_plugin_deactivation($actions, $plugin_file, $plugin_data, $context)
   {
     if ($plugin_file == 'zippy-core/zippy-sg-core.php') {
       unset($actions['deactivate']);
