@@ -1,6 +1,7 @@
 <?php
 
-function render_email_template($template_name, $data = array()) {
+function render_email_template($template_name, $data = array())
+{
   ob_start();
 
   $template_path = get_template_directory() . '-child' . '/site-structure/blocks/mail/' . $template_name . '.php';
@@ -75,6 +76,10 @@ function confirm_email_woocommerce_order_actions($actions, $order)
 
   if ($is_guest) {
     $actions['send_order_details'] = __('Send order details to Visitor', 'send_order_details');
+  }
+
+  if (!$is_monthly && !$is_guest) {
+    unset($actions['send_order_details']);
   }
 
   if ($is_monthly || $status !== 'on-hold' || $is_guest) {
@@ -163,7 +168,7 @@ function completed_email_woocommerce_order_action_execute($order_id)
 
   $mail = wp_mail($user_email, $subject, $body, $headers);
 
-  if($mail){
+  if ($mail) {
     $order->add_order_note(__('Sent completed email to customer', 'send-confirmation-email'));
   }
 }
@@ -171,7 +176,8 @@ function completed_email_woocommerce_order_action_execute($order_id)
 
 
 
-function send_notify_email($order, $old_data, $new_data){
+function send_notify_email($order, $old_data, $new_data)
+{
 
   $user_email = $order->get_billing_email();
 
@@ -191,11 +197,11 @@ function send_notify_email($order, $old_data, $new_data){
   $body = render_email_template("order-edit-email", $data);
 
   return wp_mail($user_email, $subject, $body, $headers);
-
 }
 
 
-function get_email_signature(){
+function get_email_signature()
+{
   return "
     <p style='font-size:13px;color:#000;margin-top:45px;'>Kind regards,</p>
     <h3 style='font-size:15px;color:#000'>Imperial Chauffeur Services Pte Ltd</h3>
@@ -205,7 +211,8 @@ function get_email_signature(){
 }
 
 
-add_action( 'woocommerce_email_footer', 'custom_email_footer' );
-function custom_email_footer() {
+add_action('woocommerce_email_footer', 'custom_email_footer');
+function custom_email_footer()
+{
   echo get_email_signature();
 }
