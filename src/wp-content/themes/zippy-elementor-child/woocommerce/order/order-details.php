@@ -192,7 +192,6 @@ if (empty($is_monthly_payment_order)) :
 
 					// send email to customer
 					send_notify_email($order, $old_value_arr, $new_value_arr);
-
 				}
 			}
 
@@ -245,8 +244,10 @@ if (empty($is_monthly_payment_order)) :
 				echo "<p><strong>Duration: </strong> $order_quantity Hours</p>";
 			}
 			echo '</div>';
-			if (!in_array($order->get_status(), ['completed', 'cancelled'])) {
-				echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
+			if (!is_wc_endpoint_url('order-received')) {
+				if (!in_array($order->get_status(), ['completed', 'cancelled'])) {
+					echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
+				}
 			}
 		}
 		?>

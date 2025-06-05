@@ -173,7 +173,39 @@ function completed_email_woocommerce_order_action_execute($order_id)
   }
 }
 
+add_action('woocommerce_thankyou', 'completed_email_woocommerce_order_to_admin', 10, 2);
 
+function completed_email_woocommerce_order_to_admin()
+{
+
+  global $wp;
+  $order_id = absint($wp->query_vars['order-received']); // The order ID
+  $order    = wc_get_order($order_id);
+
+  if (empty($order_id)) {
+    return;
+  }
+
+  $user = $order->get_user();
+
+  $admin_email =  get_option('admin_email');
+
+  $headers = [
+    'Content-Type: text/html; charset=UTF-8',
+    'From: Imperial <impls@singnet.com.sg>'
+  ];
+
+  $subject = "New Paid Order #" . $order_id . "  – Imperial Chauffeur Services Pte. Ltd";
+
+  $data = [
+    "user" => $user,
+    "order" => $order,
+  ];
+
+  $body = render_email_template('paid-email', $data);
+
+  $mail = wp_mail($admin_email, $subject, $body, $headers);
+}
 
 
 function send_notify_email($order, $old_data, $new_data)
