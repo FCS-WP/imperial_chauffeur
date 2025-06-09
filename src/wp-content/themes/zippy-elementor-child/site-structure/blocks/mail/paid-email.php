@@ -26,8 +26,8 @@
         color: #000;
     }
 </style>
-<p style="font-size:13px;color:#000">Hi Admin</p>
-<p style="font-size:13px;color:#000">A new order has been successfully !</p>
+<p style="font-size:13px;color:#000">Dear Admin</p>
+<p style="font-size:13px;color:#000">You have received payment for order <?php echo $order_id;?></p>
 <p style="font-size:13px;color:#000">Here are the details:</p>
 
 <h3 style="color:#e91e21;font-size:15px">
