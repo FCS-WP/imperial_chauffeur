@@ -3,7 +3,7 @@
     $custom_fields = array(
         'service_type'       => __('Service Type', 'woocommerce'),
         'flight_details'     => __('Flight Details', 'woocommerce'),
-        'eta_time'           => __('ETE/ETA Time', 'woocommerce'),
+        'eta_time'           => __('ETD/ETA Time', 'woocommerce'),
         'no_of_passengers'   => __('No Of Passengers', 'woocommerce'),
         'no_of_baggage'      => __('No Of Baggage', 'woocommerce'),
         'key_member'         => __('Customer Type', 'woocommerce'),

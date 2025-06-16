@@ -112,7 +112,7 @@ if (empty($is_monthly_payment_order)) :
 		$custom_fields = array(
 			'service_type'       => __('Service Type', 'woocommerce'),
 			'flight_details'     => __('Flight Details', 'woocommerce'),
-			'eta_time'           => __('ETE/ETA Time', 'woocommerce'),
+			'eta_time'           => __('ETD/ETA Time', 'woocommerce'),
 			'no_of_passengers'   => __('No Of Passengers', 'woocommerce'),
 			'no_of_baggage'      => __('No Of Baggage', 'woocommerce'),
 			'key_member'         => __('Key Member', 'woocommerce'),
@@ -208,23 +208,54 @@ if (empty($is_monthly_payment_order)) :
 			echo '<form method="post">';
 			wp_nonce_field('save_custom_fields_' . $order_id);
 			echo '<div class="field-columns">';
-
+			$service_type_options = array(
+				'Airport Arrival Transfer',
+				'Airport Departure Transfer',
+				'Point-to-point Transfer'
+			);
 			foreach ($custom_fields as $key => $label) {
 				$value = get_post_meta($order_id, $key, true);
 				echo '<p><label><strong>' . esc_html($label) . ':</strong><br />';
 				$type = 'text';
-				if ($key === 'pick_up_date') {
-					$type = 'date';
-				} elseif ($key === 'pick_up_time' || $key === 'eta_time') {
-					$type = 'text';
-					$id = $key;
-				} elseif ($key === 'no_of_passengers' || $key === 'no_of_baggage') {
-					$type = 'number';
+
+				switch ($key) {
+					case 'pick_up_date':
+						$type = 'date';
+						break;
+					case 'pick_up_time':
+						$type = 'text';
+						break;
+					case 'eta_time':
+						$type = 'text';
+						break;
+
+					case 'no_of_passengers':
+						$type = 'number';
+						break;
+					case 'no_of_baggage':
+						$type = 'number';
+						break;
+
+					case 'service_type':
+						$type = 'options';
+						break;
+					default:
+						$type = 'text';
+						break;
 				}
 
-				echo '<input id="' . esc_attr($id) . '" type="' . esc_attr($type) . '" name="' . esc_attr($key) . '" value="' . esc_attr($value) . '" style="width:100%;" />';
+				if ($type == 'options') : ?>
+					<select style="width: 400px;background: none; margin-top: 10px;" id="servicetype" name="service_type" required>
+						<option value="Airport Arrival Transfer" <?php echo selected($service_type_options[0], esc_attr($value)); ?>>Airport Arrival Transfer</option>
+						<option value="Airport Departure Transfer" <?php echo selected($service_type_options[1], esc_attr($value)); ?>>Airport Departure Transfer</option>
+						<option value="Point-to-point Transfer" <?php echo selected($service_type_options[2], esc_attr($value)); ?>>Point-to-point Transfer</option>
+					</select>
+				<?php else : ?>
+					<input id="<?php echo esc_attr($key); ?>" type="<?php echo esc_attr($type); ?>" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($value); ?>" style="width:100%;" />
+				<?php endif; ?>
 
-				echo '</label></p>';
+				</label></p>
+		<?php
 			}
 
 			echo '</div>';
@@ -244,11 +275,22 @@ if (empty($is_monthly_payment_order)) :
 				echo "<p><strong>Duration: </strong> $order_quantity Hours</p>";
 			}
 			echo '</div>';
+			echo '<div style="text-align:left;margin:30px 0px 20px 0px;">';
 			if (!is_wc_endpoint_url('order-received')) {
 				if (!in_array($order->get_status(), ['completed', 'cancelled'])) {
-					echo '<p><a class="button button-black" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a></p>';
+
+					$order_date = $order->get_date_created();
+					$current_time = new DateTime('now', wp_timezone());
+					$threshold = clone $current_time; // Clone as =
+					$threshold->modify('-24 hours');
+					if ($order_date < $threshold) {
+						echo '<p style="font-style: italic;" >This order is scheduled in less than 24 hours and can no longer be edited or changed.<br>For any enquiries, please contact us directly. Thank you for your understanding!</p>';
+					} else {
+						echo '<a class="button button-black red" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a>';
+					}
 				}
 			}
+			echo '</div>';
 		}
 		?>
 	</div>

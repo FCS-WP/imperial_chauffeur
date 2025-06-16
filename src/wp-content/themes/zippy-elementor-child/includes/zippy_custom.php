@@ -12,8 +12,8 @@ function shin_scripts()
     // Load Thirt-party
     // wp_enqueue_style('vanilla-celendar-css', THEME_URL . '-child' . '/assets/lib/vanilla-calendar.min.css', array(), $version, 'all');
     // wp_enqueue_script('vanilla-scripts-js', THEME_URL . '-child' . '/assets/lib/vanilla-calendar.min.js', array('jquery'), $version, true);
-    wp_enqueue_script('flatpickr-js', get_template_directory_uri() . '/lib/flatpickr/flatpickr.min.js', array('jquery'), null, true);
-    wp_enqueue_style('flatpickr-css', get_template_directory_uri() . '/lib/flatpickr/flatpickr.min.css');
+    wp_enqueue_script('flatpickr-js', THEME_URL . '-child' . '/assets/lib/flatpickr/flatpickr.min.js', array('jquery'), null, true);
+    wp_enqueue_style('flatpickr-css', THEME_URL . '-child' . '/assets/lib/flatpickr/flatpickr.min.css');
 }
 
 add_filter('woocommerce_my_account_my_orders_actions', 'remove_pay_action', 10, 2);
