@@ -49,7 +49,10 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 					</td>
 					<td data-title="<?php esc_attr_e('Date & time of booking', 'woocommerce'); ?>">
 						<time datetime="<?php echo esc_attr($order->get_date_created()->date('c')); ?>">
-							<?php echo esc_html(wc_format_datetime($order->get_date_created())); ?>
+							<?php
+							$pickupdate_value = get_post_meta($order->get_order_number(), "pick_up_date", true);
+							$pickupdate = date('d-m-Y', strtotime($pickupdate_value)); ?>
+							<?php echo esc_html($pickupdate); ?>
 						</time>
 					</td>
 					<td><?php echo get_post_meta($order->get_order_number(), "service_type", true) ?></td>

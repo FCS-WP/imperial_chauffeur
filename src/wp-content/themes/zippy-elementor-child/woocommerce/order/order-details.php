@@ -204,7 +204,7 @@ if (empty($is_monthly_payment_order)) :
 		}
 
 
-		if ($is_editing) {
+		if ($is_editing && can_edit_order($order_id)) {
 			echo '<form method="post">';
 			wp_nonce_field('save_custom_fields_' . $order_id);
 			echo '<div class="field-columns">';
