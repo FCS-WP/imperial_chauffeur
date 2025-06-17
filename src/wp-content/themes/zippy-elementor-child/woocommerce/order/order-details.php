@@ -250,8 +250,14 @@ if (empty($is_monthly_payment_order)) :
 						<option value="Airport Departure Transfer" <?php echo selected($service_type_options[1], esc_attr($value)); ?>>Airport Departure Transfer</option>
 						<option value="Point-to-point Transfer" <?php echo selected($service_type_options[2], esc_attr($value)); ?>>Point-to-point Transfer</option>
 					</select>
-				<?php else : ?>
+				<?php elseif ($key == 'pick_up_date') : ?>
+					<?php $pickupdate = date('Y-m-d', strtotime($value)); ?>
+
+					<input id="<?php echo esc_attr($key); ?>" type="<?php echo esc_attr($type); ?>" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($pickupdate); ?>" style="width:100%;" />
+
+				<?php else: ?>
 					<input id="<?php echo esc_attr($key); ?>" type="<?php echo esc_attr($type); ?>" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($value); ?>" style="width:100%;" />
+
 				<?php endif; ?>
 
 				</label></p>
@@ -279,14 +285,19 @@ if (empty($is_monthly_payment_order)) :
 			if (!is_wc_endpoint_url('order-received')) {
 				if (!in_array($order->get_status(), ['completed', 'cancelled'])) {
 
-					$order_date = $order->get_date_created();
-					$current_time = new DateTime('now', wp_timezone());
-					$threshold = clone $current_time; // Clone as =
-					$threshold->modify('-24 hours');
-					if ($order_date < $threshold) {
-						echo '<p style="font-style: italic;" >This order is scheduled in less than 24 hours and can no longer be edited or changed.<br>For any enquiries, please contact us directly. Thank you for your understanding!</p>';
-					} else {
-						echo '<a class="button button-black red" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a>';
+
+
+					try {
+						$canEdit = can_edit_order($order_id);
+
+						if ($canEdit) {
+							echo '<a class="button button-black red" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a>';
+						} else {
+							echo '<p style="font-style: italic;">This order is scheduled in less than 24 hours and can no longer be edited or changed.<br>For any enquiries, please contact us directly. Thank you for your understanding!</p>';
+						}
+					} catch (Exception $e) {
+						// Handle invalid date format
+						echo '<p style="font-style: italic;">This order is scheduled in less than 24 hours and can no longer be edited or changed.<br>For any enquiries, please contact us directly. Thank you for your understanding!</p>';
 					}
 				}
 			}
