@@ -4,6 +4,7 @@ jQuery(document).ready(function ($) {
   const initFlatpickr = function () {
     const $pickUp = $("#pick_up_time");
     const $eta = $("#eta_time");
+
     if (typeof flatpickr !== "undefined") {
       if ($pickUp.length) {
         $pickUp.flatpickr({
