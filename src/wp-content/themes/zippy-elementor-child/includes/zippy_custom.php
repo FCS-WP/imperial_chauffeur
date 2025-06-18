@@ -12,7 +12,7 @@ function shin_scripts()
     // Load Thirt-party
     // wp_enqueue_style('vanilla-celendar-css', THEME_URL . '-child' . '/assets/lib/vanilla-calendar.min.css', array(), $version, 'all');
     // wp_enqueue_script('vanilla-scripts-js', THEME_URL . '-child' . '/assets/lib/vanilla-calendar.min.js', array('jquery'), $version, true);
-    if (is_checkout()) {
+    if (is_account_page()) {
         wp_enqueue_script('flatpickr-js', THEME_URL . '-child' . '/assets/lib/flatpickr/flatpickr.min.js', array('jquery'), null, true);
         wp_enqueue_style('flatpickr-css', THEME_URL . '-child' . '/assets/lib/flatpickr/flatpickr.min.css');
     }

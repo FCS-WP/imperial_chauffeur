@@ -1,11 +1,42 @@
 <?php
 defined('ABSPATH') || exit;
 
-$current_orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'date_created';
+$current_orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'booking_date';
 $current_order   = isset($_GET['order']) ? strtolower(sanitize_text_field($_GET['order'])) : 'desc';
 
 do_action('woocommerce_before_account_orders', $has_orders); ?>
+<?php
 
+if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
+	$customer_orders = [];
+	global $wpdb;
+
+	$results = $wpdb->get_col(
+		"
+    SELECT o.id
+    FROM {$wpdb->prefix}wc_orders AS o
+    JOIN {$wpdb->prefix}postmeta AS p ON o.id = p.post_id 
+    WHERE o.type = 'shop_order'
+      AND o.customer_id <> 0
+      AND p.meta_key = 'pick_up_date'
+			AND o.status IN ('wc-on-hold','wc-pending','wc-processing','wc-confirmed')
+     AND o.customer_id = " . get_current_user_id() . "
+    ORDER BY
+      COALESCE(
+        STR_TO_DATE(p.meta_value, '%d-%m-%Y'),
+        STR_TO_DATE(p.meta_value, '%Y-%m-%d'),
+        STR_TO_DATE(p.meta_value, '%d-%M-%Y')
+      ) {$current_order} 
+		
+    "
+	);
+
+	$customer_orders = (object) array(
+		'orders' => $results
+	);
+}
+
+?>
 <?php if ($has_orders) : ?>
 	<?php wc_print_notices(); ?>
 	<table class="woocommerce-orders-table shop_table shop_table_responsive my_account_orders account-orders-table">
@@ -16,7 +47,7 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 				</th>
 				<th><?php esc_html_e('Staff Name', 'woocommerce'); ?></th>
 				<th>
-					<?php echo build_sort_link(__('Booking Date', 'woocommerce'), 'date_created', $current_orderby, $current_order); ?>
+					<?php echo build_sort_link(__('Booking Date', 'woocommerce'), 'booking_date', $current_orderby, $current_order); ?>
 				</th>
 				<th><?php esc_html_e('Type of service', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Status', 'woocommerce'); ?></th>
