@@ -251,9 +251,9 @@ if (empty($is_monthly_payment_order)) :
 						<option value="Point-to-point Transfer" <?php echo selected($service_type_options[2], esc_attr($value)); ?>>Point-to-point Transfer</option>
 					</select>
 				<?php elseif ($key == 'pick_up_date') : ?>
-					<?php $pickupdate = date('Y-m-d', strtotime($value)); ?>
+					<?php $pickupdate = date('d-m-Y', strtotime($value)); ?>
 
-					<input id="<?php echo esc_attr($key); ?>" type="<?php echo esc_attr($type); ?>" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($pickupdate); ?>" style="width:100%;" />
+					<input class="js-datepicker" id="<?php echo esc_attr($key); ?>" type="text" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($pickupdate); ?>" style="width:100%;" />
 
 				<?php else: ?>
 					<input id="<?php echo esc_attr($key); ?>" type="<?php echo esc_attr($type); ?>" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($value); ?>" style="width:100%;" />

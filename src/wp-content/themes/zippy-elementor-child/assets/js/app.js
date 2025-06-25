@@ -22,6 +22,13 @@ jQuery(document).ready(function ($) {
           time_24hr: true,
         });
       }
+
+      if ($(".js-datepicker").length) {
+        $(".js-datepicker").flatpickr({
+          dateFormat: "d-m-Y",
+        });
+      }
+
     } else {
       setTimeout(initFlatpickr, 300);
     }
@@ -29,3 +36,5 @@ jQuery(document).ready(function ($) {
 
   initFlatpickr();
 });
+
+
