@@ -91,7 +91,7 @@ function handle_update_order_fee()
   $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
   $payment_method = isset($_POST['payment_method']) ? sanitize_text_field($_POST['payment_method']) : '';
 
-  $allowed_paymentmethod = "zippy_antom_payment"; //zippy_antom_payment
+  $allowed_paymentmethod = "cod"; //zippy_antom_payment
 
   $cc_name = get_option("zippy_cc_fee_name");
 
@@ -104,20 +104,47 @@ function handle_update_order_fee()
           $order->remove_item($item_id);
         }
       }
+      $subtotal = $order->get_subtotal();
+      $total_discount = $order->get_total_discount() ?? 0;
+      $subtotal =  $subtotal - $total_discount;
+      if (!empty($order->get_items("tax"))) {
+        foreach ($order->get_items("tax") as $itm_id => $itm) {
+          $gst_rate = $itm["rate_percent"];
+          $gst = ($gst_rate * $subtotal) / 100;
+        }
+      }
+
       if ($payment_method == $allowed_paymentmethod && get_option("enable_cc_fee") == "yes") {
-        $fee_base = $order->get_subtotal();
-        $fee = $fee_base * (get_option("zippy_cc_fee_amount") / 100);
+        // Remove old tax fee
+        foreach ($order->get_items('tax') as $item_id => $item) {
+          $order->remove_item($item_id);
+        }
+
+        $cc_fee_amount = get_option("zippy_cc_fee_amount");
+
+        $cc_fee = ($cc_fee_amount * ($gst + $subtotal)) / 100;
 
         // Add 5% CC Fee
         $fee_item = new WC_Order_Item_Fee();
         $fee_item->set_name($cc_name);
-        $fee_item->set_amount($fee);
-        $fee_item->set_total($fee);
+        $fee_item->set_amount($cc_fee);
+        $fee_item->set_total_tax(0);
+        $fee_item->set_total($cc_fee);
         $fee_item->set_tax_class('');
         $order->add_item($fee_item);
-      }
 
-      $order->calculate_totals();
+        // Add tax
+        $order_tax = new WC_Order_Item_Tax();
+
+        $order_tax->set_name('9% GST');
+        $order_tax->set_label('9% GST');
+        $order_tax->set_rate_percent($gst_rate);
+        $order_tax->set_tax_total($gst);
+        $order->add_item($order_tax);
+      }
+      $order->save();
+
+      $order->calculate_totals(false);
 
       $data = [
         "order" => $order,
