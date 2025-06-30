@@ -8,6 +8,7 @@
     $custom_subtotal = 0;
     $cc_fee = 0;
     $gst = 0;
+    // var_dump($is_checkout);
 ?>
 <table cellspacing="0" cellpadding="6" style="border:1px solid #e5e5e5;vertical-align:middle;color:#000;width:502px" border="1">
     <thead>
