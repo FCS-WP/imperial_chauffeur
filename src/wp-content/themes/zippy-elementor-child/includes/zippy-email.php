@@ -217,7 +217,7 @@ function send_notify_email($order, $old_data, $new_data)
     'From: Imperial <impls@singnet.com.sg>'
   ];
 
-  $subject = "Your order information has been updated";
+  $subject = "Your order amendment has been submitted";
 
   $data = [
     "old_data" => $old_data,

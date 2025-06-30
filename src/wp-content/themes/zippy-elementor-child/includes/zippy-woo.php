@@ -91,7 +91,7 @@ function handle_update_order_fee()
   $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
   $payment_method = isset($_POST['payment_method']) ? sanitize_text_field($_POST['payment_method']) : '';
 
-  $allowed_paymentmethod = "cod"; //zippy_antom_payment
+  $allowed_paymentmethod = "zippy_antom_payment"; //zippy_antom_payment
 
   $cc_name = get_option("zippy_cc_fee_name");
 
