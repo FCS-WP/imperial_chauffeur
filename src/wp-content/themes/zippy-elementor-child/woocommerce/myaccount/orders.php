@@ -16,7 +16,7 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 				</th>
 				<th><?php esc_html_e('Staff Name', 'woocommerce'); ?></th>
 				<th>
-					<?php echo build_sort_link(__('Booking Date', 'woocommerce'), 'date_created', $current_orderby, $current_order); ?>
+					<?php echo build_sort_link(__('Transfer date', 'woocommerce'), 'date_created', $current_orderby, $current_order); ?>
 				</th>
 				<th><?php esc_html_e('Type of service', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Status', 'woocommerce'); ?></th>
@@ -63,18 +63,14 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 						<?php
 						$actions = wc_get_account_orders_actions($order);
 
-						if ($order->has_status('on-hold') && $order->get_cancel_order_url()) {
-							$actions['cancel'] = array(
-								'url'  => $order->get_cancel_order_url(wc_get_page_permalink('myaccount')),
-								'name' => __('Cancel', 'woocommerce'),
-							);
-						}
-
+						//remove cancel action
+						unset($actions['cancel']);
 						if (!empty($actions)) {
 							foreach ($actions as $key => $action) {
 								echo '<a href="' . esc_url($action['url']) . '" class="woocommerce-button button ' . sanitize_html_class($key) . '">' . esc_html($action['name']) . '</a>';
 							}
 						}
+						
 						?>
 					</td>
 				</tr>
@@ -105,17 +101,3 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 <?php endif; ?>
 
 <?php do_action('woocommerce_after_account_orders', $has_orders); ?>
-<?php
-add_action('woocommerce_cancelled_order', 'custom_cancel_order_notice', 10, 1);
-
-function custom_cancel_order_notice($order_id)
-{
-	if (!is_user_logged_in()) return;
-
-	// Check if it's the current user's order
-	$order = wc_get_order($order_id);
-	if ($order->get_user_id() === get_current_user_id()) {
-		wc_add_notice(__('You have successfully cancelled the order.', 'woocommerce'), 'success');
-	}
-}
-?>

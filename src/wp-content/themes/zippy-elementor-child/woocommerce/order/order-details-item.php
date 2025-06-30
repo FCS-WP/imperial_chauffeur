@@ -44,12 +44,6 @@ $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
 			$qty_display = esc_html($qty);
 		}
 
-		if($service_type != "Hourly/Disposal"){
-			echo apply_filters('woocommerce_order_item_quantity_html', ' <strong class="product-quantity">' . sprintf('&times;&nbsp;%s', $qty_display) . '</strong>', $item); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
-
-		
-
 		do_action('woocommerce_order_item_meta_start', $item_id, $item, $order, false);
 
 		wc_display_item_meta($item); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -85,7 +79,7 @@ $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
 	<tr class="woocommerce-table__product-purchase-note product-purchase-note">
 
 		<td colspan="2"><?php echo wpautop(do_shortcode(wp_kses_post($purchase_note))); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
-						?></td>
+										?></td>
 
 	</tr>
 

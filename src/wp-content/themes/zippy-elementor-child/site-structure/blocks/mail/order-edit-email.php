@@ -18,12 +18,12 @@
 <div style="padding:70px 0;background-color:#f7f7f7">
     <div style="color:#000;width:600px;margin:0 auto">
         <div style="color:#000;background:#e91e21;color:#fff;padding:36px 48px;font-size:30px;border-radius: 3px 3px 0 0;">
-            <strong>Order information updated</strong>
+            <strong>Order amendment submitted</strong>
         </div>
 
         <div style="color:#000;background:#fff;padding:48px 48px 32px;font-family: Arial, sans-serif; font-size:13px; color:#000;margin:0 auto;text-align:left;border-radius: 0 0 3px 3px;">
             <p style="color:#000;font-size:13px;">Hi <?php echo esc_html($order->get_billing_first_name()); ?>,</p>
-            <p style="color:#000;font-size:13px;margin-bottom:20px">The information in bold has been changed in your order.</p>
+            <p style="color:#000;font-size:13px;margin-bottom:20px">The information in bold has been changed in your order.  Please wait for the admin to confirm your changes.</p>
             <h3 style="font-size:15px;color:#000">Order Information:</h3>
             <div style="margin-left:20px">
                 <?php

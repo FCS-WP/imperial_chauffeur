@@ -284,9 +284,6 @@ if (empty($is_monthly_payment_order)) :
 			echo '<div style="text-align:left;margin:30px 0px 20px 0px;">';
 			if (!is_wc_endpoint_url('order-received')) {
 				if (!in_array($order->get_status(), ['completed', 'cancelled'])) {
-
-
-
 					try {
 						$canEdit = can_edit_order($order_id);
 
