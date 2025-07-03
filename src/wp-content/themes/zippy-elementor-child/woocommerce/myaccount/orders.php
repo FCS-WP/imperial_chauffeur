@@ -1,11 +1,52 @@
 <?php
 defined('ABSPATH') || exit;
 
-$current_orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'date_created';
+$current_orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'booking_date';
 $current_order   = isset($_GET['order']) ? strtolower(sanitize_text_field($_GET['order'])) : 'desc';
 
 do_action('woocommerce_before_account_orders', $has_orders); ?>
+<?php
 
+if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
+	$customer_orders = [];
+	global $wpdb;
+
+	$results = $wpdb->get_col(
+		"
+    SELECT o.id
+    FROM {$wpdb->prefix}wc_orders AS o
+    JOIN {$wpdb->prefix}postmeta AS p ON o.id = p.post_id
+    WHERE o.type = 'shop_order'
+      AND o.customer_id <> 0
+      AND p.meta_key = 'pick_up_date'
+			AND o.status IN ('wc-on-hold','wc-pending','wc-processing','wc-confirmed')
+     AND o.customer_id = " . get_current_user_id() . "
+    ORDER BY
+      COALESCE(
+        STR_TO_DATE(p.meta_value, '%d-%m-%Y'),
+        STR_TO_DATE(p.meta_value, '%Y-%m-%d'),
+        STR_TO_DATE(p.meta_value, '%d-%M-%Y')
+      ) {$current_order} 
+
+    "
+	);
+	// 	$results2 = $wpdb->get_col(
+	// 		"
+	//     SELECT  o.id
+	// FROM {$wpdb->prefix}wc_orders_meta AS om
+	// LEFT JOIN {$wpdb->prefix}wc_orders  as o ON o.id = om.order_id 
+	// WHERE o.customer_id = " . get_current_user_id() . "
+	// AND om.meta_key = 'is_monthly_payment_order'
+	// GROUP BY o.id
+	//     "
+	// 	);
+	// $result = array_merge($results, $results2);
+	$customer_orders = (object) array(
+		'orders' => $results
+	);
+}
+
+?>
 <?php if ($has_orders) : ?>
 	<?php wc_print_notices(); ?>
 	<table class="woocommerce-orders-table shop_table shop_table_responsive my_account_orders account-orders-table">
@@ -16,7 +57,7 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 				</th>
 				<th><?php esc_html_e('Staff Name', 'woocommerce'); ?></th>
 				<th>
-					<?php echo build_sort_link(__('Transfer date', 'woocommerce'), 'date_created', $current_orderby, $current_order); ?>
+					<?php echo build_sort_link(__('Booking Date', 'woocommerce'), 'booking_date', $current_orderby, $current_order); ?>
 				</th>
 				<th><?php esc_html_e('Type of service', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Status', 'woocommerce'); ?></th>
@@ -49,7 +90,10 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 					</td>
 					<td data-title="<?php esc_attr_e('Date & time of booking', 'woocommerce'); ?>">
 						<time datetime="<?php echo esc_attr($order->get_date_created()->date('c')); ?>">
-							<?php echo esc_html(wc_format_datetime($order->get_date_created())); ?>
+							<?php
+							$pickupdate_value = get_post_meta($order->get_order_number(), "pick_up_date", true);
+							$pickupdate = !empty($pickupdate_value)  ? date('d-m-Y', strtotime($pickupdate_value)) : esc_html(wc_format_datetime($order->get_date_created(), 'd-m-Y')) ?>
+							<?php echo esc_html($pickupdate); ?>
 						</time>
 					</td>
 					<td><?php echo get_post_meta($order->get_order_number(), "service_type", true) ?></td>
@@ -70,7 +114,6 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 								echo '<a href="' . esc_url($action['url']) . '" class="woocommerce-button button ' . sanitize_html_class($key) . '">' . esc_html($action['name']) . '</a>';
 							}
 						}
-						
 						?>
 					</td>
 				</tr>
@@ -101,3 +144,17 @@ do_action('woocommerce_before_account_orders', $has_orders); ?>
 <?php endif; ?>
 
 <?php do_action('woocommerce_after_account_orders', $has_orders); ?>
+<?php
+add_action('woocommerce_cancelled_order', 'custom_cancel_order_notice', 10, 1);
+
+function custom_cancel_order_notice($order_id)
+{
+	if (!is_user_logged_in()) return;
+
+	// Check if it's the current user's order
+	$order = wc_get_order($order_id);
+	if ($order->get_user_id() === get_current_user_id()) {
+		wc_add_notice(__('You have successfully cancelled the order.', 'woocommerce'), 'success');
+	}
+}
+?>
