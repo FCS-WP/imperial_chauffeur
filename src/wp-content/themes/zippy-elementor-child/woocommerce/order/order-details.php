@@ -211,57 +211,64 @@ if (empty($is_monthly_payment_order)) :
 			$service_type_options = array(
 				'Airport Arrival Transfer',
 				'Airport Departure Transfer',
-				'Point-to-point Transfer'
+				'Point-to-point Transfer',
+				'Hourly/Disposal'
 			);
 			foreach ($custom_fields as $key => $label) {
 				$value = get_post_meta($order_id, $key, true);
-				echo '<p><label><strong>' . esc_html($label) . ':</strong><br />';
-				$type = 'text';
+				if (!empty($value)) {
+					echo '<p><label><strong>' . esc_html($label) . ':</strong><br />';
 
-				switch ($key) {
-					case 'pick_up_date':
-						$type = 'date';
-						break;
-					case 'pick_up_time':
-						$type = 'text';
-						break;
-					case 'eta_time':
-						$type = 'text';
-						break;
+					$type = 'text';
 
-					case 'no_of_passengers':
-						$type = 'number';
-						break;
-					case 'no_of_baggage':
-						$type = 'number';
-						break;
+					switch ($key) {
+						case 'pick_up_date':
+							$type = 'date';
+							break;
+						case 'pick_up_time':
+							$type = 'text';
+							break;
+						case 'eta_time':
+							$type = 'text';
+							break;
 
-					case 'service_type':
-						$type = 'options';
-						break;
-					default:
-						$type = 'text';
-						break;
-				}
+						case 'no_of_passengers':
+							$type = 'number';
+							break;
+						case 'no_of_baggage':
+							$type = 'number';
+							break;
 
-				if ($type == 'options') : ?>
-					<select style="width: 400px;background: none; margin-top: 10px;" id="servicetype" name="service_type" required>
-						<option value="Airport Arrival Transfer" <?php echo selected($service_type_options[0], esc_attr($value)); ?>>Airport Arrival Transfer</option>
-						<option value="Airport Departure Transfer" <?php echo selected($service_type_options[1], esc_attr($value)); ?>>Airport Departure Transfer</option>
-						<option value="Point-to-point Transfer" <?php echo selected($service_type_options[2], esc_attr($value)); ?>>Point-to-point Transfer</option>
-					</select>
-				<?php elseif ($key == 'pick_up_date') : ?>
-					<?php $pickupdate = date('d-m-Y', strtotime($value)); ?>
+						case 'service_type':
+							$type = 'options';
+							break;
+						default:
+							$type = 'text';
+							break;
+					}
 
-					<input class="js-datepicker" id="<?php echo esc_attr($key); ?>" type="text" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($pickupdate); ?>" style="width:100%;" />
+					if ($type == 'options') : ?>
+						<select style="width: 400px;background: none; margin-top: 10px;" id="servicetype" name="service_type" required>
+							<option value="Airport Arrival Transfer" <?php echo selected($service_type_options[0], esc_attr($value)); ?>>Airport Arrival Transfer</option>
+							<option value="Airport Departure Transfer" <?php echo selected($service_type_options[1], esc_attr($value)); ?>>Airport Departure Transfer</option>
+							<option value="Point-to-point Transfer" <?php echo selected($service_type_options[2], esc_attr($value)); ?>>Point-to-point Transfer</option>
+							<option value="Hourly/Disposal" <?php echo selected($service_type_options[3], esc_attr($value)); ?>>Hourly/Disposal</option>
+						</select>
+					<?php elseif ($key == 'pick_up_date') : ?>
+						<?php $pickupdate = date('d-m-Y', strtotime($value)); ?>
 
-				<?php else: ?>
-					<input id="<?php echo esc_attr($key); ?>" type="<?php echo esc_attr($type); ?>" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($value); ?>" style="width:100%;" />
+						<input class="js-datepicker" id="<?php echo esc_attr($key); ?>" type="text" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($pickupdate); ?>" style="width:100%;" />
 
-				<?php endif; ?>
+					<?php else: ?>
+						<input id="<?php echo esc_attr($key); ?>" type="<?php echo esc_attr($type); ?>" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($value); ?>" style="width:100%;" />
 
-				</label></p>
-		<?php
+					<?php endif; ?>
+
+					</label></p>
+
+					<?php	} ?>
+
+			<?php
 			}
 
 			echo '</div>';
@@ -300,7 +307,7 @@ if (empty($is_monthly_payment_order)) :
 			}
 			echo '</div>';
 		}
-		?>
+			?>
 	</div>
 <?php endif; ?>
 
