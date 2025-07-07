@@ -57,7 +57,7 @@ function custom_woocommerce_auto_complete_order($order_id)
 
   $order = wc_get_order($order_id);
 
-  if ($order->has_status('processing') || $order->has_status('on-hold')) {
+  if ($order->has_status('processing') || $order->has_status('on-hold') || $order->is_paid()) {
     $order->update_status('completed');
   }
 }
