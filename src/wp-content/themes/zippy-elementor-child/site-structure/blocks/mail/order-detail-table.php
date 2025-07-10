@@ -100,7 +100,8 @@ $gst = 0;
         if (!empty($fees)) {
             foreach ($fees as $itm_id => $itm) {
                 if ($itm->get_name() == get_option("zippy_cc_fee_name")) {
-                    $cc_fee = round(($cc_fee_amount * ($gst + $subtotal)) / 100, 2);
+             $cc_fee = round(($cc_fee_amount * ($gst + $subtotal)) / 100, 2);
+
         ?>
                     <tr>
                         <th colspan="2" style="border:1px solid #e5e5e5;vertical-align:middle;padding:12px;color:#000;font-size:13px;text-align:left" align="left">
