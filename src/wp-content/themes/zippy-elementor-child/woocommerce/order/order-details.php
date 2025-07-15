@@ -109,7 +109,9 @@ if (empty($is_monthly_payment_order)) :
 ?>
 	<div class="woocommerce-order-custom-fields">
 		<?php
+
 		$custom_fields = array(
+			'staff_name'       => __('Staff Name', 'woocommerce'),
 			'service_type'       => __('Service Type', 'woocommerce'),
 			'flight_details'     => __('Flight Details', 'woocommerce'),
 			'eta_time'           => __('ETD/ETA Time', 'woocommerce'),
@@ -120,6 +122,8 @@ if (empty($is_monthly_payment_order)) :
 			'pick_up_time'       => __('Pick Up Time', 'woocommerce'),
 			'pick_up_location'   => __('Pick Up Location', 'woocommerce'),
 			'drop_off_location'  => __('Drop Off Location', 'woocommerce'),
+			'special_requests'       => __('Special Reuest', 'woocommerce'),
+
 		);
 
 		$order_id = $order->get_id();
@@ -144,15 +148,17 @@ if (empty($is_monthly_payment_order)) :
 					}
 				}
 			}
+
 			if (!empty($changes)) {
-				$order = wc_get_order($order_id);
+				// $order = wc_get_order($order_id);
 				if ($order) {
 					$note_content = "Custom fields changed:\n" . implode("\n", $changes);
 					$note = $order->add_order_note($note_content, true); // true = cusstomer
-					$order->add_order_note($note_content, true);
+
 					if ($order->get_status() !== 'on-hold') {
 						$order->update_status('on-hold');
 					}
+
 					$current_user = wp_get_current_user();
 					$member_name = $current_user->display_name ?: $current_user->user_login;
 					$edit_date = current_time('d/m/Y');
@@ -266,16 +272,18 @@ if (empty($is_monthly_payment_order)) :
 
 					</label></p>
 
-					<?php	} ?>
+				<?php	} ?>
 
-			<?php
+		<?php
 			}
 
 			echo '</div>';
 			echo '<p><button type="submit" class="button button-black ">Save</button></p>';
 			echo '</form>';
 		} else {
+
 			echo '<div class="field-columns">';
+
 			foreach ($custom_fields as $key => $label) {
 
 				$value = get_post_meta($order_id, $key, true);
@@ -284,9 +292,11 @@ if (empty($is_monthly_payment_order)) :
 					echo '<p><strong>' . esc_html($label) . ':</strong> ' . esc_html($value) . '</p>';
 				}
 			}
+
 			if ($service_type == "Hourly/Disposal") {
 				echo "<p><strong>Duration: </strong> $order_quantity Hours</p>";
 			}
+
 			echo '</div>';
 			echo '<div style="text-align:left;margin:30px 0px 20px 0px;">';
 			if (!is_wc_endpoint_url('order-received')) {
@@ -307,7 +317,7 @@ if (empty($is_monthly_payment_order)) :
 			}
 			echo '</div>';
 		}
-			?>
+		?>
 	</div>
 <?php endif; ?>
 
