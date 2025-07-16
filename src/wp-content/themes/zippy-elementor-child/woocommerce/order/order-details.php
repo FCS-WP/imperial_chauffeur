@@ -109,7 +109,9 @@ if (empty($is_monthly_payment_order)) :
 ?>
 	<div class="woocommerce-order-custom-fields">
 		<?php
+
 		$custom_fields = array(
+			'staff_name'       => __('Staff Name', 'woocommerce'),
 			'service_type'       => __('Service Type', 'woocommerce'),
 			'flight_details'     => __('Flight Details', 'woocommerce'),
 			'eta_time'           => __('ETD/ETA Time', 'woocommerce'),
@@ -120,15 +122,20 @@ if (empty($is_monthly_payment_order)) :
 			'pick_up_time'       => __('Pick Up Time', 'woocommerce'),
 			'pick_up_location'   => __('Pick Up Location', 'woocommerce'),
 			'drop_off_location'  => __('Drop Off Location', 'woocommerce'),
+			'special_requests'       => __('Special Reuest', 'woocommerce'),
+
 		);
 
 		$order_id = $order->get_id();
+
 		$is_editing = isset($_GET['edit_order']) && $_GET['edit_order'] == $order_id;
 		$old_value_arr = [];
 		$new_value_arr = [];
+
 		if ($is_editing && $_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('save_custom_fields_' . $order_id)) {
 			$changes = [];
-
+			$customer_name = sanitize_text_field($_POST['billing_first_name']) ?? '';
+			$customer_phone = sanitize_text_field($_POST['billing_phone']) ?? '';
 			foreach ($custom_fields as $key => $label) {
 				if (isset($_POST[$key])) {
 					$old_value = get_post_meta($order_id, $key, true);
@@ -144,15 +151,35 @@ if (empty($is_monthly_payment_order)) :
 					}
 				}
 			}
+
+			//add customer changes
+			if (!empty($customer_phone) || !empty($customer_name)) {
+				$old_customer_name = $order->get_billing_first_name();
+				$old_customer_phone = $order->get_billing_phone();
+
+				if ($customer_name !== $old_customer_name && $customer_name !== '') {
+					$order->set_billing_first_name($customer_name);
+					$changes[]  = "Customer Name: \"{$old_customer_name}\" → \"{$customer_name}\"";
+				}
+
+				if ($customer_phone !== $old_customer_phone && $customer_phone !== '') {
+					$order->set_billing_phone($customer_phone);
+					$changes[]  = "Customer Name: \"{$old_customer_phone}\" → \"{$customer_phone}\"";
+				}
+
+				$order->save();
+			}
+
 			if (!empty($changes)) {
-				$order = wc_get_order($order_id);
+
 				if ($order) {
 					$note_content = "Custom fields changed:\n" . implode("\n", $changes);
 					$note = $order->add_order_note($note_content, true); // true = cusstomer
-					$order->add_order_note($note_content, true);
+
 					if ($order->get_status() !== 'on-hold') {
 						$order->update_status('on-hold');
 					}
+
 					$current_user = wp_get_current_user();
 					$member_name = $current_user->display_name ?: $current_user->user_login;
 					$edit_date = current_time('d/m/Y');
@@ -195,119 +222,21 @@ if (empty($is_monthly_payment_order)) :
 				}
 			}
 
-
-
-
 			$redirect_url = remove_query_arg('edit_order', wp_unslash($_SERVER['REQUEST_URI']));
 			echo '<script>window.location.href = "' . esc_url($redirect_url) . '";</script>';
 			exit;
 		}
 
 
-		if ($is_editing) {
-			echo '<form method="post">';
-			wp_nonce_field('save_custom_fields_' . $order_id);
-			echo '<div class="field-columns">';
-			$service_type_options = array(
-				'Airport Arrival Transfer',
-				'Airport Departure Transfer',
-				'Point-to-point Transfer',
-				'Hourly/Disposal'
-			);
-			foreach ($custom_fields as $key => $label) {
-				$value = get_post_meta($order_id, $key, true);
-				if (!empty($value)) {
-					echo '<p><label><strong>' . esc_html($label) . ':</strong><br />';
+		if ($is_editing) : ?>
 
-					$type = 'text';
+			<?php wc_get_template('order/edit-order.php', array('order' => $order, 'custom_fields' => $custom_fields)); ?>
 
-					switch ($key) {
-						case 'pick_up_date':
-							$type = 'date';
-							break;
-						case 'pick_up_time':
-							$type = 'text';
-							break;
-						case 'eta_time':
-							$type = 'text';
-							break;
+		<?php else: ?>
 
-						case 'no_of_passengers':
-							$type = 'number';
-							break;
-						case 'no_of_baggage':
-							$type = 'number';
-							break;
+			<?php wc_get_template('order/view-order-details.php', array('order' => $order, 'custom_fields' => $custom_fields)); ?>
 
-						case 'service_type':
-							$type = 'options';
-							break;
-						default:
-							$type = 'text';
-							break;
-					}
-
-					if ($type == 'options') : ?>
-						<select style="width: 400px;background: none; margin-top: 10px;" id="servicetype" name="service_type" required>
-							<option value="Airport Arrival Transfer" <?php echo selected($service_type_options[0], esc_attr($value)); ?>>Airport Arrival Transfer</option>
-							<option value="Airport Departure Transfer" <?php echo selected($service_type_options[1], esc_attr($value)); ?>>Airport Departure Transfer</option>
-							<option value="Point-to-point Transfer" <?php echo selected($service_type_options[2], esc_attr($value)); ?>>Point-to-point Transfer</option>
-							<option value="Hourly/Disposal" <?php echo selected($service_type_options[3], esc_attr($value)); ?>>Hourly/Disposal</option>
-						</select>
-					<?php elseif ($key == 'pick_up_date') : ?>
-						<?php $pickupdate = date('d-m-Y', strtotime($value)); ?>
-
-						<input class="js-datepicker" id="<?php echo esc_attr($key); ?>" type="text" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($pickupdate); ?>" style="width:100%;" />
-
-					<?php else: ?>
-						<input id="<?php echo esc_attr($key); ?>" type="<?php echo esc_attr($type); ?>" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($value); ?>" style="width:100%;" />
-
-					<?php endif; ?>
-
-					</label></p>
-
-					<?php	} ?>
-
-			<?php
-			}
-
-			echo '</div>';
-			echo '<p><button type="submit" class="button button-black ">Save</button></p>';
-			echo '</form>';
-		} else {
-			echo '<div class="field-columns">';
-			foreach ($custom_fields as $key => $label) {
-
-				$value = get_post_meta($order_id, $key, true);
-				if (! empty($value)) {
-
-					echo '<p><strong>' . esc_html($label) . ':</strong> ' . esc_html($value) . '</p>';
-				}
-			}
-			if ($service_type == "Hourly/Disposal") {
-				echo "<p><strong>Duration: </strong> $order_quantity Hours</p>";
-			}
-			echo '</div>';
-			echo '<div style="text-align:left;margin:30px 0px 20px 0px;">';
-			if (!is_wc_endpoint_url('order-received')) {
-				if (!in_array($order->get_status(), ['completed', 'cancelled'])) {
-					try {
-						$canEdit = can_edit_order($order_id);
-
-						if ($canEdit) {
-							echo '<a class="button button-black red" href="' . esc_url(add_query_arg('edit_order', $order_id)) . '">Edit</a>';
-						} else {
-							echo '<p style="font-style: italic;">This order is scheduled in less than 24 hours and can no longer be edited or changed.<br>For any enquiries, please contact us directly. Thank you for your understanding!</p>';
-						}
-					} catch (Exception $e) {
-						// Handle invalid date format
-						echo '<p style="font-style: italic;">This order is scheduled in less than 24 hours and can no longer be edited or changed.<br>For any enquiries, please contact us directly. Thank you for your understanding!</p>';
-					}
-				}
-			}
-			echo '</div>';
-		}
-			?>
+		<?php endif; ?>
 	</div>
 <?php endif; ?>
 
@@ -322,6 +251,6 @@ if (empty($is_monthly_payment_order)) :
  */
 do_action('woocommerce_after_order_details', $order);
 
-if ($show_customer_details) {
-	wc_get_template('order/order-details-customer.php', array('order' => $order));
-}
+// if ($show_customer_details && !$is_editing) {
+// 	wc_get_template('order/order-details-customer.php', array('order' => $order));
+// }

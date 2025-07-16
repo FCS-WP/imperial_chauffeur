@@ -243,7 +243,6 @@ function display_order_history_content()
     ));
 
     echo '<h2>History for Order #' . $order->get_order_number() . '</h2>';
-
     if (!empty($order_notes)) {
         echo '<table class="shop_table shop_table_responsive my_account_orders order_notes_table woocommerce-orders-table">';
         echo '<thead>';
@@ -256,7 +255,7 @@ function display_order_history_content()
 
         foreach ($order_notes as $note) {
             echo '<tr>';
-            echo '<td class="note-action">' . esc_html($note->content) . '</td>';
+            echo '<td class="note-action">' .  wpautop(wptexturize(wp_kses_post($note->content))) . '</td>';
             echo '<td class="note-time">' . esc_html($note->date_created->date('Y-m-d H:i:s')) . '</td>';
             echo '</tr>';
         }
