@@ -4,6 +4,7 @@ defined('ABSPATH') || exit;
 $current_orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'booking_date';
 $current_order   = isset($_GET['order']) ? strtolower(sanitize_text_field($_GET['order'])) : 'desc';
 
+
 do_action('woocommerce_before_account_orders', $has_orders); ?>
 <?php
 
@@ -62,12 +63,14 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 				<th><?php esc_html_e('Type of service', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Status', 'woocommerce'); ?></th>
 				<th><?php esc_html_e('Type of vehicle', 'woocommerce'); ?></th>
+				<th><?php esc_html_e('Total', 'woocommerce'); ?></th>
 				<th></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php foreach ($customer_orders->orders as $customer_order) :
 				$order = wc_get_order($customer_order);
+				$is_monthly = $order->get_meta('is_monthly_payment_order');
 				$item_count = $order->get_item_count() - $order->get_item_count_refunded();
 				foreach ($order->get_items() as $item) {
 
@@ -102,6 +105,11 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 					</td>
 					<td data-title="<?php esc_attr_e('Vehicle', 'woocommerce'); ?>">
 						<?php echo esc_html($product_name); ?>
+					</td>
+					<td data-title="<?php esc_attr_e('Total', 'woocommerce'); ?>">
+						<?php if ($is_monthly) : ?>
+							<?php echo apply_filters('woocommerce_order_item_total', wc_price($order->get_total()), $order->get_items(), $order); ?>
+						<?php endif; ?>
 					</td>
 					<td class="order-actions">
 						<?php
