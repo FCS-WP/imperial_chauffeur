@@ -88,7 +88,7 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 							<?php echo esc_html(_x('#', 'hash before order number', 'woocommerce') . $order->get_order_number()); ?>
 						</a>
 					</td>
-					<td>
+					<td data-title="<?php esc_attr_e('Staff Name', 'woocommerce'); ?>">
 						<?php echo get_post_meta($order->get_order_number(), "staff_name", true) ?>
 					</td>
 					<td data-title="<?php esc_attr_e('Date & time of booking', 'woocommerce'); ?>">
@@ -99,7 +99,7 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 							<?php echo esc_html($pickupdate); ?>
 						</time>
 					</td>
-					<td><?php echo get_post_meta($order->get_order_number(), "service_type", true) ?></td>
+					<td data-title="<?php esc_attr_e('Type of service', 'woocommerce'); ?>"><?php echo get_post_meta($order->get_order_number(), "service_type", true) ?></td>
 					<td class="order-status <?php echo sanitize_html_class($order->get_status()); ?>" data-title="<?php esc_attr_e('Status', 'woocommerce'); ?>">
 						<span><?php echo esc_html(wc_get_order_status_name($order->get_status())); ?></span>
 					</td>
