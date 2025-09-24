@@ -88,7 +88,7 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 							<?php echo esc_html(_x('#', 'hash before order number', 'woocommerce') . $order->get_order_number()); ?>
 						</a>
 					</td>
-					<td>
+					<td data-title="<?php esc_attr_e('Staff Name', 'woocommerce'); ?>">
 						<?php echo get_post_meta($order->get_order_number(), "staff_name", true) ?>
 					</td>
 					<td data-title="<?php esc_attr_e('Date & time of booking', 'woocommerce'); ?>">
@@ -107,9 +107,9 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 						<?php echo esc_html($product_name); ?>
 					</td>
 					<td data-title="<?php esc_attr_e('Total', 'woocommerce'); ?>">
-						<?php if ($is_monthly) : ?>
-							<?php echo apply_filters('woocommerce_order_item_total', wc_price($order->get_total()), $order->get_items(), $order); ?>
-						<?php endif; ?>
+
+						<?php echo apply_filters('woocommerce_order_item_total', wc_price($order->get_total()), $order->get_items(), $order); ?>
+
 					</td>
 					<td class="order-actions">
 						<?php
