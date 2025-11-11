@@ -266,3 +266,18 @@ function change_pay_order_notice_text($new_text, $text, $domain)
 
   return $new_text;
 }
+
+
+function add_customer_v2_role()
+{
+  $customer_role = get_role('customer');
+
+  if ($customer_role && ! get_role('customer_v2')) {
+    add_role(
+      'customer_v2',
+      __('Customer V2', 'your-text-domain'),
+      $customer_role->capabilities
+    );
+  }
+}
+add_action('init', 'add_customer_v2_role');
