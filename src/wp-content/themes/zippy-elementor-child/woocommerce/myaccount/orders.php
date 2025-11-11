@@ -27,21 +27,10 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
         STR_TO_DATE(p.meta_value, '%d-%m-%Y'),
         STR_TO_DATE(p.meta_value, '%Y-%m-%d'),
         STR_TO_DATE(p.meta_value, '%d-%M-%Y')
-      ) {$current_order} 
-
+      ) {$current_order}
     "
 	);
-	// 	$results2 = $wpdb->get_col(
-	// 		"
-	//     SELECT  o.id
-	// FROM {$wpdb->prefix}wc_orders_meta AS om
-	// LEFT JOIN {$wpdb->prefix}wc_orders  as o ON o.id = om.order_id 
-	// WHERE o.customer_id = " . get_current_user_id() . "
-	// AND om.meta_key = 'is_monthly_payment_order'
-	// GROUP BY o.id
-	//     "
-	// 	);
-	// $result = array_merge($results, $results2);
+
 	$customer_orders = (object) array(
 		'orders' => $results
 	);
@@ -108,7 +97,17 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 					</td>
 					<td data-title="<?php esc_attr_e('Total', 'woocommerce'); ?>">
 
-						<?php echo apply_filters('woocommerce_order_item_total', wc_price($order->get_total()), $order->get_items(), $order); ?>
+						<?php
+
+						$user = wp_get_current_user();
+
+						if (!in_array('customer', (array) $user->roles) || !in_array('subscriber', (array) $user->roles)) {
+							echo apply_filters('woocommerce_order_item_total', wc_price($order->get_total()), $order->get_items(), $order);
+						} else {
+							echo "Please contact administrator to see the price!";
+						}
+
+						?>
 
 					</td>
 					<td class="order-actions">
