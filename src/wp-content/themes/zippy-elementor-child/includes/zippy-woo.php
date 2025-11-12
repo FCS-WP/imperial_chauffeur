@@ -268,16 +268,27 @@ function change_pay_order_notice_text($new_text, $text, $domain)
 }
 
 
-function add_customer_v2_role()
+function add_customer_role()
 {
+  $list_roles = [
+    'customer_v2' => 'Customer V2',
+    'customer_v3' => 'Customer V3',
+    'customer_v4' => 'Customer V4',
+    'customer_v5' => 'Customer V5',
+  ];
+
   $customer_role = get_role('customer');
 
-  if ($customer_role && ! get_role('customer_v2')) {
-    add_role(
-      'customer_v2',
-      __('Customer V2', 'your-text-domain'),
-      $customer_role->capabilities
-    );
+  if ($customer_role) {
+    foreach ($list_roles as $role_key => $role_name) {
+      if (! get_role($role_key)) {
+        add_role(
+          $role_key,
+          $role_name,
+          $customer_role->capabilities
+        );
+      }
+    }
   }
 }
-add_action('init', 'add_customer_v2_role');
+add_action('init', 'add_customer_role');
