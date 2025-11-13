@@ -280,7 +280,12 @@ add_filter('woocommerce_my_account_my_orders_query', 'filter_my_account_orders_b
 
 function filter_my_account_orders_by_status($args)
 {
-    $args['status'] = array('pending', 'processing', 'on-hold', 'confirmed');
+    $user = wp_get_current_user();
+    $show_all_status = !empty(array_filter((array) $user->roles, function ($role) {
+        return strpos($role, 'customer') !== false;
+    }));
+
+    $args['status'] = !$show_all_status ? array('pending', 'processing', 'on-hold', 'confirmed') : [];
     return $args;
 }
 

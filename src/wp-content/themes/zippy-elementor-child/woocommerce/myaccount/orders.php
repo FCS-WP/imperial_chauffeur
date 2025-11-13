@@ -12,23 +12,32 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 	$customer_orders = [];
 	global $wpdb;
 
+	$user = wp_get_current_user();
+	$user_id = $user->ID;
+	$show_all_status = in_array('customer_v2', (array) $user->roles);
+
+	$status_condition = '';
+	if (!$show_all_status) {
+		$status_condition = " AND o.status IN ('wc-on-hold','wc-pending','wc-processing','wc-confirmed')";
+	}
+
 	$results = $wpdb->get_col(
 		"
-    SELECT o.id
-    FROM {$wpdb->prefix}wc_orders AS o
-    JOIN {$wpdb->prefix}postmeta AS p ON o.id = p.post_id
-    WHERE o.type = 'shop_order'
-      AND o.customer_id <> 0
-      AND p.meta_key = 'pick_up_date'
-			AND o.status IN ('wc-on-hold','wc-pending','wc-processing','wc-confirmed')
-     AND o.customer_id = " . get_current_user_id() . "
-    ORDER BY
-      COALESCE(
-        STR_TO_DATE(p.meta_value, '%d-%m-%Y'),
-        STR_TO_DATE(p.meta_value, '%Y-%m-%d'),
-        STR_TO_DATE(p.meta_value, '%d-%M-%Y')
-      ) {$current_order}
-    "
+        SELECT o.id
+        FROM {$wpdb->prefix}wc_orders AS o
+        JOIN {$wpdb->prefix}postmeta AS p ON o.id = p.post_id
+        WHERE o.type = 'shop_order'
+          AND o.customer_id <> 0
+          AND p.meta_key = 'pick_up_date'
+          AND o.customer_id = {$user_id}
+          {$status_condition}
+        ORDER BY
+          COALESCE(
+            STR_TO_DATE(p.meta_value, '%d-%m-%Y'),
+            STR_TO_DATE(p.meta_value, '%Y-%m-%d'),
+            STR_TO_DATE(p.meta_value, '%d-%M-%Y')
+          ) {$current_order}
+        "
 	);
 
 	$customer_orders = (object) array(
