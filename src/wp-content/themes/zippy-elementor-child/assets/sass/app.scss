@@ -1,5 +1,4 @@
-
-@import 'product-single';
-@import 'customize';
-@import '../lib/flatpickr/flatpickr.min.css'
-
+@import "product-single";
+@import "customize";
+@import "../lib/flatpickr/flatpickr.min.css";
+@import "./pages/account/order.scss";
