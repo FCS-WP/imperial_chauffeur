@@ -101,10 +101,10 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 
 						$user = wp_get_current_user();
 
-						if (!in_array('customer', (array) $user->roles) || !in_array('subscriber', (array) $user->roles)) {
+						if (in_array('customer_v2', (array) $user->roles)) {
 							echo apply_filters('woocommerce_order_item_total', wc_price($order->get_total()), $order->get_items(), $order);
 						} else {
-							echo "Please contact administrator to see the price!";
+							echo "Please contact administrator!";
 						}
 
 						?>
