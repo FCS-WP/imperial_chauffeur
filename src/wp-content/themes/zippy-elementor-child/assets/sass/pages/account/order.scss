@@ -1,0 +1,8 @@
+.woocommerce-orders-table {
+  th:nth-child(5),
+  td.order-status {
+    width: 150px;
+    min-width: 150px;
+    text-align: center;
+  }
+}
