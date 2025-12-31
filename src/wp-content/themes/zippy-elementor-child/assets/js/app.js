@@ -29,9 +29,12 @@ jQuery(document).ready(function ($) {
         });
       }
     } else {
+
       setTimeout(initFlatpickr, 300);
     }
   };
 
   initFlatpickr();
 });
+
+

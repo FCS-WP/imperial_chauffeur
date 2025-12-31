@@ -296,7 +296,6 @@ add_action('init', 'add_customer_role');
 
 function render_can_see_total_toggle_edit_user($user)
 {
-  // Chỉ admin
   if (!current_user_can('manage_options')) return;
 
   $checked = get_user_meta(
