@@ -28,8 +28,8 @@ jQuery(document).ready(function ($) {
           dateFormat: "d-m-Y",
         });
       }
-    } else {
 
+    } else {
       setTimeout(initFlatpickr, 300);
     }
   };
