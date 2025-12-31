@@ -234,7 +234,7 @@ if (empty($is_monthly_payment_order)) :
 
 		<?php else: ?>
 
-			<?php wc_get_template('order/view-order-details.php', array('order' => $order, 'custom_fields' => $custom_fields)); ?>
+			<?php wc_get_template('order/view-order-details.php', array('order' => $order, 'custom_fields' => $custom_fields, 'service_type' => $service_type, 'order_quantity' => $order_quantity)); ?>
 
 		<?php endif; ?>
 	</div>
