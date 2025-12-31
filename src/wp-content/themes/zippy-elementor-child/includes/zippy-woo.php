@@ -1,4 +1,5 @@
 <?php
+const USER_META_CUSTOMER_CAN_SEE_TOTAL = '_customer_can_see_total';
 
 function disable_password_reset()
 {
@@ -213,7 +214,7 @@ function add_order_pay_js()
           }
         });
       </script>
-<?php
+  <?php
     }
   }
 }
@@ -292,3 +293,59 @@ function add_customer_role()
   }
 }
 add_action('init', 'add_customer_role');
+
+function render_can_see_total_toggle_edit_user($user)
+{
+  if (!current_user_can('manage_options')) return;
+
+  $checked = get_user_meta(
+    $user->ID,
+    USER_META_CUSTOMER_CAN_SEE_TOTAL,
+    true
+  ) ? 'checked' : '';
+  ?>
+  <h2>Booking Settings</h2>
+
+  <table class="form-table">
+    <tr>
+      <th>
+        <label for="can_see_total">
+          Customer can see total?
+        </label>
+      </th>
+      <td>
+        <label class="switch">
+          <input
+            type="checkbox"
+            name="can_see_total"
+            id="can_see_total"
+            value="1"
+            <?php echo esc_attr($checked); ?>>
+          <span class="slider"></span>
+        </label>
+      </td>
+    </tr>
+  </table>
+<?php
+}
+
+add_action(
+  'edit_user_profile',
+  'render_can_see_total_toggle_edit_user'
+);
+
+function save_can_see_total_edit_user($user_id)
+{
+  if (!current_user_can('manage_options')) return;
+
+  if (isset($_POST['can_see_total'])) {
+    update_user_meta($user_id, USER_META_CUSTOMER_CAN_SEE_TOTAL, 1);
+  } else {
+    delete_user_meta($user_id, USER_META_CUSTOMER_CAN_SEE_TOTAL);
+  }
+}
+
+add_action(
+  'edit_user_profile_update',
+  'save_can_see_total_edit_user'
+);
