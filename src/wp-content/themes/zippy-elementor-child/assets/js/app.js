@@ -1,5 +1,4 @@
 import "../lib/flatpickr/flatpickr.min.js";
-import "./pages/myaccount/toggle-visile-total.js";
 
 jQuery(document).ready(function ($) {
   const initFlatpickr = function () {

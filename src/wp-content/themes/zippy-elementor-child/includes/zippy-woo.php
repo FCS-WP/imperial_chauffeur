@@ -294,53 +294,59 @@ function add_customer_role()
 }
 add_action('init', 'add_customer_role');
 
-add_action('woocommerce_before_edit_account_form', 'render_can_see_total_toggle');
-function render_can_see_total_toggle()
+function render_can_see_total_toggle_edit_user($user)
 {
-  if (!is_user_logged_in()) return;
-
+  // Chỉ admin
   if (!current_user_can('manage_options')) return;
 
-  $user_id = get_current_user_id();
   $checked = get_user_meta(
-    $user_id,
+    $user->ID,
     USER_META_CUSTOMER_CAN_SEE_TOTAL,
     true
   ) ? 'checked' : '';
   ?>
-  <div class="toggle-total-wrapper">
-    <span class="toggle-label">
-      Customer can see total?
-    </span>
+  <h2>Booking Settings</h2>
 
-    <label class="switch">
-      <input
-        type="checkbox"
-        id="toggle-can-see-total"
-        <?php echo esc_attr($checked); ?>>
-      <span class="slider"></span>
-    </label>
-  </div>
+  <table class="form-table">
+    <tr>
+      <th>
+        <label for="can_see_total">
+          Customer can see total?
+        </label>
+      </th>
+      <td>
+        <label class="switch">
+          <input
+            type="checkbox"
+            name="can_see_total"
+            id="can_see_total"
+            value="1"
+            <?php echo esc_attr($checked); ?>>
+          <span class="slider"></span>
+        </label>
+      </td>
+    </tr>
+  </table>
 <?php
 }
 
+add_action(
+  'edit_user_profile',
+  'render_can_see_total_toggle_edit_user'
+);
 
-function handle_toggle_can_see_total()
+function save_can_see_total_edit_user($user_id)
 {
-  if (!is_user_logged_in() || !current_user_can('manage_options')) {
-    wp_send_json_error('No permission');
-  }
+  if (!current_user_can('manage_options')) return;
 
-  $user_id = get_current_user_id();
-  $status  = isset($_POST['status']) ? intval($_POST['status']) : 0;
-
-  if ($status === 1) {
+  if (isset($_POST['can_see_total'])) {
     update_user_meta($user_id, USER_META_CUSTOMER_CAN_SEE_TOTAL, 1);
   } else {
     delete_user_meta($user_id, USER_META_CUSTOMER_CAN_SEE_TOTAL);
   }
-
-  wp_send_json_success();
 }
 
-add_action('wp_ajax_toggle_can_see_total', 'handle_toggle_can_see_total');
+add_action(
+  'edit_user_profile_update',
+  'save_can_see_total_edit_user'
+);
