@@ -1,4 +1,5 @@
 <?php
+const USER_META_CUSTOMER_CAN_SEE_TOTAL = '_customer_can_see_total';
 
 function disable_password_reset()
 {
@@ -213,7 +214,7 @@ function add_order_pay_js()
           }
         });
       </script>
-<?php
+  <?php
     }
   }
 }
@@ -292,3 +293,54 @@ function add_customer_role()
   }
 }
 add_action('init', 'add_customer_role');
+
+add_action('woocommerce_before_edit_account_form', 'render_can_see_total_toggle');
+function render_can_see_total_toggle()
+{
+  if (!is_user_logged_in()) return;
+
+  if (!current_user_can('manage_options')) return;
+
+  $user_id = get_current_user_id();
+  $checked = get_user_meta(
+    $user_id,
+    USER_META_CUSTOMER_CAN_SEE_TOTAL,
+    true
+  ) ? 'checked' : '';
+  ?>
+  <div class="toggle-total-wrapper">
+    <span class="toggle-label">
+      Customer can see total?
+    </span>
+
+    <label class="switch">
+      <input
+        type="checkbox"
+        id="toggle-can-see-total"
+        <?php echo esc_attr($checked); ?>>
+      <span class="slider"></span>
+    </label>
+  </div>
+<?php
+}
+
+
+function handle_toggle_can_see_total()
+{
+  if (!is_user_logged_in() || !current_user_can('manage_options')) {
+    wp_send_json_error('No permission');
+  }
+
+  $user_id = get_current_user_id();
+  $status  = isset($_POST['status']) ? intval($_POST['status']) : 0;
+
+  if ($status === 1) {
+    update_user_meta($user_id, USER_META_CUSTOMER_CAN_SEE_TOTAL, 1);
+  } else {
+    delete_user_meta($user_id, USER_META_CUSTOMER_CAN_SEE_TOTAL);
+  }
+
+  wp_send_json_success();
+}
+
+add_action('wp_ajax_toggle_can_see_total', 'handle_toggle_can_see_total');
