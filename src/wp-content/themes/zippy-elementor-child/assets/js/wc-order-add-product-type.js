@@ -80,7 +80,6 @@ jQuery(function ($) {
       return;
     }
 
-    // Gửi service type
     settings.data += "&order_service_type=" + encodeURIComponent(service);
   });
 });
