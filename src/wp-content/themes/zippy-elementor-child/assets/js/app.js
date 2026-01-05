@@ -1,4 +1,5 @@
 import "../lib/flatpickr/flatpickr.min.js";
+import "./wc-order-add-product-type.js";
 
 jQuery(document).ready(function ($) {
   const initFlatpickr = function () {
@@ -28,7 +29,6 @@ jQuery(document).ready(function ($) {
           dateFormat: "d-m-Y",
         });
       }
-
     } else {
       setTimeout(initFlatpickr, 300);
     }
@@ -36,5 +36,3 @@ jQuery(document).ready(function ($) {
 
   initFlatpickr();
 });
-
-
