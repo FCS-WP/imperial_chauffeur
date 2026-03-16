@@ -25,6 +25,12 @@ jQuery(function ($) {
     });
   }
 
+  function loadAllVehicles() {
+    return $.get(ajaxurl, {
+      action: "get_all_vehicles",
+    });
+  }
+
   // ===== OBSERVE ADD PRODUCT MODAL =====
   const observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
@@ -38,6 +44,49 @@ jQuery(function ($) {
         if (!$header.length) return;
 
         $header.after(SERVICE_SELECT_HTML);
+
+        // Inject Vehicle Container
+        const $vehicleContainer = $('<div class="quick-select-vehicles-wrap" style="padding:12px 16px; border-bottom:1px solid #eee; background: #fafafa;"><label style="display:block;font-weight:600;margin-bottom:8px;">Quick Select Vehicle</label><div class="vehicle-tags-list" style="display:flex; flex-wrap:wrap; gap:8px;">Loading vehicles...</div></div>');
+        $modal.find(".order-service-type-wrap").after($vehicleContainer);
+
+        // Load Vehicles
+        loadAllVehicles().done(function(res) {
+          if (!res.success) return;
+          const $list = $modal.find(".vehicle-tags-list");
+          $list.empty();
+          
+          res.data.forEach(function(vehicle) {
+            const $tag = $(`<span class="vehicle-tag" data-id="${vehicle.id}" style="padding: 4px 10px; background:#fff; border:1px solid #ddd; border-radius:15px; cursor:pointer; font-size:12px; transition: all 0.2s; white-space:nowrap;">${vehicle.name}</span>`);
+            
+            $tag.hover(
+              function() { $(this).css({ 'background': '#f0f0f0', 'border-color': '#bbb' }); },
+              function() { $(this).css({ 'background': '#fff', 'border-color': '#ddd' }); }
+            );
+
+            $tag.on('click', function() {
+              const vId = $(this).data('id');
+              const vName = $(this).text();
+              
+              // Target WC Product Search Select2
+              const $search = $modal.find('select.wc-product-search');
+              if ($search.length) {
+                // Add option if not exists
+                if ($search.find(`option[value="${vId}"]`).length === 0) {
+                  const newOption = new Option(vName, vId, true, true);
+                  $search.append(newOption).trigger('change');
+                } else {
+                  $search.val(vId).trigger('change');
+                }
+                
+                // Visual feedback
+                $modal.find('.vehicle-tag').css({ 'border-color': '#ddd', 'background': '#fff', 'color': '#000' });
+                $(this).css({ 'border-color': '#2271b1', 'background': '#f0f6fb', 'color': '#2271b1' });
+              }
+            });
+
+            $list.append($tag);
+          });
+        });
 
         const orderId = getOrderId();
         if (!orderId) return;
