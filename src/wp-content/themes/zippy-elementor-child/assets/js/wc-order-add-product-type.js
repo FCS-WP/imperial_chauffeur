@@ -84,8 +84,6 @@ jQuery(function ($) {
       return;
     }
 
-    console.log(service);
-
     // ===== VALIDATE MIN QUANTITY FOR HOURLY DISPOSAL =====
     if (service === "Hourly/Disposal") {
       let qty = 0;
@@ -111,8 +109,6 @@ jQuery(function ($) {
           qty = parseInt(modalQty);
         }
       }
-
-      console.log("Validated Quantity:", qty);
 
       if (qty > 0 && qty < 3) {
         alert(
