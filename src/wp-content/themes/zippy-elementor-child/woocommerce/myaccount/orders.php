@@ -25,17 +25,17 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 		"
         SELECT o.id
         FROM {$wpdb->prefix}wc_orders AS o
-        JOIN {$wpdb->prefix}postmeta AS p ON o.id = p.post_id
+        JOIN {$wpdb->prefix}wc_order_meta AS m ON o.id = m.order_id
         WHERE o.type = 'shop_order'
           AND o.customer_id <> 0
-          AND p.meta_key = 'pick_up_date'
+          AND m.meta_key = 'pick_up_date'
           AND o.customer_id = {$user_id}
           {$status_condition}
         ORDER BY
           COALESCE(
-            STR_TO_DATE(p.meta_value, '%d-%m-%Y'),
-            STR_TO_DATE(p.meta_value, '%Y-%m-%d'),
-            STR_TO_DATE(p.meta_value, '%d-%M-%Y')
+            STR_TO_DATE(m.meta_value, '%d-%m-%Y'),
+            STR_TO_DATE(m.meta_value, '%Y-%m-%d'),
+            STR_TO_DATE(m.meta_value, '%d-%M-%Y')
           ) {$current_order}
         "
 	);
@@ -87,17 +87,17 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 						</a>
 					</td>
 					<td data-title="<?php esc_attr_e('Staff Name', 'woocommerce'); ?>">
-						<?php echo get_post_meta($order->get_order_number(), "staff_name", true) ?>
+						<?php echo $order->get_meta("staff_name") ?>
 					</td>
 					<td data-title="<?php esc_attr_e('Date & time of booking', 'woocommerce'); ?>">
 						<time datetime="<?php echo esc_attr($order->get_date_created()->date('c')); ?>">
 							<?php
-							$pickupdate_value = get_post_meta($order->get_order_number(), "pick_up_date", true);
+							$pickupdate_value = $order->get_meta("pick_up_date");
 							$pickupdate = !empty($pickupdate_value)  ? date('d-m-Y', strtotime($pickupdate_value)) : esc_html(wc_format_datetime($order->get_date_created(), 'd-m-Y')) ?>
 							<?php echo esc_html($pickupdate); ?>
 						</time>
 					</td>
-					<td data-title="<?php esc_attr_e('Type of service', 'woocommerce'); ?>"><?php echo get_post_meta($order->get_order_number(), "service_type", true) ?></td>
+					<td data-title="<?php esc_attr_e('Type of service', 'woocommerce'); ?>"><?php echo $order->get_meta("service_type") ?></td>
 					<td class="order-status <?php echo sanitize_html_class($order->get_status()); ?>" data-title="<?php esc_attr_e('Status', 'woocommerce'); ?>">
 						<span><?php echo esc_html(wc_get_order_status_name($order->get_status())); ?></span>
 					</td>

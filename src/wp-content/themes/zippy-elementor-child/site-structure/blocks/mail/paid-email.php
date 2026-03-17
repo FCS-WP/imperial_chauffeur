@@ -3,17 +3,17 @@
     $subtotal = $order->get_subtotal();
     $user_name = !empty($user->display_name) ? $user->display_name : $order->get_formatted_billing_full_name();
     $user_email = !empty($user->user_email) ? $user->user_email : $order->get_billing_email();
-    $service_type = get_post_meta($order_id, "service_type", true);
+    $service_type = $order->get_meta("service_type");
     $member_type = $order->get_meta("member_type");
 
     $customer_type = $member_type == 1 ? "Member" : "Visitor";
 
     $eta_label = $service_type == "Airport Departure Transfer" ? "ETD" : "ETA";
 
-    $pick_up_location = get_post_meta($order_id, "pick_up_location", true);
-    $flight_details = get_post_meta($order_id, "flight_details", true);
-    $drop_off_location = get_post_meta($order_id, "drop_off_location", true);
-    $eta_time = get_post_meta($order_id, "eta_time", true);
+    $pick_up_location = $order->get_meta("pick_up_location");
+    $flight_details = $order->get_meta("flight_details");
+    $drop_off_location = $order->get_meta("drop_off_location");
+    $eta_time = $order->get_meta("eta_time");
 
     $items = $order->get_items();
     
@@ -54,8 +54,8 @@
     <p style="font-size:13px;color:#000">Usage time: <?php echo reset($items)->get_quantity(); ?> Hours</p>
 <?php } ?>
 
-<p style="font-size:13px;color:#000">Pick up date: <?php echo get_post_meta($order_id, "pick_up_date", true) ?></p>
-<p style="font-size:13px;color:#000">Pick up time: <?php echo get_post_meta($order_id, "pick_up_time", true) ?></p>
+<p style="font-size:13px;color:#000">Pick up date: <?php echo $order->get_meta("pick_up_date") ?></p>
+<p style="font-size:13px;color:#000">Pick up time: <?php echo $order->get_meta("pick_up_time") ?></p>
 
 
 <?php if ($service_type == "Airport Arrival Transfer") { ?>
@@ -73,12 +73,12 @@
       <p style='font-size:13px;color:#000'>Drop off location: <?php echo $drop_off_location ?></p>
  <?php } ?>
 
-<p style="font-size:13px;color:#000">No of pax: <?php echo get_post_meta($order_id, "no_of_passengers", true) ?></p>
-<p style="font-size:13px;color:#000">No of luggages: <?php echo get_post_meta($order_id, "no_of_baggage", true) ?></p>
-<p style="font-size:13px;color:#000">Special requests: <?php echo get_post_meta($order_id, "special_requests", true) ?></p>
+<p style="font-size:13px;color:#000">No of pax: <?php echo $order->get_meta("no_of_passengers") ?></p>
+<p style="font-size:13px;color:#000">No of luggages: <?php echo $order->get_meta("no_of_baggage") ?></p>
+<p style="font-size:13px;color:#000">Special requests: <?php echo $order->get_meta("special_requests") ?></p>
 
 <?php if($member_type == 1){ ?>
-    <p style="font-size:13px;color:#000">Staff name: <?php echo get_post_meta($order_id, "staff_name", true) ?></p>
+    <p style="font-size:13px;color:#000">Staff name: <?php echo $order->get_meta("staff_name") ?></p>
 <?php } ?>
 
 
