@@ -35,7 +35,7 @@ $order_quantity = 0;
 $show_purchase_note = $order->has_status(apply_filters('woocommerce_purchase_note_order_statuses', array('completed', 'processing')));
 // $downloads          = $order->get_downloadable_items();
 $is_monthly_payment_order = $order->get_meta('is_monthly_payment_order', true);
-$service_type = get_post_meta($order_id, 'service_type', true);
+$service_type = $order->get_meta('service_type');
 // We make sure the order belongs to the user. This will also be true if the user is a guest, and the order belongs to a guest (userID === 0).
 $show_customer_details = $order->get_user_id() === get_current_user_id();
 $order_date = $order->get_date_created();
@@ -138,7 +138,7 @@ if (empty($is_monthly_payment_order)) :
 			$customer_phone = sanitize_text_field($_POST['billing_phone']) ?? '';
 			foreach ($custom_fields as $key => $label) {
 				if (isset($_POST[$key])) {
-					$old_value = get_post_meta($order_id, $key, true);
+					$old_value = $order->get_meta($key);
 					$old_value_arr[$key] = $old_value;
 
 					$new_value = sanitize_text_field($_POST[$key]);
@@ -146,7 +146,7 @@ if (empty($is_monthly_payment_order)) :
 
 					if ($old_value !== $new_value && $new_value !== '') {
 
-						update_post_meta($order_id, $key, $new_value);
+						$order->update_meta_data($key, $new_value);
 						$changes[] = "{$label}: \"{$old_value}\" → \"{$new_value}\"";
 					}
 				}
@@ -167,6 +167,8 @@ if (empty($is_monthly_payment_order)) :
 					$changes[]  = "Customer Name: \"{$old_customer_phone}\" → \"{$customer_phone}\"";
 				}
 
+				$order->save();
+			} elseif (!empty($changes)) {
 				$order->save();
 			}
 

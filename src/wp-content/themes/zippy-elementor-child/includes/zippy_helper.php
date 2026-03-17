@@ -42,8 +42,11 @@ function pr($data)
 
 function can_edit_order($order_id)
 {
-  $booking_date = get_post_meta($order_id, 'pick_up_date', true);
-  $booking_time = get_post_meta($order_id, 'pick_up_time', true);
+  $order = wc_get_order($order_id);
+  if (!$order) return false;
+
+  $booking_date = $order->get_meta('pick_up_date');
+  $booking_time = $order->get_meta('pick_up_time');
 
   $original = trim($booking_date . ' ' . $booking_time);
   try {
