@@ -5,7 +5,7 @@
   <div class="field-columns">
 
     <?php foreach ($custom_fields as $key => $label) : ?>
-      <?php $value = get_post_meta($order->get_id(), $key, true); ?>
+      <?php $value = $order->get_meta($key); ?>
 
       <?php if (!empty($value)) : ?>
         <p>
