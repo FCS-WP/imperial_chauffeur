@@ -67,8 +67,15 @@ jQuery(function ($) {
               const vId = $(this).data('id');
               const vName = $(this).text();
               
-              // Target WC Product Search Select2
-              const $search = $modal.find('select.wc-product-search');
+              const $allSearches = $modal.find('select.wc-product-search');
+              let $search = $allSearches.filter(function() {
+                return !$(this).val();
+              }).first();
+
+              if (!$search.length) {
+                $search = $allSearches.last();
+              }
+
               if ($search.length) {
                 // Add option if not exists
                 if ($search.find(`option[value="${vId}"]`).length === 0) {
