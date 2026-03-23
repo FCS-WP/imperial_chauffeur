@@ -31,6 +31,8 @@ jQuery(function ($) {
     });
   }
 
+  let allVehicleIds = [];
+
   // ===== OBSERVE ADD PRODUCT MODAL =====
   const observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
@@ -46,31 +48,45 @@ jQuery(function ($) {
         $header.after(SERVICE_SELECT_HTML);
 
         // Inject Vehicle Container
-        const $vehicleContainer = $('<div class="quick-select-vehicles-wrap" style="padding:12px 16px; border-bottom:1px solid #eee; background: #fafafa;"><label style="display:block;font-weight:600;margin-bottom:8px;">Quick Select Vehicle</label><div class="vehicle-tags-list" style="display:flex; flex-wrap:wrap; gap:8px;">Loading vehicles...</div></div>');
+        const $vehicleContainer = $(
+          '<div class="quick-select-vehicles-wrap" style="padding:12px 16px; border-bottom:1px solid #eee; background: #fafafa;"><label style="display:block;font-weight:600;margin-bottom:8px;">Quick Select Vehicle</label><div class="vehicle-tags-list" style="display:flex; flex-wrap:wrap; gap:8px;">Loading vehicles...</div></div>',
+        );
         $modal.find(".order-service-type-wrap").after($vehicleContainer);
 
         // Load Vehicles
-        loadAllVehicles().done(function(res) {
+        loadAllVehicles().done(function (res) {
           if (!res.success) return;
           const $list = $modal.find(".vehicle-tags-list");
           $list.empty();
-          
-          res.data.forEach(function(vehicle) {
-            const $tag = $(`<span class="vehicle-tag" data-id="${vehicle.id}" style="padding: 4px 10px; background:#fff; border:1px solid #ddd; border-radius:15px; cursor:pointer; font-size:12px; transition: all 0.2s; white-space:nowrap;">${vehicle.name}</span>`);
-            
-            $tag.hover(
-              function() { $(this).css({ 'background': '#f0f0f0', 'border-color': '#bbb' }); },
-              function() { $(this).css({ 'background': '#fff', 'border-color': '#ddd' }); }
+
+          allVehicleIds = res.data
+            .filter((v) => v.is_vehicle)
+            .map((v) => parseInt(v.id));
+
+          res.data.forEach(function (vehicle) {
+            const $tag = $(
+              `<span class="vehicle-tag" data-id="${vehicle.id}" style="padding: 4px 10px; background:#fff; border:1px solid #ddd; border-radius:15px; cursor:pointer; font-size:12px; transition: all 0.2s; white-space:nowrap;">${vehicle.name}</span>`,
             );
 
-            $tag.on('click', function() {
-              const vId = $(this).data('id');
+            $tag.hover(
+              function () {
+                $(this).css({ background: "#f0f0f0", "border-color": "#bbb" });
+              },
+              function () {
+                $(this).css({ background: "#fff", "border-color": "#ddd" });
+              },
+            );
+
+            $tag.on("click", function () {
+              const vId = $(this).data("id");
               const vName = $(this).text();
-              
-              const $allSearches = $modal.find('select.wc-product-search');
-              let $search = $allSearches.filter(function() {
-                return !$(this).val();
-              }).first();
+
+              const $allSearches = $modal.find("select.wc-product-search");
+              let $search = $allSearches
+                .filter(function () {
+                  return !$(this).val();
+                })
+                .first();
 
               if (!$search.length) {
                 $search = $allSearches.last();
@@ -80,14 +96,22 @@ jQuery(function ($) {
                 // Add option if not exists
                 if ($search.find(`option[value="${vId}"]`).length === 0) {
                   const newOption = new Option(vName, vId, true, true);
-                  $search.append(newOption).trigger('change');
+                  $search.append(newOption).trigger("change");
                 } else {
-                  $search.val(vId).trigger('change');
+                  $search.val(vId).trigger("change");
                 }
-                
+
                 // Visual feedback
-                $modal.find('.vehicle-tag').css({ 'border-color': '#ddd', 'background': '#fff', 'color': '#000' });
-                $(this).css({ 'border-color': '#2271b1', 'background': '#f0f6fb', 'color': '#2271b1' });
+                $modal.find(".vehicle-tag").css({
+                  "border-color": "#ddd",
+                  background: "#fff",
+                  color: "#000",
+                });
+                $(this).css({
+                  "border-color": "#2271b1",
+                  background: "#f0f6fb",
+                  color: "#2271b1",
+                });
               }
             });
 
@@ -140,50 +164,63 @@ jQuery(function ($) {
       return;
     }
 
-    // ===== VALIDATE MIN QUANTITY FOR HOURLY DISPOSAL =====
-    if (service === "Hourly/Disposal") {
-      let qty = 0;
+    // ===== VALIDATE MIN QUANTITY FOR HOURLY DISPOSAL (CONSTRAINED TO VEHICLES ONLY) =====
+    if (service === "Hourly/Disposal" && allVehicleIds.length > 0) {
+      let itemsToVerify = [];
 
       if (typeof settings.data === "string") {
         const params = new URLSearchParams(settings.data);
         for (let [key, value] of params.entries()) {
-          console.log(`Param: ${key} = ${value}`);
-          if (key.includes("[qty]") || key === "quantity" || key === "qty") {
-            qty = parseInt(value || 0);
-            break;
+          const match = key.match(/data\[([0-9]+)\]\[id\]/);
+          if (match && value) {
+            const index = match[1];
+            const qtyVal = params.get(`data[${index}][qty]`);
+            itemsToVerify.push({
+              id: parseInt(value),
+              qty: parseInt(qtyVal || 0),
+            });
           }
         }
-      } else if (typeof settings.data === "object" && settings.data !== null) {
-        qty = parseInt(settings.data.quantity || settings.data.qty || 0);
       }
 
-      if (!qty || qty <= 0) {
-        const modalQty =
-          $("#wc-backbone-modal-dialog .quantity input[type=number]").val() ||
-          $("#wc-backbone-modal-dialog input[name*='[qty]']").val();
-        if (modalQty) {
-          qty = parseInt(modalQty);
+      for (let item of itemsToVerify) {
+        console.log(item.id);
+        console.log(allVehicleIds); 
+
+        if (allVehicleIds.includes(item.id)) {
+          let checkQty = item.qty;
+
+          if (!checkQty || checkQty <= 0) {
+            const modalQty =
+              $(
+                "#wc-backbone-modal-dialog .quantity input[type=number]",
+              ).val() ||
+              $("#wc-backbone-modal-dialog input[name*='[qty]']").val();
+            if (modalQty) {
+              checkQty = parseInt(modalQty);
+            }
+          }
+
+          if (checkQty > 0 && checkQty < 3) {
+            alert(
+              "For Hourly / Disposal service, the minimum quantity is 3 hours.",
+            );
+            jqxhr.abort();
+
+            if ($.unblockUI) {
+              $.unblockUI();
+            }
+            $(
+              ".wc-backbone-modal-content, #wc-backbone-modal-dialog, .wc-order-items-editable",
+            ).each(function () {
+              if ($(this).unblock) $(this).unblock();
+            });
+            $(".blockUI").remove();
+            $(".loading").removeClass("loading");
+
+            return;
+          }
         }
-      }
-
-      if (qty > 0 && qty < 3) {
-        alert(
-          "For Hourly / Disposal service, the minimum quantity is 3 hours.",
-        );
-        jqxhr.abort();
-
-        if ($.unblockUI) {
-          $.unblockUI();
-        }
-        $(
-          ".wc-backbone-modal-content, #wc-backbone-modal-dialog, .wc-order-items-editable",
-        ).each(function () {
-          if ($(this).unblock) $(this).unblock();
-        });
-        $(".blockUI").remove();
-        $(".loading").removeClass("loading");
-
-        return;
       }
     }
 
