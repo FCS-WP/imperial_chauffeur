@@ -3,8 +3,6 @@ defined('ABSPATH') || exit;
 
 $current_orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'booking_date';
 $current_order   = isset($_GET['order']) ? strtolower(sanitize_text_field($_GET['order'])) : 'desc';
-
-
 do_action('woocommerce_before_account_orders', $has_orders); ?>
 <?php
 
@@ -21,24 +19,34 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 		$status_condition = " AND o.status IN ('wc-on-hold','wc-pending','wc-processing','wc-confirmed')";
 	}
 
-	$results = $wpdb->get_col(
-		"
+	$date_filter = '';
+	if (!empty($_GET['start_date']) && !empty($_GET['end_date'])) {
+		$start = sanitize_text_field($_GET['start_date']);
+		$end   = sanitize_text_field($_GET['end_date']);
+		// Sử dụng STR_TO_DATE để đảm bảo so sánh ngày chính xác
+		$date_filter = " AND STR_TO_DATE(m.meta_value, '%Y-%m-%d') BETWEEN '{$start}' AND '{$end}'";
+	}
+
+	$sql = "
         SELECT o.id
         FROM {$wpdb->prefix}wc_orders AS o
-        JOIN {$wpdb->prefix}wc_order_meta AS m ON o.id = m.order_id
+        JOIN {$wpdb->prefix}wc_orders_meta AS m ON o.id = m.order_id
         WHERE o.type = 'shop_order'
           AND o.customer_id <> 0
           AND m.meta_key = 'pick_up_date'
           AND o.customer_id = {$user_id}
           {$status_condition}
+          {$date_filter}
         ORDER BY
           COALESCE(
-            STR_TO_DATE(m.meta_value, '%d-%m-%Y'),
             STR_TO_DATE(m.meta_value, '%Y-%m-%d'),
-            STR_TO_DATE(m.meta_value, '%d-%M-%Y')
+            STR_TO_DATE(m.meta_value, '%d-%m-%Y'),
+            STR_TO_DATE(m.meta_value, '%d/%m/%Y'),
+            STR_TO_DATE(m.meta_value, '%Y/%m/%d')
           ) {$current_order}
-        "
-	);
+        ";
+
+	$results = $wpdb->get_col($sql);
 
 	$customer_orders = (object) array(
 		'orders' => $results
@@ -70,14 +78,23 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 				$order = wc_get_order($customer_order);
 				$is_monthly = $order->get_meta('is_monthly_payment_order');
 				$item_count = $order->get_item_count() - $order->get_item_count_refunded();
+				$vehicle_name = '';
+				$extra_fees = [];
 				foreach ($order->get_items() as $item) {
-
 					$product = $item->get_product();
-
 					if ($product) {
-						$product_ids = $product->get_id();
-						$product_name = $product->get_name();
+						if (has_term('vehicle', 'product_cat', $product->get_id())) {
+							$vehicle_name = $product->get_name();
+						} else {
+							$extra_fees[] = $product->get_name();
+						}
 					}
+				}
+
+				$display_product_name = esc_html($vehicle_name);
+				if (!empty($extra_fees)) {
+					$extra_label = '<small style="display:block; opacity:0.8; font-size: 0.9em; margin-top: 4px;">Extra fee: ' . esc_html(implode(', ', $extra_fees)) . '</small>';
+					$display_product_name = !empty($display_product_name) ? $display_product_name . $extra_label : $extra_label;
 				}
 			?>
 				<tr class="woocommerce-orders-table__row order">
@@ -102,7 +119,7 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 						<span><?php echo esc_html(wc_get_order_status_name($order->get_status())); ?></span>
 					</td>
 					<td data-title="<?php esc_attr_e('Vehicle', 'woocommerce'); ?>">
-						<?php echo esc_html($product_name); ?>
+						<?php echo $display_product_name; ?>
 					</td>
 					<td data-title="<?php esc_attr_e('Total', 'woocommerce'); ?>">
 
