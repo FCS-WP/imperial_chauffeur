@@ -62,7 +62,7 @@ if (isset($_GET['orderby']) && $current_orderby == 'booking_date') {
 				<th>
 					<?php echo build_sort_link(__('Order Number', 'woocommerce'), 'id', $current_orderby, $current_order); ?>
 				</th>
-				<th><?php esc_html_e('Staff Name', 'woocommerce'); ?></th>
+				<th><?php esc_html_e('Passenger Name', 'woocommerce'); ?></th>
 				<th>
 					<?php echo build_sort_link(__('Booking Date', 'woocommerce'), 'booking_date', $current_orderby, $current_order); ?>
 				</th>
