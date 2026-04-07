@@ -28,11 +28,24 @@
             <div style="margin-left:20px">
                 <?php
                     foreach ($custom_fields as $key => $value) {
+                        $old_val = $old_data[$key] ?? '';
+                        $new_val = $new_data[$key] ?? '';
+
+                        // Convert pick_up_date from Y-m-d to d-m-Y for display
+                        if ($key === 'pick_up_date') {
+                            if (!empty($old_val) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $old_val)) {
+                                $old_val = date('d-m-Y', strtotime($old_val));
+                            }
+                            if (!empty($new_val) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $new_val)) {
+                                $new_val = date('d-m-Y', strtotime($new_val));
+                            }
+                        }
+
                         echo "<p style='font-size: 13px;color:#000;'>";
                             if(trim($old_data[$key]) !== trim($new_data[$key])){
-                                echo "<strong>" . $value . ": " . $old_data[$key] . " → " . $new_data[$key] . "</strong>";
+                                echo "<strong>" . $value . ": " . $old_val . " → " . $new_val . "</strong>";
                             } else {
-                                echo $value . ": " . $old_data[$key];
+                                echo $value . ": " . $old_val;
                             }
                         echo "</p>";
                     }

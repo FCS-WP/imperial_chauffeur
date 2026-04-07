@@ -48,7 +48,12 @@
             </select>
 
           <?php elseif ($key === 'pick_up_date') :
-            $pickupdate = date('d-m-Y', strtotime($value));
+            // Convert Y-m-d to d-m-Y for display, keep d-m-Y as is
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+              $pickupdate = date('d-m-Y', strtotime($value));
+            } else {
+              $pickupdate = $value;
+            }
           ?>
             <input
               class="js-datepicker"
