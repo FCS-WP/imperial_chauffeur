@@ -4,7 +4,12 @@
 
 	    <?php $value = $order->get_meta($key); ?>
 	    <?php if (! empty($value)): ?>
-
+	      <?php
+	      // Convert pick_up_date from Y-m-d to d-m-Y for display
+	      if ($key === 'pick_up_date' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+	        $value = date('d-m-Y', strtotime($value));
+	      }
+	      ?>
 	      <p><strong><?php echo esc_html($label); ?>:</strong> <?php echo esc_html($value); ?></p>
 	    <?php endif; ?>
 	  <?php endforeach; ?>

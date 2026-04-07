@@ -142,12 +142,34 @@ if (empty($is_monthly_payment_order)) :
 					$old_value_arr[$key] = $old_value;
 
 					$new_value = sanitize_text_field($_POST[$key]);
+
+					// Convert pick_up_date from d-m-Y to Y-m-d for storage
+					if ($key === 'pick_up_date' && !empty($new_value)) {
+						$new_value_display = $new_value; // Keep original d-m-Y for display
+						// Convert old value to d-m-Y for comparison/display in changes log
+						if (!empty($old_value) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $old_value)) {
+							$old_date_obj = DateTime::createFromFormat('Y-m-d', $old_value);
+							if ($old_date_obj) {
+								$old_value = $old_date_obj->format('d-m-Y');
+							}
+						}
+						// Convert new value to Y-m-d for storage
+						if (strpos($new_value, '-') !== false && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $new_value)) {
+							$date_obj = DateTime::createFromFormat('d-m-Y', $new_value);
+							if ($date_obj) {
+								$new_value = $date_obj->format('Y-m-d');
+							}
+						}
+					}
+
 					$new_value_arr[$key] = $new_value;
 
 					if ($old_value !== $new_value && $new_value !== '') {
 
 						$order->update_meta_data($key, $new_value);
-						$changes[] = "{$label}: \"{$old_value}\" → \"{$new_value}\"";
+						// Use display values for changes log
+						$display_new = isset($new_value_display) ? $new_value_display : $new_value;
+						$changes[] = "{$label}: \"{$old_value}\" → \"{$display_new}\"";
 					}
 				}
 			}
